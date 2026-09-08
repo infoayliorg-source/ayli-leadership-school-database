@@ -1,0 +1,328 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Chapter Management</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🌍 Chapter Management</h1>
+
+        <p>
+            Manage AYLI chapters and view student enrollment.
+        </p>
+
+
+        <!-- Chapter Summary -->
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Chapters
+                </div>
+
+                <div class="stat-number" id="chapterTotal">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Active Chapters
+                </div>
+
+                <div class="stat-number" id="activeChapters">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+                <div class="stat-number" id="chapterStudentTotal">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Chapter List -->
+
+        <h2>AYLI Chapters</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Chapter</th>
+                        <th>Country</th>
+                        <th>Students</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="chapterTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        async function loadChapters() {
+
+            const chapterTableBody =
+                document.getElementById("chapterTableBody");
+
+            if (!chapterTableBody) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data: students,
+                    error
+                } = await supabaseClient
+                    .from("students")
+                    .select("chapter, country, status");
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load chapters:",
+                        error
+                    );
+
+                    chapterTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4"
+                                style="text-align:center;">
+                                Unable to load chapters.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                const chapterData = {};
+
+
+                (students || []).forEach(function (student) {
+
+                    const chapter =
+                        String(student.chapter || "").trim();
+
+                    const country =
+                        String(student.country || "").trim();
+
+
+                    if (!chapter) {
+                        return;
+                    }
+
+
+                    if (!chapterData[chapter]) {
+
+                        chapterData[chapter] = {
+                            country: country,
+                            students: 0,
+                            active: false
+                        };
+
+                    }
+
+
+                    chapterData[chapter].students++;
+
+
+                    if (
+                        String(student.status || "")
+                            .toLowerCase() === "active"
+                    ) {
+
+                        chapterData[chapter].active = true;
+
+                    }
+
+                });
+
+
+                chapterTableBody.innerHTML = "";
+
+
+                const chapters =
+                    Object.keys(chapterData).sort();
+
+
+                if (chapters.length === 0) {
+
+                    chapterTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="4"
+                                style="text-align:center;">
+                                No chapters found.
+                            </td>
+                        </tr>
+                    `;
+
+                } else {
+
+                    chapters.forEach(function (chapter) {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        const status =
+                            chapterData[chapter].active
+                                ? "Active"
+                                : "Completed";
+
+
+                        row.innerHTML = `
+                            <td>${chapter}</td>
+                            <td>
+                                ${chapterData[chapter].country || "-"}
+                            </td>
+                            <td>
+                                ${chapterData[chapter].students}
+                            </td>
+                            <td>${status}</td>
+                        `;
+
+
+                        chapterTableBody.appendChild(row);
+
+                    });
+
+                }
+
+
+                const chapterTotal =
+                    document.getElementById("chapterTotal");
+
+
+                if (chapterTotal) {
+
+                    chapterTotal.textContent =
+                        chapters.length;
+
+                }
+
+
+                const activeChapters =
+                    document.getElementById("activeChapters");
+
+
+                if (activeChapters) {
+
+                    activeChapters.textContent =
+                        chapters.filter(function (chapter) {
+
+                            return chapterData[chapter].active;
+
+                        }).length;
+
+                }
+
+
+                const chapterStudentTotal =
+                    document.getElementById("chapterStudentTotal");
+
+
+                if (chapterStudentTotal) {
+
+                    chapterStudentTotal.textContent =
+                        students ? students.length : 0;
+
+                }
+
+
+                console.log(
+                    "AYLI Chapters loaded from Supabase."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unexpected chapter error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadChapters();
+
+            }
+        );
+
+    </script>
+
+
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>
+```

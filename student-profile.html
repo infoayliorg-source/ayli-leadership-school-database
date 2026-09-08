@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+```
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>AYLI Student Profile</title>
+
+<link rel="stylesheet"
+      href="css/style.css">
+```
+
+</head>
+
+<body>
+
+```
+<div class="container">
+
+    <h1>👤 AYLI Student Profile</h1>
+
+    <p>
+        Complete student information and AYLI records.
+    </p>
+
+
+    <!-- Student Profile -->
+
+    <div class="stat-card">
+
+        <h2 id="studentName">
+            Loading Student...
+        </h2>
+
+        <p>
+            <strong>AYLI ID:</strong>
+            <span id="studentId">-</span>
+        </p>
+
+        <p>
+            <strong>Gender:</strong>
+            <span id="studentGender">-</span>
+        </p>
+
+        <p>
+            <strong>Date of Birth:</strong>
+            <span id="studentDOB">-</span>
+        </p>
+
+        <p>
+            <strong>Nationality:</strong>
+            <span id="studentNationality">-</span>
+        </p>
+
+        <p>
+            <strong>Country:</strong>
+            <span id="studentCountry">-</span>
+        </p>
+
+        <p>
+            <strong>City:</strong>
+            <span id="studentCity">-</span>
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            <span id="studentPhone">-</span>
+        </p>
+
+        <p>
+            <strong>WhatsApp:</strong>
+            <span id="studentWhatsApp">-</span>
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            <span id="studentEmail">-</span>
+        </p>
+
+        <p>
+            <strong>Cohort:</strong>
+            <span id="studentCohort">-</span>
+        </p>
+
+        <p>
+            <strong>Chapter:</strong>
+            <span id="studentChapter">-</span>
+        </p>
+
+        <p>
+            <strong>Status:</strong>
+            <span id="studentStatus">-</span>
+        </p>
+
+    </div>
+
+
+    <!-- Academic Records -->
+
+    <h2>📚 Academic Records</h2>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Course</th>
+                    <th>Lecturer</th>
+                    <th>Score</th>
+                    <th>Grade</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="academicProfileBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- Leadership -->
+
+    <h2>👔 Leadership</h2>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Position</th>
+                    <th>Start Date</th>
+                    <th>Chapter</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="leadershipProfileBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- Certificates -->
+
+    <h2>📜 Certificates</h2>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+                    <th>Certificate Number</th>
+                    <th>Type</th>
+                    <th>Issue Date</th>
+                    <th>Status</th>
+                </tr>
+
+            </thead>
+
+            <tbody id="certificateProfileBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <br>
+
+    <button onclick="window.history.back()">
+        ← Back to Students
+    </button>
+
+</div>
+
+
+<!-- LOAD SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+    // ==========================================================
+    // SUPABASE CONNECTION
+    // ==========================================================
+
+    const PROFILE_SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+    const PROFILE_SUPABASE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+    const profileSupabaseClient =
+        supabase.createClient(
+            PROFILE_SUPABASE_URL,
+            PROFILE_SUPABASE_KEY
+        );
+
+
+    // ==========================================================
+    // GET STUDENT ID FROM URL
+    // ==========================================================
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const ayliId =
+        params.get("id");
+
+
+    // ==========================================================
+    // LOAD STUDENT PROFILE
+    // ==========================================================
+
+    async function loadStudentProfile() {
+
+        if (!ayliId) {
+
+            document.getElementById(
+                "studentName"
+            ).textContent =
+                "Student not found";
+
+            return;
+
+        }
+
+
+        try {
+
+            const {
+                data: student,
+                error
+            } = await profileSupabaseClient
+                .from("students")
+                .select("*")
+                .eq("ayli_id", ayliId)
+                .single();
+
+
+            if (error || !student) {
+
+                console.error(
+                    "Student loading error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "studentName"
+                ).textContent =
+                    "Student not found";
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // STUDENT NAME
+            // ==================================================
+
+            const fullName =
+                [
+
+                    student.first_name ||
+                    student.firstName,
+
+                    student.middle_name ||
+                    student.middleName,
+
+                    student.last_name ||
+                    student.lastName
+
+                ]
+                .filter(Boolean)
+                .join(" ");
+
+
+            document.getElementById(
+                "studentName"
+            ).textContent =
+                fullName || "Student Profile";
+
+
+            // ==================================================
+            // PERSONAL INFORMATION
+            // ==================================================
+
+            document.getElementById(
+                "studentId"
+            ).textContent =
+                student.ayli_id ||
+                student.ayliId ||
+                "-";
+
+
+            document.getElementById(
+                "studentGender"
+            ).textContent =
+                student.gender || "-";
+
+
+            document.getElementById(
+                "studentDOB"
+            ).textContent =
+                student.date_of_birth ||
+                student.dateOfBirth ||
+                "-";
+
+
+            document.getElementById(
+                "studentNationality"
+            ).textContent =
+                student.nationality || "-";
+
+
+            document.getElementById(
+                "studentCountry"
+            ).textContent =
+                student.country || "-";
+
+
+            document.getElementById(
+                "studentCity"
+            ).textContent =
+                student.city || "-";
+
+
+            document.getElementById(
+                "studentPhone"
+            ).textContent =
+                student.phone || "-";
+
+
+            document.getElementById(
+                "studentWhatsApp"
+            ).textContent =
+                student.whatsapp || "-";
+
+
+            document.getElementById(
+                "studentEmail"
+            ).textContent =
+                student.email || "-";
+
+
+            document.getElementById(
+                "studentCohort"
+            ).textContent =
+                student.cohort || "-";
+
+
+            document.getElementById(
+                "studentChapter"
+            ).textContent =
+                student.chapter || "-";
+
+
+            document.getElementById(
+                "studentStatus"
+            ).textContent =
+                student.status || "-";
+
+
+            // ==================================================
+            // LOAD ACADEMIC RECORDS
+            // ==================================================
+
+            await loadAcademicRecords(ayliId);
+
+
+            // ==================================================
+            // LOAD LEADERSHIP RECORDS
+            // ==================================================
+
+            await loadLeadership(ayliId);
+
+
+            // ==================================================
+            // LOAD CERTIFICATES
+            // ==================================================
+
+           await loadCertificates(ayliId);
+
+
+        }
+        catch (error) {
+
+            console.error(
+                "Unexpected profile error:",
+                error
+            );
+
+
+            document.getElementById(
+                "studentName"
+            ).textContent =
+                "Error loading student";
+
+        }
+
+    }
+
+
+    // ==========================================================
+    // LOAD ACADEMIC RECORDS
+    // ==========================================================
+
+    async function loadAcademicRecords(studentAyliId) {
+
+        const academicBody =
+            document.getElementById(
+                "academicProfileBody"
+            );
+
+
+        const {
+            data: records,
+            error
+        } = await profileSupabaseClient
+            .from("academic_records")
+            .select("*")
+            .eq("ayli_id", studentAyliId);
+
+
+        if (error) {
+
+            console.error(
+                "Academic records error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        academicBody.innerHTML = "";
+
+
+        if (!records || records.length === 0) {
+
+            academicBody.innerHTML = `
+                <tr>
+                    <td colspan="4"
+                        style="text-align:center;">
+                        No academic records found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        records.forEach(function (record) {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${record.course || "-"}
+                </td>
+
+                <td>
+                    ${record.lecturer || "-"}
+                </td>
+
+                <td>
+                    ${record.score || "-"}
+                </td>
+
+                <td>
+                    ${record.grade || "-"}
+                </td>
+
+            `;
+
+
+            academicBody.appendChild(row);
+
+        });
+
+    }
+
+
+    // ==========================================================
+    // LOAD LEADERSHIP
+    // ==========================================================
+
+    async function loadLeadership(studentAyliId) {
+
+        const leadershipBody =
+            document.getElementById(
+                "leadershipProfileBody"
+            );
+
+
+        const {
+            data: leaders,
+            error
+        } = await profileSupabaseClient
+            .from("leadership")
+            .select("*")
+            .eq("ayli_id", studentAyliId);
+
+
+        if (error) {
+
+            console.error(
+                "Leadership error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        leadershipBody.innerHTML = "";
+
+
+        if (!leaders || leaders.length === 0) {
+
+            leadershipBody.innerHTML = `
+                <tr>
+                    <td colspan="4"
+                        style="text-align:center;">
+                        No leadership record found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        leaders.forEach(function (leader) {
+
+            const row =
+                document.createElement("tr");
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${leader.position || "-"}
+                </td>
+
+                <td>
+                    ${
+                        leader.start_date ||
+                        leader.startDate ||
+                        "-"
+                    }
+                </td>
+
+                <td>
+                    ${leader.chapter || "-"}
+                </td>
+
+                <td>
+                    ${leader.status || "-"}
+                </td>
+
+            `;
+
+
+            leadershipBody.appendChild(row);
+
+        });
+
+    }
+
+
+    // ==========================================================
+    // LOAD CERTIFICATES
+    // ==========================================================
+
+    async function loadCertificates(studentAyliId) {
+
+        const certificateBody =
+            document.getElementById(
+                "certificateProfileBody"
+            );
+
+
+        const {
+            data: certificates,
+            error
+        } = await profileSupabaseClient
+            .from("certificates")
+            .select("*")
+            .eq("ayli_id", studentAyliId);
+
+
+        if (error) {
+
+            console.error(
+                "Certificate error:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        certificateBody.innerHTML = "";
+
+
+        if (
+            !certificates ||
+            certificates.length === 0
+        ) {
+
+            certificateBody.innerHTML = `
+                <tr>
+                    <td colspan="4"
+                        style="text-align:center;">
+                        No certificates found.
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        certificates.forEach(
+            function (certificate) {
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${
+                            certificate.certificate_number ||
+                            certificate.certificateNumber ||
+                            "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            certificate.type ||
+                            "Certificate of Completion"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            certificate.issue_date ||
+                            certificate.issueDate ||
+                            "-"
+                        }
+                    </td>
+
+                    <td>
+                        ${
+                            certificate.status ||
+                            "Issued"
+                        }
+                    </td>
+
+                `;
+
+
+                certificateBody
+                    .appendChild(row);
+
+            }
+        );
+
+    }
+
+
+    // ==========================================================
+    // START
+    // ==========================================================
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function () {
+
+            loadStudentProfile();
+
+        }
+    );
+
+</script>
+
+
+<!-- ADMIN AUTHENTICATION -->
+
+<script src="js/auth.js"></script>
+```
+
+</body>
+
+</html>

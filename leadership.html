@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Leadership Management</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>👔 Leadership Management</h1>
+        <p>Manage AYLI leadership positions and assignments.</p>
+
+        <!-- SUMMARY -->
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+                <div class="stat-label">Total Leaders</div>
+                <div class="stat-number" id="leaderTotal">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Active Leaders</div>
+                <div class="stat-number" id="activeLeaders">0</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-label">Leadership Positions</div>
+                <div class="stat-number" id="leadershipPositions">0</div>
+            </div>
+
+        </div>
+
+
+        <!-- ASSIGN LEADERSHIP -->
+        <h2>Assign Leadership Position</h2>
+
+        <form id="leadershipForm">
+
+            <div>
+                <label for="leaderStudent">Student</label>
+
+                <select id="leaderStudent" required>
+                    <option value="">Select Student</option>
+                </select>
+            </div>
+
+
+            <div>
+                <label for="leaderPosition">Position</label>
+
+                <input
+                    type="text"
+                    id="leaderPosition"
+                    placeholder="e.g. President"
+                    required
+                >
+            </div>
+
+
+            <div>
+                <label for="leadershipStartDate">Start Date</label>
+
+                <input
+                    type="date"
+                    id="leadershipStartDate"
+                    required
+                >
+            </div>
+
+
+            <div>
+                <label for="leaderChapter">Chapter</label>
+
+                <input
+                    type="text"
+                    id="leaderChapter"
+                    placeholder="e.g. AYLI Liberia"
+                    required
+                >
+            </div>
+
+
+            <div>
+                <label for="leaderStatus">Status</label>
+
+                <select id="leaderStatus" required>
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+                </select>
+            </div>
+
+
+            <button type="submit">
+                Save Leadership Assignment
+            </button>
+
+        </form>
+
+
+        <!-- LEADERSHIP TABLE -->
+        <h2>AYLI Leadership</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>AYLI ID</th>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Start Date</th>
+                        <th>Chapter</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="leadershipTableBody"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ==========================================
+        // LOAD STUDENTS INTO DROPDOWN
+        // ==========================================
+
+        async function loadLeadershipStudents() {
+
+            const select =
+                document.getElementById("leaderStudent");
+
+            if (!select) return;
+
+
+            const {
+                data: students,
+                error
+            } = await supabaseClient
+                .from("students")
+                .select("ayli_id, first_name, middle_name, last_name")
+                .order("first_name");
+
+
+            if (error) {
+
+                console.error(
+                    "Error loading students:",
+                    error
+                );
+
+                return;
+            }
+
+
+            select.innerHTML =
+                `<option value="">Select Student</option>`;
+
+
+            students.forEach(function (student) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value =
+                    student.ayli_id;
+
+                option.textContent =
+                    `${student.ayli_id} - ${student.first_name || ""} ${student.middle_name || ""} ${student.last_name || ""}`
+                        .replace(/\s+/g, " ")
+                        .trim();
+
+                select.appendChild(option);
+
+            });
+
+        }
+
+
+        // ==========================================
+        // LOAD LEADERSHIP RECORDS
+        // ==========================================
+
+        async function loadLeadership() {
+
+            const table =
+                document.getElementById(
+                    "leadershipTableBody"
+                );
+
+            if (!table) return;
+
+
+            const {
+                data: leaders,
+                error
+            } = await supabaseClient
+                .from("leadership")
+                .select(`
+                    id,
+                    ayli_id,
+                    position,
+                    start_date,
+                    chapter,
+                    status
+                `)
+                .order("start_date", {
+                    ascending: false
+                });
+
+
+            if (error) {
+
+                console.error(
+                    "Error loading leadership:",
+                    error
+                );
+
+                return;
+            }
+
+
+            // Load students
+            const {
+                data: students,
+                error: studentError
+            } = await supabaseClient
+                .from("students")
+                .select(
+                    "ayli_id, first_name, middle_name, last_name"
+                );
+
+
+            if (studentError) {
+
+                console.error(
+                    "Error loading student names:",
+                    studentError
+                );
+
+                return;
+            }
+
+
+            table.innerHTML = "";
+
+
+            leaders.forEach(function (leader) {
+
+                const student =
+                    students.find(function (item) {
+
+                        return item.ayli_id ===
+                            leader.ayli_id;
+
+                    });
+
+
+                const row =
+                    document.createElement("tr");
+
+
+                const studentName =
+                    student
+                        ? `${student.first_name || ""} ${student.middle_name || ""} ${student.last_name || ""}`
+                            .replace(/\s+/g, " ")
+                            .trim()
+                        : "-";
+
+
+                row.innerHTML = `
+
+                    <td>${leader.ayli_id || "-"}</td>
+
+                    <td>${studentName}</td>
+
+                    <td>${leader.position || "-"}</td>
+
+                    <td>${leader.start_date || "-"}</td>
+
+                    <td>${leader.chapter || "-"}</td>
+
+                    <td>${leader.status || "-"}</td>
+
+                `;
+
+
+                table.appendChild(row);
+
+            });
+
+
+            // ======================================
+            // UPDATE STATISTICS
+            // ======================================
+
+            const leaderTotal =
+                document.getElementById("leaderTotal");
+
+            if (leaderTotal) {
+
+                leaderTotal.textContent =
+                    leaders.length;
+
+            }
+
+
+            const activeLeaders =
+                document.getElementById("activeLeaders");
+
+            if (activeLeaders) {
+
+                const activeCount =
+                    leaders.filter(function (leader) {
+
+                        return (
+                            leader.status || ""
+                        ).toLowerCase() === "active";
+
+                    }).length;
+
+
+                activeLeaders.textContent =
+                    activeCount;
+
+            }
+
+
+            const positions =
+                leaders
+                    .map(function (leader) {
+
+                        return leader.position;
+
+                    })
+                    .filter(function (position) {
+
+                        return position;
+
+                    });
+
+
+            const uniquePositions =
+                [...new Set(positions)];
+
+
+            const leadershipPositions =
+                document.getElementById(
+                    "leadershipPositions"
+                );
+
+
+            if (leadershipPositions) {
+
+                leadershipPositions.textContent =
+                    uniquePositions.length;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // SAVE LEADERSHIP ASSIGNMENT
+        // ==========================================
+
+        document
+            .getElementById("leadershipForm")
+            .addEventListener(
+                "submit",
+                async function (event) {
+
+                    event.preventDefault();
+
+
+                    const ayliId =
+                        document.getElementById(
+                            "leaderStudent"
+                        ).value;
+
+
+                    const position =
+                        document.getElementById(
+                            "leaderPosition"
+                        ).value.trim();
+
+
+                    const startDate =
+                        document.getElementById(
+                            "leadershipStartDate"
+                        ).value;
+
+
+                    const chapter =
+                        document.getElementById(
+                            "leaderChapter"
+                        ).value.trim();
+
+
+                    const status =
+                        document.getElementById(
+                            "leaderStatus"
+                        ).value;
+
+
+                    if (!ayliId) {
+
+                        alert(
+                            "Please select a student."
+                        );
+
+                        return;
+                    }
+
+
+                    const {
+                        error
+                    } = await supabaseClient
+                        .from("leadership")
+                        .insert([{
+
+                            ayli_id: ayliId,
+
+                            position: position,
+
+                            start_date: startDate,
+
+                            chapter: chapter,
+
+                            status: status
+
+                        }]);
+
+
+                    if (error) {
+
+                        console.error(
+                            "Error saving leadership:",
+                            error
+                        );
+
+
+                        alert(
+                            "Error saving leadership assignment: " +
+                            error.message
+                        );
+
+                        return;
+                    }
+
+
+                    alert(
+                        "Leadership assignment saved successfully!"
+                    );
+
+
+                    document
+                        .getElementById(
+                            "leadershipForm"
+                        )
+                        .reset();
+
+
+                    await loadLeadership();
+
+                }
+            );
+
+
+        // ==========================================
+        // INITIALIZE PAGE
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                await loadLeadershipStudents();
+
+                await loadLeadership();
+
+            }
+        );
+
+    </script>
+
+
+    <!-- AUTHENTICATION -->
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>

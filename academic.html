@@ -1,0 +1,791 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Academic Records</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>📚 Academic Records</h1>
+
+        <p>
+            Manage student academic performance and records.
+        </p>
+
+
+        <!-- Academic Summary -->
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+                <div class="stat-number" id="academicStudents">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Records Entered
+                </div>
+
+                <div class="stat-number" id="academicRecords">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Passed
+                </div>
+
+                <div class="stat-number" id="academicPassed">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Academic Record Form -->
+
+        <h2>Enter Academic Record</h2>
+
+        <form id="academicForm">
+
+            <div>
+
+                <label for="academicStudent">
+                    Student
+                </label>
+
+                <select id="academicStudent" required>
+
+                    <option value="">
+                        Select Student
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div>
+
+                <label for="academicCourse">
+                    Course
+                </label>
+
+                <input
+                    type="text"
+                    id="academicCourse"
+                    placeholder="Enter course name"
+                    required
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="academicLecturer">
+                    Lecturer
+                </label>
+
+                <input
+                    type="text"
+                    id="academicLecturer"
+                    placeholder="Enter lecturer name"
+                >
+
+            </div>
+
+
+            <div>
+
+                <label for="academicScore">
+                    Score
+                </label>
+
+                <input
+                    type="number"
+                    id="academicScore"
+                    min="0"
+                    max="100"
+                    placeholder="Enter score"
+                    required
+                >
+
+            </div>
+
+
+            <button type="submit">
+                Save Academic Record
+            </button>
+
+        </form>
+
+
+        <!-- Academic Records Table -->
+
+        <h2>Academic Records</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>AYLI ID</th>
+                        <th>Student</th>
+                        <th>Course</th>
+                        <th>Lecturer</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Result</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody id="academicTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SUPABASE
+    ====================================================== -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // =====================================================
+        // GRADE CALCULATION
+        // =====================================================
+
+        function getGrade(score) {
+
+            score = Number(score);
+
+            if (score >= 80) {
+                return "A";
+            }
+
+            if (score >= 70) {
+                return "B";
+            }
+
+            if (score >= 60) {
+                return "C";
+            }
+
+            if (score >= 50) {
+                return "D";
+            }
+
+            return "F";
+        }
+
+
+        // =====================================================
+        // RESULT CALCULATION
+        // =====================================================
+
+        function getResult(score) {
+
+            score = Number(score);
+
+            if (score >= 50) {
+                return "Pass";
+            }
+
+            return "Fail";
+        }
+
+
+        // =====================================================
+        // LOAD STUDENTS FROM SUPABASE
+        // =====================================================
+
+        async function loadAcademicStudents() {
+
+            const select =
+                document.getElementById("academicStudent");
+
+
+            if (!select) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data: students,
+                    error
+                } = await supabaseClient
+                    .from("students")
+                    .select(
+                        "ayli_id, first_name, middle_name, last_name"
+                    )
+                    .order("ayli_id", {
+                        ascending: true
+                    });
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load students:",
+                        error
+                    );
+
+                    alert(
+                        "Unable to load students.\n\n" +
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                select.innerHTML = `
+                    <option value="">
+                        Select Student
+                    </option>
+                `;
+
+
+                (students || []).forEach(function (student) {
+
+                    const option =
+                        document.createElement("option");
+
+
+                    option.value =
+                        student.ayli_id;
+
+
+                    const fullName =
+                        [
+                            student.first_name,
+                            student.middle_name,
+                            student.last_name
+                        ]
+                        .filter(Boolean)
+                        .join(" ");
+
+
+                    option.textContent =
+                        `${student.ayli_id} - ${fullName}`;
+
+
+                    select.appendChild(option);
+
+                });
+
+
+                document.getElementById(
+                    "academicStudents"
+                ).textContent =
+                    students ? students.length : 0;
+
+
+                console.log(
+                    "Students loaded from Supabase."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unexpected student loading error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // LOAD ACADEMIC RECORDS FROM SUPABASE
+        // =====================================================
+
+        async function loadAcademicRecords() {
+
+            const table =
+                document.getElementById(
+                    "academicTableBody"
+                );
+
+
+            if (!table) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data: records,
+                    error
+                } = await supabaseClient
+                    .from("academic_records")
+                    .select("*")
+                    .order("id", {
+                        ascending: false
+                    });
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load academic records:",
+                        error
+                    );
+
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="7"
+                                style="text-align:center;">
+                                Unable to load academic records.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                const {
+                    data: students,
+                    error: studentError
+                } = await supabaseClient
+                    .from("students")
+                    .select(
+                        "ayli_id, first_name, middle_name, last_name"
+                    );
+
+
+                if (studentError) {
+
+                    console.error(
+                        "Unable to load student names:",
+                        studentError
+                    );
+
+                }
+
+
+                table.innerHTML = "";
+
+
+                if (!records || records.length === 0) {
+
+                    table.innerHTML = `
+                        <tr>
+                            <td colspan="7"
+                                style="text-align:center;">
+                                No academic records entered yet.
+                            </td>
+                        </tr>
+                    `;
+
+                } else {
+
+                    records.forEach(function (record) {
+
+                        const student =
+                            (students || []).find(
+                                function (item) {
+
+                                    return (
+                                        item.ayli_id ===
+                                        record.ayli_id
+                                    );
+
+                                }
+                            );
+
+
+                        let studentName = "-";
+
+
+                        if (student) {
+
+                            studentName =
+                                [
+                                    student.first_name,
+                                    student.middle_name,
+                                    student.last_name
+                                ]
+                                .filter(Boolean)
+                                .join(" ");
+
+                        }
+
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        row.innerHTML = `
+                            <td>
+                                ${record.ayli_id || "-"}
+                            </td>
+
+                            <td>
+                                ${studentName}
+                            </td>
+
+                            <td>
+                                ${record.course || "-"}
+                            </td>
+
+                            <td>
+                                ${record.lecturer || "-"}
+                            </td>
+
+                            <td>
+                                ${record.score ?? "-"}
+                            </td>
+
+                            <td>
+                                ${record.grade || "-"}
+                            </td>
+
+                            <td>
+                                ${record.result || "-"}
+                            </td>
+                        `;
+
+
+                        table.appendChild(row);
+
+                    });
+
+                }
+
+
+                document.getElementById(
+                    "academicRecords"
+                ).textContent =
+                    records ? records.length : 0;
+
+
+                const passed =
+                    (records || []).filter(
+                        function (record) {
+
+                            return (
+                                String(record.result || "")
+                                    .toLowerCase() ===
+                                "pass"
+                            );
+
+                        }
+                    ).length;
+
+
+                document.getElementById(
+                    "academicPassed"
+                ).textContent =
+                    passed;
+
+
+                console.log(
+                    "Academic records loaded from Supabase."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unexpected academic records error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // =====================================================
+        // SAVE ACADEMIC RECORD
+        // =====================================================
+
+        async function saveAcademicRecord(event) {
+
+            event.preventDefault();
+
+
+            const studentSelect =
+                document.getElementById(
+                    "academicStudent"
+                );
+
+
+            const courseInput =
+                document.getElementById(
+                    "academicCourse"
+                );
+
+
+            const lecturerInput =
+                document.getElementById(
+                    "academicLecturer"
+                );
+
+
+            const scoreInput =
+                document.getElementById(
+                    "academicScore"
+                );
+
+
+            const ayliId =
+                studentSelect.value.trim();
+
+
+            const course =
+                courseInput.value.trim();
+
+
+            const lecturer =
+                lecturerInput.value.trim();
+
+
+            const score =
+                Number(scoreInput.value);
+
+
+            if (!ayliId) {
+
+                alert(
+                    "Please select a student."
+                );
+
+                return;
+            }
+
+
+            if (!course) {
+
+                alert(
+                    "Please enter the course name."
+                );
+
+                return;
+            }
+
+
+            if (
+                scoreInput.value === "" ||
+                isNaN(score) ||
+                score < 0 ||
+                score > 100
+            ) {
+
+                alert(
+                    "Please enter a valid score between 0 and 100."
+                );
+
+                return;
+            }
+
+
+            const grade =
+                getGrade(score);
+
+
+            const result =
+                getResult(score);
+
+
+            const submitButton =
+                document.querySelector(
+                    "#academicForm button[type='submit']"
+                );
+
+
+            if (submitButton) {
+                submitButton.disabled = true;
+                submitButton.textContent = "Saving...";
+            }
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from("academic_records")
+                    .insert([
+                        {
+                            ayli_id: ayliId,
+                            course: course,
+                            lecturer: lecturer,
+                            score: score,
+                            grade: grade,
+                            result: result
+                        }
+                    ])
+                    .select()
+                    .single();
+
+
+                if (error) {
+
+                    console.error(
+                        "Academic record save error:",
+                        error
+                    );
+
+                    alert(
+                        "Unable to save academic record.\n\n" +
+                        error.message
+                    );
+
+                    return;
+                }
+
+
+                console.log(
+                    "Academic record saved:",
+                    data
+                );
+
+
+                alert(
+                    "Academic record saved successfully!"
+                );
+
+
+                document.getElementById(
+                    "academicForm"
+                ).reset();
+
+
+                await loadAcademicRecords();
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unexpected academic save error:",
+                    error
+                );
+
+                alert(
+                    "An error occurred while saving the academic record."
+                );
+
+            } finally {
+
+                if (submitButton) {
+
+                    submitButton.disabled = false;
+
+                    submitButton.textContent =
+                        "Save Academic Record";
+
+                }
+
+            }
+
+        }
+
+
+        // =====================================================
+        // PAGE INITIALIZATION
+        // =====================================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            async function () {
+
+                const academicForm =
+                    document.getElementById(
+                        "academicForm"
+                    );
+
+
+                if (academicForm) {
+
+                    academicForm.addEventListener(
+                        "submit",
+                        saveAcademicRecord
+                    );
+
+                }
+
+
+                await loadAcademicStudents();
+
+                await loadAcademicRecords();
+
+
+                console.log(
+                    "AYLI Academic Records connected to Supabase."
+                );
+
+            }
+        );
+
+    </script>
+
+
+    <script src="js/auth.js"></script>
+
+</body>
+
+</html>
+```

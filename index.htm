@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Leadership School Database System</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+
+            <div class="logo">
+                AYLI
+            </div>
+
+            <div class="logo-text">
+
+                <h2>AYLI</h2>
+
+                <p>LEADERSHIP SCHOOL</p>
+
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <div class="menu-title">
+                Main Menu
+            </div>
+
+
+            <a href="#" class="active">
+                <span class="menu-icon">📊</span>
+                Dashboard
+            </a>
+
+
+            <a href="students.html">
+              <span class="menu-icon">👨‍🎓</span>
+               Students
+           </a>
+
+
+            <a href="cohorts.html">
+           <span class="menu-icon">🎓</span>
+              Cohorts
+           </a>
+
+
+            <a href="chapters.html">
+                <span class="menu-icon">🌍</span>
+                Chapters
+            </a>
+
+
+           <a href="academic.html">
+                <span class="menu-icon">📚</span>
+               Academic Records
+            </a>
+
+
+            <a href="leadership.html">
+                <span class="menu-icon">👔</span>
+              Leadership
+            </a>
+
+
+            <a href="certificates.html">
+               <span class="menu-icon">📜</span>
+               Certificates
+            </a>
+
+
+           <a href="alumni.html">
+                <span class="menu-icon">🏆</span>
+               Alumni
+           </a>
+
+
+            <a href="reports.html">
+               <span class="menu-icon">📊</span>
+              Reports
+           </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>Dashboard</h1>
+
+                <p>
+                    AYLI Leadership School Database System
+                </p>
+
+            </div>
+
+
+            <div class="admin">
+
+    <div class="admin-avatar">
+        A
+    </div>
+
+    <div class="admin-info">
+
+        <strong>Administrator</strong>
+
+        <span>System Administrator</span>
+
+    </div>
+
+    <button onclick="logout()" class="logout-button">
+        Logout
+    </button>
+
+</div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="content">
+
+
+            <!-- WELCOME -->
+
+            <div class="welcome">
+
+                <h2>
+                    Welcome to AYLI Leadership School
+                </h2>
+
+                <p>
+                    Manage students, cohorts, chapters,
+                    academic records, leadership,
+                    certificates and alumni from one system.
+                </p>
+
+            </div>
+
+
+            <!-- STATISTICS -->
+
+            <div class="stats">
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        👨‍🎓
+                    </div>
+
+                    <div>
+
+                        <div class="stat-label">
+                            Total Students
+                        </div>
+
+                        <div class="stat-number" id="totalStudents">
+                           0
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🎓
+                    </div>
+
+                    <div>
+
+                        <div class="stat-label">
+                         Total Cohorts
+                    </div>
+
+                <div class="stat-number" id="totalCohorts">
+                     0
+                </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🌍
+                    </div>
+
+                    <div>
+
+                        <div class="stat-label">
+                         Total Chapters
+                </div>
+
+                <div class="stat-number" id="totalChapters">
+                    0
+               </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <div class="stat-icon">
+                        🏆
+                    </div>
+
+                    <div>
+
+                        <div class="stat-label">
+                       Total Alumni
+                    </div>
+
+                <div class="stat-number" id="totalAlumni">
+                      0
+                </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- DASHBOARD CARDS -->
+
+            <div class="dashboard-grid">
+
+
+                <!-- STUDENT OVERVIEW -->
+
+                <div class="card">
+
+                    <h3>
+                        Student Overview
+                    </h3>
+
+                    <p class="card-description">
+                        Current student statistics
+                    </p>
+
+
+                    <div class="overview-item">
+
+                <span>
+                  Male Students
+                </span>
+
+                <strong id="maleStudents">
+                   0
+                </strong>
+
+            </div>
+
+
+                    <div class="overview-item">
+
+                <span>
+                Female Students
+               </span>
+
+                 <strong id="femaleStudents">
+                    0
+                 </strong>
+
+            </div>
+
+
+                    <div class="overview-item">
+
+                <span>
+                  Graduates
+                </span>
+
+                <strong id="graduates">
+                     0
+                </strong>
+
+            </div>
+            <div class="overview-item">
+
+                 <span>
+                 Students by Country
+                  </span>
+
+               <div id="countryBreakdown">
+                 No students registered yet.
+              </div>
+
+            </div>
+                </div>
+
+
+                <!-- QUICK ACTIONS -->
+
+                <div class="card">
+
+                    <h3>
+                        Quick Actions
+                    </h3>
+
+                    <p class="card-description">
+                        Frequently used functions
+                    </p>
+
+
+                    <div class="actions">
+
+
+                        <button class="action">
+
+                            <span class="action-icon">
+                                ➕
+                            </span>
+
+                            Register Student
+
+                        </button>
+
+
+                        <button class="action">
+
+                            <span class="action-icon">
+                                🎓
+                            </span>
+
+                            Manage Cohorts
+
+                        </button>
+
+
+                        <button class="action">
+
+                            <span class="action-icon">
+                                🌍
+                            </span>
+
+                            Manage Chapters
+
+                        </button>
+
+
+                        <button class="action" onclick="window.location.href='reports.html'">
+
+                           <span class="action-icon">
+                                  📈
+                            </span>
+
+                           View Reports
+
+            </button>
+
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            <strong>
+                Africa Youth Leadership Institute (AYLI)
+            </strong>
+
+            <br>
+
+            Professional Leadership School
+            Management System © 2026
+
+        </footer>
+
+
+    </main>
+
+</div>
+
+<!-- SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+    const SUPABASE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+    async function checkAuthentication() {
+
+        const {
+            data: { session },
+            error
+        } = await supabaseClient.auth.getSession();
+
+        if (error || !session) {
+            window.location.href = "login.html";
+            return;
+        }
+
+        console.log("Administrator authenticated.");
+    }
+
+    async function logout() {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href = "login.html";
+    }
+
+    checkAuthentication();
+</script>
+
+<script src="js/app.js"></script>
+</body>
+
+</html>

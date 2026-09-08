@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Alumni Management</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🏆 Alumni Management</h1>
+
+        <p>
+            Manage AYLI graduates and alumni records.
+        </p>
+
+
+        <!-- ALUMNI SUMMARY -->
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Alumni
+                </div>
+
+                <div class="stat-number" id="alumniTotal">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Alumni Countries
+                </div>
+
+                <div class="stat-number" id="alumniCountries">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Alumni Cohorts
+                </div>
+
+                <div class="stat-number" id="alumniCohorts">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ALUMNI LIST -->
+
+        <h2>AYLI Alumni</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>AYLI ID</th>
+                        <th>Name</th>
+                        <th>Country</th>
+                        <th>Cohort</th>
+                        <th>Chapter</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="alumniTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOAD SUPABASE FIRST -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- ALUMNI DATABASE CODE -->
+
+    <script>
+
+        const ALUMNI_SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+        const ALUMNI_SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+        const alumniSupabaseClient =
+            supabase.createClient(
+                ALUMNI_SUPABASE_URL,
+                ALUMNI_SUPABASE_KEY
+            );
+
+
+        async function loadAlumni() {
+
+            const alumniTableBody =
+                document.getElementById(
+                    "alumniTableBody"
+                );
+
+
+            if (!alumniTableBody) {
+
+                return;
+
+            }
+
+
+            try {
+
+                const {
+                    data: students,
+                    error
+                } = await alumniSupabaseClient
+                    .from("students")
+                    .select("*");
+
+
+                if (error) {
+
+                    console.error(
+                        "Error loading alumni:",
+                        error
+                    );
+
+
+                    alumniTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6"
+                                style="text-align:center;">
+                                Error loading alumni.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+
+                }
+
+
+                // ONLY GRADUATE STUDENTS
+
+                const alumni =
+                    (students || [])
+                    .filter(function (student) {
+
+                        return (
+                            student.status || ""
+                        )
+                        .toLowerCase()
+                        .trim() === "graduate";
+
+                    });
+
+
+                alumniTableBody.innerHTML = "";
+
+
+                if (alumni.length === 0) {
+
+                    alumniTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="6"
+                                style="text-align:center;">
+                                No alumni found.
+                            </td>
+                        </tr>
+                    `;
+
+                }
+
+
+                alumni.forEach(
+                    function (student) {
+
+
+                        const row =
+                            document.createElement(
+                                "tr"
+                            );
+
+
+                        const fullName =
+                            [
+
+                                student.first_name ||
+                                student.firstName,
+
+                                student.middle_name ||
+                                student.middleName,
+
+                                student.last_name ||
+                                student.lastName
+
+                            ]
+                            .filter(Boolean)
+                            .join(" ");
+
+
+                        row.innerHTML = `
+
+                            <td>
+                                ${
+                                    student.ayli_id ||
+                                    student.ayliId ||
+                                    "-"
+                                }
+                            </td>
+
+                            <td>
+                                ${fullName || "-"}
+                            </td>
+
+                            <td>
+                                ${student.country || "-"}
+                            </td>
+
+                            <td>
+                                ${student.cohort || "-"}
+                            </td>
+
+                            <td>
+                                ${student.chapter || "-"}
+                            </td>
+
+                            <td>
+                                Graduate
+                            </td>
+
+                        `;
+
+
+                        alumniTableBody
+                            .appendChild(row);
+
+                    }
+                );
+
+
+                // TOTAL ALUMNI
+
+                const alumniTotal =
+                    document.getElementById(
+                        "alumniTotal"
+                    );
+
+
+                if (alumniTotal) {
+
+                    alumniTotal.textContent =
+                        alumni.length;
+
+                }
+
+
+                // ALUMNI COUNTRIES
+
+                const countries =
+                    alumni
+                    .map(function (student) {
+
+                        return student.country;
+
+                    })
+                    .filter(Boolean);
+
+
+                const uniqueCountries =
+                    [...new Set(countries)];
+
+
+                const alumniCountries =
+                    document.getElementById(
+                        "alumniCountries"
+                    );
+
+
+                if (alumniCountries) {
+
+                    alumniCountries.textContent =
+                        uniqueCountries.length;
+
+                }
+
+
+                // ALUMNI COHORTS
+
+                const cohorts =
+                    alumni
+                    .map(function (student) {
+
+                        return student.cohort;
+
+                    })
+                    .filter(Boolean);
+
+
+                const uniqueCohorts =
+                    [...new Set(cohorts)];
+
+
+                const alumniCohorts =
+                    document.getElementById(
+                        "alumniCohorts"
+                    );
+
+
+                if (alumniCohorts) {
+
+                    alumniCohorts.textContent =
+                        uniqueCohorts.length;
+
+                }
+
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Unexpected error loading alumni:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        // LOAD ALUMNI
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadAlumni();
+
+            }
+        );
+
+    </script>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="js/auth.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Reports</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>📊 AYLI Reports</h1>
+
+        <p>
+            View an overview of AYLI Leadership School records.
+        </p>
+
+
+        <!-- Main Statistics -->
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+                <div class="stat-number"
+                     id="reportStudents">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Cohorts
+                </div>
+
+                <div class="stat-number"
+                     id="reportCohorts">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Chapters
+                </div>
+
+                <div class="stat-number"
+                     id="reportChapters">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Total Alumni
+                </div>
+
+                <div class="stat-number"
+                     id="reportAlumni">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Academic Records
+                </div>
+
+                <div class="stat-number"
+                     id="reportAcademic">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Leaders
+                </div>
+
+                <div class="stat-number"
+                     id="reportLeaders">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Certificates
+                </div>
+
+                <div class="stat-number"
+                     id="reportCertificates">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Student Overview -->
+
+        <h2>Student Overview</h2>
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Male Students
+                </div>
+
+                <div class="stat-number"
+                     id="reportMale">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Female Students
+                </div>
+
+                <div class="stat-number"
+                     id="reportFemale">
+                    0
+                </div>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <div class="stat-label">
+                    Graduates
+                </div>
+
+                <div class="stat-number"
+                     id="reportGraduates">
+                    0
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Students by Country -->
+
+        <h2>🌍 Students by Country</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Country</th>
+                        <th>Students</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="countryReportBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- Students by Cohort -->
+
+        <h2>🎓 Students by Cohort</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Cohort</th>
+                        <th>Students</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="cohortReportBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- Students by Chapter -->
+
+        <h2>🌍 Students by Chapter</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Chapter</th>
+                        <th>Students</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="chapterReportBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- LOAD SUPABASE FIRST -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+    const REPORTS_SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+    const REPORTS_SUPABASE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+    const reportsSupabaseClient =
+        supabase.createClient(
+            REPORTS_SUPABASE_URL,
+            REPORTS_SUPABASE_KEY
+        );
+
+
+    async function loadReports() {
+
+        try {
+
+            // LOAD STUDENTS
+
+            const {
+                data: students,
+                error: studentError
+            } = await reportsSupabaseClient
+                .from("students")
+                .select("*");
+
+
+            if (studentError) {
+
+                console.error(
+                    "Error loading students:",
+                    studentError
+                );
+
+                return;
+
+            }
+
+
+            // LOAD CERTIFICATES
+
+            const {
+                data: certificates,
+                error: certificateError
+            } = await reportsSupabaseClient
+                .from("certificates")
+                .select("*");
+
+
+            if (certificateError) {
+
+                console.error(
+                    "Error loading certificates:",
+                    certificateError
+                );
+
+            }
+
+            // LOAD ACADEMIC RECORDS
+
+const {
+    data: academicRecords,
+    error: academicError
+} = await reportsSupabaseClient
+    .from("academic_records")
+    .select("*");
+
+
+if (academicError) {
+
+    console.error(
+        "Error loading academic records:",
+        academicError
+    );
+
+}
+
+
+// LOAD LEADERSHIP
+
+const {
+    data: leaders,
+    error: leadershipError
+} = await reportsSupabaseClient
+    .from("leadership")
+    .select("*");
+
+
+if (leadershipError) {
+
+    console.error(
+        "Error loading leadership:",
+        leadershipError
+    );
+
+}
+
+          const studentList =
+    students || [];
+
+const certificateList =
+    certificates || [];
+
+const academicList =
+    academicRecords || [];
+
+const leadershipList =
+    leaders || [];
+
+
+console.log("STUDENTS:", studentList);
+console.log("CERTIFICATES:", certificateList);
+console.log("ACADEMIC:", academicList);
+console.log("LEADERSHIP:", leadershipList);
+    
+
+            // TOTAL STUDENTS
+
+            document.getElementById(
+                "reportStudents"
+            ).textContent =
+                studentList.length;
+
+
+            // TOTAL COHORTS
+
+            const cohorts =
+                studentList
+                .map(function(student) {
+
+                    return student.cohort;
+
+                })
+                .filter(Boolean);
+
+
+            document.getElementById(
+                "reportCohorts"
+            ).textContent =
+                [...new Set(cohorts)].length;
+
+
+            // TOTAL CHAPTERS
+
+            const chapters =
+                studentList
+                .map(function(student) {
+
+                    return student.chapter;
+
+                })
+                .filter(Boolean);
+
+
+            document.getElementById(
+                "reportChapters"
+            ).textContent =
+                [...new Set(chapters)].length;
+
+
+            // ALUMNI / GRADUATES
+
+            const alumni =
+                studentList.filter(
+                    function(student) {
+
+                        return (
+                            student.status || ""
+                        )
+                        .toLowerCase()
+                        .trim() === "graduate";
+
+                    }
+                );
+
+
+            document.getElementById(
+                "reportAlumni"
+            ).textContent =
+                alumni.length;
+
+
+            document.getElementById(
+                "reportGraduates"
+            ).textContent =
+                alumni.length;
+
+
+            // CERTIFICATES
+
+document.getElementById(
+    "reportCertificates"
+).textContent =
+    certificateList.length;
+
+
+// ACADEMIC RECORDS
+
+document.getElementById(
+    "reportAcademic"
+).textContent =
+    academicList.length;
+
+
+// LEADERS
+
+document.getElementById(
+    "reportLeaders"
+).textContent =
+    leadershipList.length;
+
+
+            // MALE STUDENTS
+
+            const male =
+                studentList.filter(
+                    function(student) {
+
+                        return (
+                            student.gender || ""
+                        )
+                        .toLowerCase()
+                        .trim() === "male";
+
+                    }
+                );
+
+
+            document.getElementById(
+                "reportMale"
+            ).textContent =
+                male.length;
+
+
+            // FEMALE STUDENTS
+
+            const female =
+                studentList.filter(
+                    function(student) {
+
+                        return (
+                            student.gender || ""
+                        )
+                        .toLowerCase()
+                        .trim() === "female";
+
+                    }
+                );
+
+
+            document.getElementById(
+                "reportFemale"
+            ).textContent =
+                female.length;
+
+
+            // STUDENTS BY COUNTRY
+
+            const countryTotals = {};
+
+
+            studentList.forEach(
+                function(student) {
+
+                    const country =
+                        (
+                            student.country || ""
+                        ).trim();
+
+
+                    if (!country) return;
+
+
+                    countryTotals[country] =
+                        (
+                            countryTotals[country] || 0
+                        ) + 1;
+
+                }
+            );
+
+
+            const countryBody =
+                document.getElementById(
+                    "countryReportBody"
+                );
+
+
+            countryBody.innerHTML = "";
+
+
+            Object.keys(countryTotals)
+                .sort()
+                .forEach(
+                    function(country) {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        row.innerHTML = `
+                            <td>${country}</td>
+                            <td>${countryTotals[country]}</td>
+                        `;
+
+
+                        countryBody.appendChild(row);
+
+                    }
+                );
+
+
+            // STUDENTS BY COHORT
+
+            const cohortTotals = {};
+
+
+            studentList.forEach(
+                function(student) {
+
+                    const cohort =
+                        (
+                            student.cohort || ""
+                        ).trim();
+
+
+                    if (!cohort) return;
+
+
+                    cohortTotals[cohort] =
+                        (
+                            cohortTotals[cohort] || 0
+                        ) + 1;
+
+                }
+            );
+
+
+            const cohortBody =
+                document.getElementById(
+                    "cohortReportBody"
+                );
+
+
+            cohortBody.innerHTML = "";
+
+
+            Object.keys(cohortTotals)
+                .sort()
+                .forEach(
+                    function(cohort) {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        row.innerHTML = `
+                            <td>${cohort}</td>
+                            <td>${cohortTotals[cohort]}</td>
+                        `;
+
+
+                        cohortBody.appendChild(row);
+
+                    }
+                );
+
+
+            // STUDENTS BY CHAPTER
+
+            const chapterTotals = {};
+
+
+            studentList.forEach(
+                function(student) {
+
+                    const chapter =
+                        (
+                            student.chapter || ""
+                        ).trim();
+
+
+                    if (!chapter) return;
+
+
+                    chapterTotals[chapter] =
+                        (
+                            chapterTotals[chapter] || 0
+                        ) + 1;
+
+                }
+            );
+
+
+            const chapterBody =
+                document.getElementById(
+                    "chapterReportBody"
+                );
+
+
+            chapterBody.innerHTML = "";
+
+
+            Object.keys(chapterTotals)
+                .sort()
+                .forEach(
+                    function(chapter) {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        row.innerHTML = `
+                            <td>${chapter}</td>
+                            <td>${chapterTotals[chapter]}</td>
+                        `;
+
+
+                        chapterBody.appendChild(row);
+
+                    }
+                );
+
+        }
+        catch (error) {
+
+            console.error(
+                "Reports error:",
+                error
+            );
+
+        }
+
+    }
+
+
+    document.addEventListener(
+        "DOMContentLoaded",
+        function() {
+
+            loadReports();
+
+        }
+    );
+
+</script>
+
+<script src="js/auth.js"></script>
+</body>
+
+</html>

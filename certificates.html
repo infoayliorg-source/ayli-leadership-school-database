@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+```
+<title>AYLI Certificate Management</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+
+/* =====================================================
+   AYLI PROFESSIONAL CERTIFICATE
+===================================================== */
+
+#certificatePreviewContainer {
+    display: none;
+    margin-top: 40px;
+    padding: 30px;
+    background: #f3f3f3;
+}
+
+#certificatePreview {
+    position: relative;
+
+    width: 1100px;
+    height: 780px;
+
+    max-width: 100%;
+    margin: 0 auto;
+
+    padding: 70px 90px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 12px double #1b3a57;
+
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.20);
+
+    overflow: hidden;
+}
+
+#certificatePreview::before {
+    content: "";
+    position: absolute;
+
+    top: 22px;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+
+    border: 2px solid #c9a227;
+
+    pointer-events: none;
+}
+
+#certificatePreview h1 {
+    margin: 0;
+
+    font-size: 30px;
+    letter-spacing: 2px;
+
+    color: #1b3a57;
+
+    font-weight: bold;
+}
+
+#certificatePreview h2 {
+    margin-top: 45px;
+    margin-bottom: 30px;
+
+    font-size: 38px;
+    letter-spacing: 4px;
+
+    color: #c9a227;
+
+    font-weight: bold;
+}
+
+#certificatePreview p {
+    font-size: 19px;
+    line-height: 1.7;
+
+    color: #333333;
+}
+
+#previewStudentName {
+    margin: 25px 0;
+
+    font-size: 42px;
+
+    color: #1b3a57;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    border-bottom: 2px solid #c9a227;
+
+    display: inline-block;
+
+    padding: 0 50px 8px;
+}
+
+#certificatePreview strong {
+    color: #1b3a57;
+}
+
+#previewAyliId,
+#previewCertificateNumber,
+#previewIssueDate {
+    color: #333333;
+}
+
+#certificatePreview > div:last-child {
+    margin-top: 55px;
+
+    font-size: 17px;
+
+    color: #333333;
+}
+
+/* =====================================================
+   AYLI PROFESSIONAL CERTIFICATE
+===================================================== */
+
+#certificatePreviewContainer {
+    display: none;
+    margin-top: 40px;
+    padding: 30px;
+    background: #f3f3f3;
+}
+
+#certificatePreview {
+    position: relative;
+
+    width: 1100px;
+    height: 780px;
+
+    max-width: 100%;
+    margin: 0 auto;
+
+    padding: 70px 90px;
+
+    box-sizing: border-box;
+
+    background: #ffffff;
+
+    border: 12px double #1b3a57;
+
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.20);
+
+    overflow: hidden;
+}
+
+
+/* =====================================================
+   INNER GOLD BORDER
+===================================================== */
+
+#certificatePreview::before {
+    content: "";
+
+    position: absolute;
+
+    top: 22px;
+    left: 22px;
+    right: 22px;
+    bottom: 22px;
+
+    border: 2px solid #c9a227;
+
+    pointer-events: none;
+}
+
+
+/* =====================================================
+   AYLI NAME
+===================================================== */
+
+#certificatePreview h1 {
+    margin: 0;
+
+    font-size: 30px;
+
+    letter-spacing: 2px;
+
+    color: #1b3a57;
+
+    font-weight: bold;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   CERTIFICATE TYPE
+===================================================== */
+
+#certificatePreview h2 {
+    margin-top: 45px;
+
+    margin-bottom: 30px;
+
+    font-size: 38px;
+
+    letter-spacing: 4px;
+
+    color: #c9a227;
+
+    font-weight: bold;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   CERTIFICATE TEXT
+===================================================== */
+
+#certificatePreview p {
+    font-size: 19px;
+
+    line-height: 1.7;
+
+    color: #333333;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   STUDENT NAME
+===================================================== */
+
+#previewStudentName {
+    margin: 25px 0;
+
+    font-size: 42px;
+
+    color: #1b3a57;
+
+    font-family: Georgia, "Times New Roman", serif;
+
+    border-bottom: 2px solid #c9a227;
+
+    display: inline-block;
+
+    padding: 0 50px 8px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+
+/* =====================================================
+   CERTIFICATE DETAILS
+===================================================== */
+
+#certificatePreview strong {
+    color: #1b3a57;
+}
+
+#previewAyliId,
+#previewCertificateNumber,
+#previewIssueDate {
+    color: #333333;
+}
+
+
+/* =====================================================
+   SIGNATURE & OFFICIAL SEAL
+===================================================== */
+
+.certificate-signatures {
+    display: flex;
+
+    justify-content: space-around;
+
+    align-items: flex-end;
+
+    margin-top: 55px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.signature-block,
+.seal-block {
+    width: 260px;
+
+    text-align: center;
+
+    font-family: Georgia, "Times New Roman", serif;
+}
+
+
+/* =====================================================
+   SIGNATURE LINE
+===================================================== */
+
+.signature-line {
+    border-bottom: 2px solid #333333;
+
+    padding-bottom: 8px;
+
+    margin-bottom: 8px;
+
+    font-size: 17px;
+}
+
+.signature-block strong,
+.seal-block strong {
+    display: block;
+
+    color: #1b3a57;
+
+    font-size: 17px;
+}
+
+
+/* =====================================================
+   ORGANIZATION UNDER SIGNATURE
+===================================================== */
+
+.signature-block span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: #555555;
+}
+
+
+/* =====================================================
+   OFFICIAL SEAL
+===================================================== */
+
+.official-seal {
+    width: 105px;
+
+    height: 105px;
+
+    margin: 0 auto 10px;
+
+    border: 4px double #c9a227;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    font-size: 13px;
+
+    font-weight: bold;
+
+    line-height: 1.3;
+
+    color: #c9a227;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   MOBILE RESPONSIVE
+===================================================== */
+
+@media (max-width: 700px) {
+
+    #certificatePreviewContainer {
+        padding: 10px;
+    }
+
+    #certificatePreview {
+        width: 100%;
+
+        height: auto;
+
+        min-height: 700px;
+
+        padding: 50px 25px;
+    }
+
+    #certificatePreview h1 {
+        font-size: 22px;
+    }
+
+    #certificatePreview h2 {
+        font-size: 28px;
+
+        letter-spacing: 2px;
+    }
+
+    #previewStudentName {
+        font-size: 30px;
+
+        padding: 0 15px 8px;
+    }
+
+    #certificatePreview p {
+        font-size: 16px;
+    }
+
+    .certificate-signatures {
+        flex-direction: column;
+
+        align-items: center;
+
+        gap: 35px;
+
+        margin-top: 40px;
+    }
+
+    .signature-block,
+    .seal-block {
+        width: 240px;
+    }
+
+}
+
+/* =====================================================
+   PRINT CERTIFICATE
+===================================================== */
+
+@media print {
+
+    body * {
+        visibility: hidden;
+    }
+
+    #certificatePreview,
+    #certificatePreview * {
+        visibility: visible;
+    }
+
+    #certificatePreviewContainer {
+        display: block !important;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        background: white;
+    }
+
+    #certificatePreview {
+        position: relative;
+        width: 1100px;
+        height: 780px;
+        margin: 0;
+        box-shadow: none;
+    }
+
+    .certificate-actions {
+        display: none !important;
+    }
+    @page {
+    size: landscape;
+    margin: 0;
+}
+}  
+
+    #certificatePreview {
+        padding: 50px 25px;
+        min-height: auto;
+    }
+
+    #certificatePreview h1 {
+        font-size: 22px;
+    }
+
+    #certificatePreview h2 {
+        font-size: 28px;
+    }
+
+    #previewStudentName {
+        font-size: 30px;
+        padding: 0 15px 8px;
+    }
+
+    #certificatePreview p {
+        font-size: 16px;
+    }
+
+}
+
+</style>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+<div class="container">
+
+```
+<h1>📜 Certificate Management</h1>
+
+<p>
+    Manage AYLI student certificates and certification records.
+</p>
+
+
+<!-- =====================================================
+     CERTIFICATE STATISTICS
+====================================================== -->
+
+<div class="dashboard-grid">
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Total Certificates
+        </div>
+
+        <div
+            class="stat-number"
+            id="certificateTotal"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Issued Certificates
+        </div>
+
+        <div
+            class="stat-number"
+            id="issuedCertificates"
+        >
+            0
+        </div>
+
+    </div>
+
+
+    <div class="stat-card">
+
+        <div class="stat-label">
+            Certificate Types
+        </div>
+
+        <div
+            class="stat-number"
+            id="certificateTypes"
+        >
+            0
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =====================================================
+     ISSUE CERTIFICATE
+====================================================== -->
+
+<h2>Issue Certificate</h2>
+
+<form id="certificateForm">
+
+    <!-- Student -->
+
+    <div>
+
+        <label for="certificateStudent">
+            Student
+        </label>
+
+        <select
+            id="certificateStudent"
+            required
+        >
+
+            <option value="">
+                Select Student
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- Certificate Type -->
+
+    <div>
+
+        <label for="certificateType">
+            Certificate Type
+        </label>
+
+        <select
+            id="certificateType"
+            required
+        >
+
+            <option value="">
+                Select Certificate Type
+            </option>
+
+            <option value="Certificate of Completion">
+                Certificate of Completion
+            </option>
+
+            <option value="Certificate of Participation">
+                Certificate of Participation
+            </option>
+
+            <option value="Diploma">
+                Diploma
+            </option>
+
+            <option value="Leadership Certificate">
+                Leadership Certificate
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <!-- Certificate Number -->
+
+    <div>
+
+        <label for="certificateNumber">
+            Certificate Number
+        </label>
+
+        <input
+            type="text"
+            id="certificateNumber"
+            placeholder="e.g. AYLI-CERT-0001"
+            required
+        >
+
+    </div>
+
+
+    <!-- Issue Date -->
+
+    <div>
+
+        <label for="certificateDate">
+            Issue Date
+        </label>
+
+        <input
+            type="date"
+            id="certificateDate"
+            required
+        >
+
+    </div>
+
+
+    <!-- Status -->
+
+    <div>
+
+        <label for="certificateStatus">
+            Status
+        </label>
+
+        <select
+            id="certificateStatus"
+            required
+        >
+
+            <option value="Issued">
+                Issued
+            </option>
+
+            <option value="Pending">
+                Pending
+            </option>
+
+            <option value="Cancelled">
+                Cancelled
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <button type="submit">
+        Save Certificate
+    </button>
+
+</form>
+
+
+<!-- =====================================================
+     CERTIFICATE TABLE
+====================================================== -->
+
+<h2>AYLI Certificates</h2>
+
+<div class="table-container">
+
+    <table>
+
+        <thead>
+
+            <tr>
+
+                <th>
+                    Certificate No.
+                </th>
+
+                <th>
+                    AYLI ID
+                </th>
+
+                <th>
+                    Student
+                </th>
+
+                <th>
+                    Certificate Type
+                </th>
+
+                <th>
+                    Issue Date
+                </th>
+
+                <th>
+                    Status
+                </th>
+                <th>
+                    Actions
+                </th>
+            </tr>
+
+        </thead>
+
+        <tbody id="certificateTableBody">
+
+        </tbody>
+
+    </table>
+
+</div>
+```
+
+</div>
+<!-- =====================================================
+     CERTIFICATE PREVIEW
+===================================================== -->
+
+<div id="certificatePreviewContainer" style="display:none;">
+
+    <div id="certificatePreview">
+
+        <h1>AFRICA YOUTH LEADERSHIP INSTITUTE</h1>
+
+        <h2 id="previewCertificateType">
+    CERTIFICATE OF COMPLETION
+</h2>
+
+        <p>This certificate is proudly presented to</p>
+
+        <h3 id="previewStudentName">
+            Student Name
+        </h3>
+
+        <p>
+            for successfully completing the
+            Africa Youth Leadership Institute program.
+        </p>
+
+        <p>
+            <strong>AYLI ID:</strong>
+            <span id="previewAyliId"></span>
+        </p>
+
+        <p>
+            <strong>Certificate No:</strong>
+            <span id="previewCertificateNumber"></span>
+        </p>
+
+        <p>
+            <strong>Issue Date:</strong>
+            <span id="previewIssueDate"></span>
+        </p>
+
+        <br>
+
+        <div class="certificate-signatures">
+
+    <div class="signature-block">
+
+        <div class="signature-line">
+            __________________________
+        </div>
+
+        <strong>Founder / CEO</strong>
+
+        <span>
+            Africa Youth Leadership Institute
+        </span>
+
+    </div>
+
+
+
+    <div class="seal-block">
+
+        <div class="official-seal">
+            OFFICIAL<br>
+            AYLI<br>
+            SEAL
+        </div>
+
+        <strong>Official Seal</strong>
+
+    </div>
+
+</div>
+
+</div>
+
+
+</div>
+<div class="certificate-actions">
+
+    <button
+        type="button"
+        onclick="printCertificate()"
+    >
+        🖨️ Print Certificate
+    </button>
+
+</div>
+<!-- =====================================================
+     CERTIFICATE MANAGEMENT JAVASCRIPT
+====================================================== -->
+
+<script>
+/* =====================================================
+   PRINT CERTIFICATE
+===================================================== */
+
+function printCertificate() {
+
+    console.log("Print button clicked");
+
+    setTimeout(function () {
+        window.print();
+    }, 300);
+
+}
+/* =====================================================
+   SUPABASE CONFIGURATION
+===================================================== */
+
+const CERT_SUPABASE_URL =
+    "https://jutxahzlecbbphgxlouy.supabase.co";
+
+const CERT_SUPABASE_ANON_KEY =
+    "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+const certificatesSupabase =
+    window.supabase.createClient(
+        CERT_SUPABASE_URL,
+        CERT_SUPABASE_ANON_KEY,
+        {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+                detectSessionInUrl: false
+            }
+        }
+    );
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+    return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+/* =====================================================
+   LOAD STUDENTS
+===================================================== */
+
+async function loadCertificateStudents() {
+
+    const select =
+        document.getElementById(
+            "certificateStudent"
+        );
+
+    if (!select) return;
+
+
+    select.innerHTML = `
+        <option value="">
+            Select Student
+        </option>
+    `;
+
+
+    const {
+        data: students,
+        error
+    } = await certificatesSupabase
+        .from("students")
+        .select("*")
+        .order("first_name", {
+            ascending: true
+        });
+
+
+   if (error) {
+
+    console.error(
+        "Error loading students:",
+        error
+    );
+
+    alert(
+        "Unable to load students from Supabase.\n\n" +
+        error.message
+    );
+
+    return;
+}
+
+
+    (students || []).forEach(
+        function(student) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            const ayliId =
+                student.ayli_id ||
+                student.ayliId ||
+                student.ayliID ||
+                "";
+
+
+            const firstName =
+                student.first_name ||
+                student.firstName ||
+                "";
+
+
+            const lastName =
+                student.last_name ||
+                student.lastName ||
+                "";
+
+
+            option.value =
+                ayliId;
+
+
+            option.textContent =
+                `${ayliId} - ${firstName} ${lastName}`;
+
+
+            select.appendChild(option);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   LOAD CERTIFICATES
+===================================================== */
+
+async function loadCertificates() {
+
+    const table =
+        document.getElementById(
+            "certificateTableBody"
+        );
+
+    if (!table) return;
+
+
+    table.innerHTML = `
+        <tr>
+            <td colspan="6">
+                Loading certificates...
+            </td>
+        </tr>
+    `;
+
+
+    const {
+        data: certificates,
+        error
+    } = await certificatesSupabase
+        .from("certificates")
+        .select("*")
+        .order("created_at", {
+            ascending: false
+        });
+
+
+    if (error) {
+
+        console.error(
+            "Error loading certificates:",
+            error
+        );
+
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    Error loading certificates:
+                    ${escapeHTML(error.message)}
+                </td>
+            </tr>
+        `;
+
+
+        return;
+    }
+
+
+    const certificateList =
+        certificates || [];
+
+
+    /* =================================================
+       LOAD STUDENTS
+    ================================================= */
+
+    const {
+        data: students,
+        error: studentError
+    } = await certificatesSupabase
+        .from("students")
+        .select("*");
+
+
+    if (studentError) {
+
+        console.error(
+            "Error loading students:",
+            studentError
+        );
+
+    }
+
+
+    const studentList =
+        students || [];
+
+
+    /* =================================================
+       DISPLAY CERTIFICATES
+    ================================================= */
+
+    table.innerHTML = "";
+
+
+    if (certificateList.length === 0) {
+
+        table.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    No certificates have been issued yet.
+                </td>
+            </tr>
+        `;
+
+    }
+
+
+    certificateList.forEach(
+        function(certificate) {
+
+
+            const student =
+                studentList.find(
+                    function(item) {
+
+
+                        const studentAyliId =
+                            item.ayli_id ||
+                            item.ayliId ||
+                            item.ayliID ||
+                            "";
+
+
+                        return (
+                            String(studentAyliId) ===
+                            String(certificate.ayli_id)
+                        );
+
+                    }
+                );
+
+
+            const row =
+                document.createElement("tr");
+
+
+            const firstName =
+                student
+                    ? (
+                        student.first_name ||
+                        student.firstName ||
+                        ""
+                    )
+                    : "";
+
+
+            const lastName =
+                student
+                    ? (
+                        student.last_name ||
+                        student.lastName ||
+                        ""
+                    )
+                    : "";
+
+
+            const studentName =
+                student
+                    ? `${firstName} ${lastName}`.trim()
+                    : "-";
+
+
+            row.innerHTML = `
+
+                <td>
+                    ${escapeHTML(
+                        certificate.certificate_number || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        certificate.ayli_id || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(studentName)}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        certificate.type || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        certificate.issue_date || "-"
+                    )}
+                </td>
+
+                <td>
+                    ${escapeHTML(
+                        certificate.status || "-"
+                    )}
+                </td>
+                <td>
+                    <button
+                     type="button"
+                 onclick="viewCertificate('${escapeHTML(certificate.id)}')"
+                  >
+                View
+                </button>
+               </td>
+            `;
+
+
+            table.appendChild(row);
+
+        }
+    );
+
+
+    /* =================================================
+       TOTAL CERTIFICATES
+    ================================================= */
+
+    const certificateTotal =
+        document.getElementById(
+            "certificateTotal"
+        );
+
+
+    if (certificateTotal) {
+
+        certificateTotal.textContent =
+            certificateList.length;
+
+    }
+
+
+    /* =================================================
+       ISSUED CERTIFICATES
+    ================================================= */
+
+    const issuedCertificates =
+        document.getElementById(
+            "issuedCertificates"
+        );
+
+
+    if (issuedCertificates) {
+
+        const issuedCount =
+            certificateList.filter(
+                function(certificate) {
+
+                    return String(
+                        certificate.status || ""
+                    ).toLowerCase() === "issued";
+
+                }
+            ).length;
+
+
+        issuedCertificates.textContent =
+            issuedCount;
+
+    }
+
+
+    /* =================================================
+       CERTIFICATE TYPES
+    ================================================= */
+
+    const uniqueTypes =
+        [
+            ...new Set(
+                certificateList
+                    .map(
+                        function(certificate) {
+                            return certificate.type;
+                        }
+                    )
+                    .filter(
+                        function(type) {
+                            return type;
+                        }
+                    )
+            )
+        ];
+
+
+    const certificateTypes =
+        document.getElementById(
+            "certificateTypes"
+        );
+
+
+    if (certificateTypes) {
+
+        certificateTypes.textContent =
+            uniqueTypes.length;
+
+    }
+
+}
+/* =====================================================
+   VIEW CERTIFICATE
+===================================================== */
+
+async function viewCertificate(certificateId) {
+
+    const {
+        data: certificate,
+        error
+    } = await certificatesSupabase
+        .from("certificates")
+        .select("*")
+        .eq("id", certificateId)
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Error loading certificate:",
+            error
+        );
+
+        alert(
+            "Unable to load certificate.\n\n" +
+            error.message
+        );
+
+        return;
+    }
+
+
+    /* =================================================
+       LOAD STUDENT
+    ================================================= */
+
+    const {
+        data: student,
+        error: studentError
+    } = await certificatesSupabase
+        .from("students")
+        .select("*")
+        .eq("ayli_id", certificate.ayli_id)
+        .single();
+
+
+    if (studentError) {
+
+        console.error(
+            "Error loading student:",
+            studentError
+        );
+
+        alert(
+            "Unable to load student information.\n\n" +
+            studentError.message
+        );
+
+        return;
+    }
+
+
+    /* =================================================
+       STUDENT NAME
+    ================================================= */
+
+    const firstName =
+        student.first_name ||
+        student.firstName ||
+        "";
+
+    const middleName =
+        student.middle_name ||
+        student.middleName ||
+        "";
+
+    const lastName =
+        student.last_name ||
+        student.lastName ||
+        "";
+
+    const studentName =
+        `${firstName} ${middleName} ${lastName}`
+        .replace(/\s+/g, " ")
+        .trim();
+
+
+    /* =================================================
+       FILL CERTIFICATE PREVIEW
+    ================================================= */
+
+    document.getElementById(
+        "previewStudentName"
+    ).textContent = studentName;
+
+
+    document.getElementById(
+        "previewAyliId"
+    ).textContent = certificate.ayli_id;
+
+    document.getElementById(
+    "previewCertificateType"
+).textContent =
+    certificate.type;
+
+    document.getElementById(
+        "previewCertificateNumber"
+    ).textContent =
+        certificate.certificate_number;
+
+
+    document.getElementById(
+        "previewIssueDate"
+    ).textContent =
+        certificate.issue_date;
+
+
+    /* =================================================
+       SHOW PREVIEW
+    ================================================= */
+
+    document.getElementById(
+        "certificatePreviewContainer"
+    ).style.display = "block";
+
+
+    /* =================================================
+       SCROLL TO CERTIFICATE
+    ================================================= */
+
+    document.getElementById(
+        "certificatePreviewContainer"
+    ).scrollIntoView({
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   INITIALIZE PAGE
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+
+        /* Load students */
+
+        await loadCertificateStudents();
+
+
+        /* Load certificates */
+
+        await loadCertificates();
+
+
+        /* =================================================
+           CERTIFICATE FORM
+        ================================================= */
+
+        const certificateForm =
+            document.getElementById(
+                "certificateForm"
+            );
+
+
+        if (!certificateForm) return;
+
+
+        certificateForm.addEventListener(
+            "submit",
+            async function(event) {
+
+
+                event.preventDefault();
+
+
+                /* =========================================
+                   GET VALUES
+                ========================================= */
+
+                const ayliId =
+                    document.getElementById(
+                        "certificateStudent"
+                    ).value;
+
+
+                const type =
+                    document.getElementById(
+                        "certificateType"
+                    ).value;
+
+
+                const certificateNumber =
+                    document.getElementById(
+                        "certificateNumber"
+                    ).value.trim();
+
+
+                const issueDate =
+                    document.getElementById(
+                        "certificateDate"
+                    ).value;
+
+
+                const status =
+                    document.getElementById(
+                        "certificateStatus"
+                    ).value;
+
+
+                /* =========================================
+                   VALIDATE
+                ========================================= */
+
+                if (
+                    !ayliId ||
+                    !type ||
+                    !certificateNumber ||
+                    !issueDate ||
+                    !status
+                ) {
+
+                    alert(
+                        "Please complete all certificate fields."
+                    );
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   CHECK DUPLICATE
+                ========================================= */
+
+                const {
+                    data: existingCertificates,
+                    error: duplicateError
+                } = await certificatesSupabase
+                    .from("certificates")
+                    .select("id")
+                    .eq(
+                        "certificate_number",
+                        certificateNumber
+                    );
+
+
+                if (duplicateError) {
+
+                    console.error(
+                        "Duplicate check error:",
+                        duplicateError
+                    );
+
+
+                    alert(
+                        "Unable to verify certificate number.\n\n" +
+                        duplicateError.message
+                    );
+
+
+                    return;
+
+                }
+
+
+                if (
+                    existingCertificates &&
+                    existingCertificates.length > 0
+                ) {
+
+                    alert(
+                        "That certificate number already exists. Please use another number."
+                    );
+
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   SAVE TO SUPABASE
+                ========================================= */
+
+                const {
+                    data,
+                    error
+                } = await certificatesSupabase
+                    .from("certificates")
+                    .insert([
+                        {
+                            ayli_id:
+                                ayliId,
+
+                            type:
+                                type,
+
+                            certificate_number:
+                                certificateNumber,
+
+                            issue_date:
+                                issueDate,
+
+                            status:
+                                status
+                        }
+                    ])
+                    .select();
+
+
+                /* =========================================
+                   HANDLE ERROR
+                ========================================= */
+
+                if (error) {
+
+                    console.error(
+                        "Error saving certificate:",
+                        error
+                    );
+
+
+                    alert(
+                        "Certificate could not be saved.\n\n" +
+                        error.message
+                    );
+
+
+                    return;
+
+                }
+
+
+                /* =========================================
+                   SUCCESS
+                ========================================= */
+
+                console.log(
+                    "Certificate saved successfully:",
+                    data
+                );
+
+
+                alert(
+                    "Certificate saved successfully!"
+                );
+
+
+                certificateForm.reset();
+
+
+                /* Refresh */
+
+                await loadCertificates();
+
+            }
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>

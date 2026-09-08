@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AYLI TEST 12345</title>
+
+    <link rel="stylesheet" href="CSS/style.css">
+
+</head>
+
+
+<body>
+
+    <div class="login-container">
+
+        <div class="login-card">
+
+            <div class="login-logo">
+                AYLI
+            </div>
+
+            <h1>
+                Administrator Login
+            </h1>
+
+            <p class="login-subtitle">
+                Africa Youth Leadership Institute
+            </p>
+
+
+            <form id="loginForm" method="post" action="javascript:void(0);">
+
+                <div class="form-group">
+
+                    <label for="email">
+                        Administrator Email
+                    </label>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Enter administrator email"
+                        autocomplete="email"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Enter password"
+                        autocomplete="current-password"
+                        required
+                    >
+
+                </div>
+
+
+                <button
+                    type="submit"
+                    class="login-button"
+                    id="loginButton"
+                >
+                    Login
+                </button>
+
+
+                <p id="loginMessage"></p>
+
+            </form>
+
+
+            <div class="login-footer">
+
+                <p>
+                    Africa Youth Leadership Institute (AYLI)
+                </p>
+
+                <p>
+                    Leadership School Management System
+                </p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+        // IMPORTANT:
+        // Put your existing PUBLIC/PUBLISHABLE Supabase key
+        // between the quotation marks below.
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        // ======================================================
+        // LOGIN
+        // ======================================================
+
+        document
+            .getElementById("loginForm")
+            .addEventListener(
+                "submit",
+                async function(event) {
+
+                    event.preventDefault();
+
+
+                    const email =
+                        document
+                            .getElementById("email")
+                            .value
+                            .trim();
+
+
+                    const password =
+                        document
+                            .getElementById("password")
+                            .value;
+
+
+                    const loginMessage =
+                        document
+                            .getElementById("loginMessage");
+
+
+                    const loginButton =
+                        document
+                            .getElementById("loginButton");
+
+
+                    loginMessage.textContent =
+                        "Signing in...";
+
+
+                    loginButton.disabled =
+                        true;
+
+
+                    const {
+                        data,
+                        error
+                    } =
+                        await supabaseClient.auth.signInWithPassword({
+
+                            email: email,
+
+                            password: password
+
+                        });
+
+
+                    if (error) {
+
+                        console.error(
+                            "Login error:",
+                            error
+                        );
+
+
+                        loginMessage.textContent =
+                            error.message;
+
+                        loginMessage.style.color =
+                            "red";
+
+
+                        loginButton.disabled =
+                            false;
+
+
+                        return;
+                    }
+
+
+                    if (data.session) {
+
+                        loginMessage.textContent =
+                            "Login successful. Redirecting...";
+
+                        loginMessage.style.color =
+                            "green";
+
+
+                        window.location.href =
+                            "index.htm";
+
+                    }
+
+                }
+            );
+
+    </script>
+
+</body>
+
+</html>

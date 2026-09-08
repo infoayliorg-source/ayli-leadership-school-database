@@ -1,0 +1,292 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Cohort Management</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🎓 Cohort Management</h1>
+
+        <p>
+            Manage AYLI cohorts and view student enrollment.
+        </p>
+
+
+        <!-- Cohort Summary -->
+
+        <div class="dashboard-grid">
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Cohorts
+                </div>
+
+                <div class="stat-number" id="cohortTotal">
+                    0
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Active Cohorts
+                </div>
+
+                <div class="stat-number" id="activeCohorts">
+                    0
+                </div>
+            </div>
+
+
+            <div class="stat-card">
+                <div class="stat-label">
+                    Total Students
+                </div>
+
+                <div class="stat-number" id="cohortStudentTotal">
+                    0
+                </div>
+            </div>
+
+        </div>
+
+
+        <!-- Cohort List -->
+
+        <h2>AYLI Cohorts</h2>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+                        <th>Cohort</th>
+                        <th>Students</th>
+                        <th>Status</th>
+                    </tr>
+
+                </thead>
+
+                <tbody id="cohortTableBody">
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+        const supabaseClient =
+            supabase.createClient(
+                SUPABASE_URL,
+                SUPABASE_KEY
+            );
+
+
+        async function loadCohorts() {
+
+            const cohortTableBody =
+                document.getElementById("cohortTableBody");
+
+            if (!cohortTableBody) {
+                return;
+            }
+
+
+            try {
+
+                const {
+                    data: students,
+                    error
+                } = await supabaseClient
+                    .from("students")
+                    .select("cohort, status");
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load cohorts:",
+                        error
+                    );
+
+                    cohortTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3"
+                                style="text-align:center;">
+                                Unable to load cohorts.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+                }
+
+
+                const cohortData = {};
+
+
+                (students || []).forEach(function (student) {
+
+                    const cohort =
+                        String(student.cohort || "").trim();
+
+                    if (!cohort) {
+                        return;
+                    }
+
+
+                    if (!cohortData[cohort]) {
+
+                        cohortData[cohort] = {
+                            students: 0,
+                            active: false
+                        };
+
+                    }
+
+
+                    cohortData[cohort].students++;
+
+
+                    if (
+                        String(student.status || "")
+                            .toLowerCase() === "active"
+                    ) {
+
+                        cohortData[cohort].active = true;
+
+                    }
+
+                });
+
+
+                cohortTableBody.innerHTML = "";
+
+
+                const cohorts =
+                    Object.keys(cohortData).sort();
+
+
+                if (cohorts.length === 0) {
+
+                    cohortTableBody.innerHTML = `
+                        <tr>
+                            <td colspan="3"
+                                style="text-align:center;">
+                                No cohorts found.
+                            </td>
+                        </tr>
+                    `;
+
+                } else {
+
+                    cohorts.forEach(function (cohort) {
+
+                        const row =
+                            document.createElement("tr");
+
+
+                        const status =
+                            cohortData[cohort].active
+                                ? "Active"
+                                : "Completed";
+
+
+                        row.innerHTML = `
+                            <td>${cohort}</td>
+                            <td>
+                                ${cohortData[cohort].students}
+                            </td>
+                            <td>${status}</td>
+                        `;
+
+
+                        cohortTableBody.appendChild(row);
+
+                    });
+
+                }
+
+
+                document.getElementById(
+                    "cohortStudentTotal"
+                ).textContent =
+                    students ? students.length : 0;
+
+
+                document.getElementById(
+                    "cohortTotal"
+                ).textContent =
+                    cohorts.length;
+
+
+                document.getElementById(
+                    "activeCohorts"
+                ).textContent =
+                    cohorts.filter(function (cohort) {
+
+                        return cohortData[cohort].active;
+
+                    }).length;
+
+
+                console.log(
+                    "AYLI Cohorts loaded from Supabase."
+                );
+
+
+            } catch (error) {
+
+                console.error(
+                    "Unexpected cohort error:",
+                    error
+                );
+
+            }
+
+        }
+
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                loadCohorts();
+
+            }
+        );
+
+    </script>
+
+
+    <script src="js/auth.js"></script>
+
+</body>
+</html>
+```
