@@ -1,61 +1,147 @@
-// AYLI Student Authentication
+// ==========================================================
+// AYLI STUDENT AUTHENTICATION
+// ==========================================================
+
+
+// SUPABASE CONNECTION
+
+const STUDENT_SUPABASE_URL =
+    "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+const STUDENT_SUPABASE_KEY =
+    "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+const studentSupabaseClient =
+    supabase.createClient(
+        STUDENT_SUPABASE_URL,
+        STUDENT_SUPABASE_KEY
+    );
+
+
+// ==========================================================
+// STUDENT LOGIN
+// ==========================================================
 
 document
     .getElementById("studentLoginForm")
-    .addEventListener("submit", function(event) {
+    .addEventListener(
+        "submit",
+        async function (event) {
 
-        event.preventDefault();
+            event.preventDefault();
 
-        const ayliId =
-            document.getElementById("ayliId").value
-                .trim()
-                .toUpperCase();
 
-        const password =
-            document.getElementById("studentPassword").value;
+            const ayliId =
+                document
+                    .getElementById("ayliId")
+                    .value
+                    .trim()
+                    .toUpperCase();
 
-        const message =
-            document.getElementById("studentLoginMessage");
 
-        // Get AYLI students from the database
-        const students =
-            JSON.parse(
-                localStorage.getItem("ayliStudents") || "[]"
-            );
+            const password =
+                document
+                    .getElementById("studentPassword")
+                    .value;
 
-        // Find student
-        const student =
-            students.find(function(s) {
 
-                return s.ayliId === ayliId;
+            const message =
+                document.getElementById(
+                    "studentLoginMessage"
+                );
 
-            });
 
-        // Check student and password
+            message.textContent =
+                "Logging in...";
 
-if (student && password === student.password) {
+
+            message.style.color =
+                "black";
+
+
+            // ==================================================
+            // GET STUDENT FROM SUPABASE
+            // ==================================================
+
+            const {
+                data: student,
+                error
+            } = await studentSupabaseClient
+                .from("students")
+                .select("*")
+                .eq("ayli_id", ayliId)
+                .single();
+
+
+            // ==================================================
+            // HANDLE ERRORS
+            // ==================================================
+
+            if (error || !student) {
+
+                console.error(
+                    "Student login error:",
+                    error
+                );
+
+
+                message.textContent =
+                    "Invalid AYLI ID or password.";
+
+
+                message.style.color =
+                    "red";
+
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // CHECK PASSWORD
+            // ==================================================
+
+            if (password !== student.password_hash) {
+
+    message.textContent =
+        "Invalid AYLI ID or password.";
+
+    message.style.color =
+        "red";
+
+    return;
+
+}
+
+
+            // ==================================================
+            // SAVE STUDENT LOGIN SESSION
+            // ==================================================
 
             localStorage.setItem(
                 "ayliStudentLoggedIn",
                 "true"
             );
 
+
             localStorage.setItem(
                 "ayliCurrentStudentId",
-                student.ayliId
+                student.ayli_id
             );
 
+
+            // ==================================================
+            // REDIRECT TO STUDENT PROFILE
+            // ==================================================
+
             window.location.href =
-    "Js/student-profile.html?id=" +
-    encodeURIComponent(student.ayliId);
-
-        } else {
-
-            message.textContent =
-                "Invalid AYLI ID or password.";
-
-            message.style.color = "red";
+                "student-profile.html?id=" +
+                encodeURIComponent(
+                    student.ayli_id
+                );
 
         }
-
-    });
+    );

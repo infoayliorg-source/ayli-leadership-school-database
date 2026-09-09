@@ -221,18 +221,30 @@
 
 
     // ==========================================================
-    // GET STUDENT ID FROM URL
-    // ==========================================================
+// CHECK STUDENT LOGIN
+// ==========================================================
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
+const studentLoggedIn =
+    localStorage.getItem(
+        "ayliStudentLoggedIn"
+    );
 
 
-    const ayliId =
-        params.get("id");
+const ayliId =
+    localStorage.getItem(
+        "ayliCurrentStudentId"
+    );
 
+
+if (
+    studentLoggedIn !== "true" ||
+    !ayliId
+) {
+
+    window.location.href =
+        "student-login.html";
+
+}
 
     // ==========================================================
     // LOAD STUDENT PROFILE
