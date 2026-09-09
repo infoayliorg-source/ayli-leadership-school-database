@@ -10,6 +10,7 @@
 
 <link rel="stylesheet" href="css/style.css">
 
+
 <style>
 
 /* =====================================================
@@ -36,7 +37,16 @@
 
     box-sizing: border-box;
 
-    background: #ffffff;
+    background-image:
+    linear-gradient(
+        rgba(255, 255, 255, 0.55),
+        rgba(255, 255, 255, 0.55)
+    ),
+    url("assets/images/AYLI CERTIFICATE SAMPLE.jpeg");
+
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
 
     border: 12px double #1b3a57;
 
@@ -97,7 +107,7 @@
 #previewStudentName {
     margin: 25px 0;
 
-    font-size: 42px;
+    font-size: 48px;
 
     color: #1b3a57;
 
@@ -117,7 +127,8 @@
 #previewAyliId,
 #previewCertificateNumber,
 #previewIssueDate {
-    color: #333333;
+    color: #1b3a57;
+    font-weight: bold;
 }
 
 #certificatePreview > div:last-child {
@@ -217,7 +228,7 @@
 
     margin-bottom: 30px;
 
-    font-size: 38px;
+    font-size: 42px;
 
     letter-spacing: 4px;
 
@@ -299,7 +310,7 @@
 
     align-items: flex-end;
 
-    margin-top: 55px;
+    margin-top: 40px;
 
     position: relative;
 
@@ -513,6 +524,26 @@
     }
 
 }
+.certificate-logo {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.certificate-logo img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
+.certificate-preview-logo {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.certificate-preview-logo img {
+    width: 75px;
+    height: 75px;
+    object-fit: contain;
+}
 
 </style>
 
@@ -525,12 +556,18 @@
 
 <div class="container">
 
-```
-<h1>📜 Certificate Management</h1>
+    <div class="certificate-logo">
+        <img 
+            src="assets/images/AYLI LOGO.png"
+            alt="AYLI Official Logo"
+        >
+    </div>
 
-<p>
-    Manage AYLI student certificates and certification records.
-</p>
+    <h1>📜 Certificate Management</h1>
+
+    <p>
+        Manage AYLI student certificates and certification records.
+    </p>
 
 
 <!-- =====================================================
@@ -791,7 +828,14 @@
 
     <div id="certificatePreview">
 
-        <h1>AFRICA YOUTH LEADERSHIP INSTITUTE</h1>
+        <div class="certificate-preview-logo">
+    <img 
+        src="assets/images/AYLI LOGO.png"
+        alt="Africa Youth Leadership Institute Logo"
+    >
+</div>
+
+<h1>AFRICA YOUTH LEADERSHIP INSTITUTE</h1>
 
         <h2 id="previewCertificateType">
     CERTIFICATE OF COMPLETION

@@ -399,3 +399,18 @@ body {
     }
 
 }
+.login-logo img {
+    width: 100px;
+    height: 100px;
+    object-fit: contain;
+}
+.profile-logo {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.profile-logo img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+}
