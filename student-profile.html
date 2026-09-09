@@ -227,26 +227,35 @@
         );
 
 
-    // ==========================================================
-// CHECK STUDENT LOGIN
+   // ==========================================================
+// GET STUDENT ID
 // ==========================================================
 
-const studentLoggedIn =
-    localStorage.getItem(
-        "ayliStudentLoggedIn"
+// Get student ID from the URL
+const params =
+    new URLSearchParams(
+        window.location.search
     );
 
+const urlAyliId =
+    params.get("id");
 
-const ayliId =
+
+// Get logged-in student ID
+const loggedInAyliId =
     localStorage.getItem(
         "ayliCurrentStudentId"
     );
 
 
-if (
-    studentLoggedIn !== "true" ||
-    !ayliId
-) {
+// Use URL ID for Administrator View Profile.
+// Use logged-in ID for Student Login.
+const ayliId =
+    urlAyliId || loggedInAyliId;
+
+
+// If no student ID exists, return to Student Login
+if (!ayliId) {
 
     window.location.href =
         "student-login.html";
