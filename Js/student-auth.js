@@ -138,10 +138,7 @@ document
             // ==================================================
 
             window.location.href =
-                "student-profile.html?id=" +
-                encodeURIComponent(
-                    student.ayli_id
-                );
+    "student-dashboard.html";
 
         }
     );

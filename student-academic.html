@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Student Academic Records</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>📚 My Academic Records</h1>
+
+        <p>
+            View your AYLI courses, scores, and academic performance.
+        </p>
+
+        <hr>
+
+
+        <h2 id="studentAcademicName">
+            Loading student information...
+        </h2>
+
+
+        <div class="academic-summary">
+
+            <div class="academic-summary-card">
+
+                <h3>Total Courses</h3>
+
+                <p id="totalCourses">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="academic-summary-card">
+
+                <h3>Average Score</h3>
+
+                <p id="averageScore">
+                    -
+                </p>
+
+            </div>
+
+
+            <div class="academic-summary-card">
+
+                <h3>Highest Grade</h3>
+
+                <p id="highestGrade">
+                    -
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <h2>
+            Academic Records
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Course</th>
+
+                        <th>Lecturer</th>
+
+                        <th>Score</th>
+
+                        <th>Grade</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="academicRecordsBody">
+
+                    <tr>
+
+                        <td colspan="4">
+                            Loading academic records...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <br>
+
+
+        <a href="student-dashboard.html"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <script src="Js/student-academic.js"></script>
+
+</body>
+
+</html>

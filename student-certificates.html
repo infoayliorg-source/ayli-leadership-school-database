@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Student Certificates</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>📜 My Certificates</h1>
+
+        <p>
+            View and verify certificates issued to you by the
+            Africa Youth Leadership Institute.
+        </p>
+
+        <hr>
+
+
+        <h2 id="studentCertificateName">
+            Loading student information...
+        </h2>
+
+
+        <div class="academic-summary">
+
+            <div class="academic-summary-card">
+
+                <h3>Total Certificates</h3>
+
+                <p id="totalCertificates">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="academic-summary-card">
+
+                <h3>Latest Certificate</h3>
+
+                <p id="latestCertificate">
+                    -
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <h2>
+            My Certificate Records
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+               <thead>
+
+    <tr>
+
+        <th>Certificate Type</th>
+
+        <th>Certificate Number</th>
+
+        <th>Issue Date</th>
+
+        <th>Status</th>
+
+        <th>Certificate</th>
+
+    </tr>
+
+</thead>
+
+
+                <tbody id="certificateRecordsBody">
+
+                    <tr>
+
+                        <td colspan="5">
+    Loading certificates...
+</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <br>
+
+
+        <a href="student-dashboard.html"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <script src="Js/student-certificates.js"></script>
+
+</body>
+
+</html>

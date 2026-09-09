@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Student Leadership</title>
+
+    <link rel="stylesheet"
+          href="css/style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+    <div class="container">
+
+        <h1>👔 My Leadership</h1>
+
+        <p>
+            View your AYLI leadership positions and assignments.
+        </p>
+
+        <hr>
+
+
+        <h2 id="studentLeadershipName">
+            Loading student information...
+        </h2>
+
+
+        <div class="leadership-summary">
+
+            <div class="academic-summary-card">
+
+                <h3>Total Positions</h3>
+
+                <p id="totalLeadershipPositions">
+                    0
+                </p>
+
+            </div>
+
+
+            <div class="academic-summary-card">
+
+                <h3>Active Positions</h3>
+
+                <p id="activeLeadershipPositions">
+                    0
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <h2>
+            Leadership Positions
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>Position</th>
+
+                        <th>Chapter</th>
+
+                        <th>Start Date</th>
+
+                        <th>Status</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="leadershipRecordsBody">
+
+                    <tr>
+
+                        <td colspan="4">
+                            Loading leadership records...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <br>
+
+
+        <a href="student-dashboard.html"
+           class="back-button">
+
+            ← Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+    <script src="Js/student-leadership.js"></script>
+
+</body>
+
+</html>

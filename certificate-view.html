@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>View AYLI Certificate</title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+
+    <!-- Make certificate visible on this page -->
+
+    <style>
+
+        #certificatePreviewContainer {
+            display: block !important;
+        }
+
+    </style>
+
+
+    <!-- Supabase -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- =====================================================
+         PROFESSIONAL AYLI CERTIFICATE
+    ====================================================== -->
+
+    <div id="certificatePreviewContainer">
+
+        <div id="certificatePreview">
+
+
+            <!-- AYLI LOGO -->
+
+            <div class="certificate-preview-logo">
+
+                <img
+                    src="assets/images/AYLI LOGO.png"
+                    alt="Africa Youth Leadership Institute Logo"
+                >
+
+            </div>
+
+
+            <!-- AYLI NAME -->
+
+            <h1>
+                AFRICA YOUTH LEADERSHIP INSTITUTE
+            </h1>
+
+
+            <!-- CERTIFICATE TYPE -->
+
+            <h2 id="previewCertificateType">
+
+                CERTIFICATE OF COMPLETION
+
+            </h2>
+
+
+            <p>
+                This certificate is proudly presented to
+            </p>
+
+
+            <!-- STUDENT NAME -->
+
+            <h3 id="previewStudentName">
+
+                Loading...
+
+            </h3>
+
+
+            <p>
+                for successfully completing the
+                Africa Youth Leadership Institute program.
+            </p>
+
+
+            <!-- AYLI ID -->
+
+            <p>
+
+                <strong>AYLI ID:</strong>
+
+                <span id="previewAyliId">
+                    -
+                </span>
+
+            </p>
+
+
+            <!-- CERTIFICATE NUMBER -->
+
+            <p>
+
+                <strong>Certificate No:</strong>
+
+                <span id="previewCertificateNumber">
+                    -
+                </span>
+
+            </p>
+
+
+            <!-- ISSUE DATE -->
+
+            <p>
+
+                <strong>Issue Date:</strong>
+
+                <span id="previewIssueDate">
+                    -
+                </span>
+
+            </p>
+
+
+            <!-- =====================================================
+                 SIGNATURES AND SEAL
+            ====================================================== -->
+
+            <div class="certificate-signatures">
+
+
+                <!-- FOUNDER / CEO -->
+
+                <div class="signature-block">
+
+                    <div class="signature-line">
+
+                        __________________________
+
+                    </div>
+
+
+                    <strong>
+                        Founder / CEO
+                    </strong>
+
+
+                    <span>
+                        Africa Youth Leadership Institute
+                    </span>
+
+                </div>
+
+
+
+                <!-- OFFICIAL SEAL -->
+
+                <div class="seal-block">
+
+                    <div class="official-seal">
+
+                        OFFICIAL<br>
+                        AYLI<br>
+                        SEAL
+
+                    </div>
+
+
+                    <strong>
+                        Official Seal
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- =====================================================
+                 CERTIFICATE ACTIONS
+            ====================================================== -->
+
+            <div class="certificate-actions">
+
+
+                <button
+                    type="button"
+                    onclick="window.print()"
+                >
+
+                    🖨️ Print Certificate
+
+                </button>
+
+
+                <br><br>
+
+
+                <a
+                    href="student-certificates.html"
+                    class="back-button"
+                >
+
+                    ← Back to My Certificates
+
+                </a>
+
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+<!-- Supabase -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- Certificate Viewer JavaScript -->
+
+<script src="Js/certificate-view.js"></script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Student Dashboard</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h1>🎓 AYLI Student Dashboard</h1>
+
+        <p>
+            Welcome to your Africa Youth Leadership Institute student portal.
+        </p>
+
+        <hr>
+
+<h2 id="welcomeMessage">
+    Welcome, Student 👋
+</h2>
+
+<p id="studentDetails">
+    Loading your student information...
+</p>
+
+<div class="student-dashboard-menu">
+
+    <a href="student-profile.html" class="student-dashboard-card">
+        👤
+        <h3>My Profile</h3>
+        <p>View your personal AYLI information.</p>
+    </a>
+
+    <a href="student-academic.html" class="student-dashboard-card">
+        📚
+        <h3>Academic Records</h3>
+        <p>View your courses, scores and grades.</p>
+    </a>
+
+    <a href="student-leadership.html" class="student-dashboard-card">
+        👔
+        <h3>Leadership</h3>
+        <p>View your AYLI leadership positions.</p>
+    </a>
+
+    <a href="student-certificates.html" class="student-dashboard-card">
+        📜
+        <h3>My Certificates</h3>
+        <p>View your issued AYLI certificates.</p>
+    </a>
+
+    <button
+        type="button"
+        class="student-dashboard-card logout-card"
+        onclick="studentLogout()"
+    >
+        🚪
+        <h3>Logout</h3>
+        <p>Securely sign out of your student account.</p>
+    </button>
+
+</div>
+    </div>
+
+    <script src="Js/student-dashboard.js"></script>
+
+</body>
+
+</html>
