@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Grade Report</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        .grade-report-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 30px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .report-header {
+            text-align: center;
+            border-bottom: 2px solid #1b3a57;
+            padding-bottom: 20px;
+            margin-bottom: 25px;
+        }
+
+        .report-header img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+
+        .report-header h1 {
+            margin: 10px 0 5px;
+            color: #1b3a57;
+        }
+
+        .report-header h2 {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .student-information {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+
+        .student-information div {
+            padding: 10px;
+            background: #f5f7f9;
+            border-radius: 6px;
+        }
+
+        .student-information strong {
+            color: #1b3a57;
+        }
+
+        .grade-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .grade-table th,
+        .grade-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+
+        .grade-table th {
+            background: #1b3a57;
+            color: white;
+        }
+
+        .summary-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #f5f7f9;
+            border-radius: 8px;
+        }
+
+        .summary-box p {
+            margin: 8px 0;
+            font-size: 16px;
+        }
+
+        .report-actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .report-actions button,
+        .back-button {
+            padding: 12px 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .print-button {
+            background: #1b3a57;
+            color: white;
+        }
+
+        .back-button {
+            background: #ddd;
+            color: #222;
+        }
+
+        @media (max-width: 600px) {
+            .student-information {
+                grid-template-columns: 1fr;
+            }
+
+            .grade-report-container {
+                padding: 15px;
+            }
+
+            .grade-table {
+                font-size: 13px;
+            }
+        }
+
+        @media print {
+
+            body {
+                background: white !important;
+            }
+
+            .grade-report-container {
+                box-shadow: none;
+                margin: 0;
+                max-width: none;
+            }
+
+            .report-actions {
+                display: none;
+            }
+        }
+       .report-signature {
+    margin-top: 45px;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.signature-line {
+    width: 320px;
+    text-align: center;
+}
+
+.signature-space {
+    height: 55px;
+    border-bottom: 1px solid #1b3a57;
+    margin-bottom: 8px;
+}
+
+.signature-name {
+    font-weight: bold;
+    font-size: 16px;
+    color: #1b3a57;
+}
+
+.signature-title {
+    margin-top: 5px;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.signature-organization {
+    margin-top: 4px;
+    font-size: 13px;
+    color: #555;
+}
+
+@media print {
+    .report-signature {
+        margin-top: 35px;
+    }
+
+}
+    </style>
+</head>
+
+<body>
+
+<div class="grade-report-container">
+
+    <div class="report-header">
+
+        <img
+            src="assets/images/AYLI LOGO.png"
+            alt="AYLI Official Logo"
+        >
+
+        <h1>AFRICA YOUTH LEADERSHIP INSTITUTE</h1>
+
+        <h2>ACADEMIC GRADE REPORT</h2>
+
+        <p>Official Student Academic Record</p>
+
+    </div>
+
+
+    <div class="student-information">
+
+        <div>
+            <strong>Student Name:</strong>
+            <span id="studentName">Loading...</span>
+        </div>
+
+        <div>
+            <strong>AYLI ID:</strong>
+            <span id="studentId">Loading...</span>
+        </div>
+
+        <div>
+            <strong>Cohort:</strong>
+            <span id="studentCohort">Loading...</span>
+        </div>
+
+        <div>
+            <strong>Chapter:</strong>
+            <span id="studentChapter">Loading...</span>
+        </div>
+
+    </div>
+
+
+    <h3>Academic Records</h3>
+
+    <table class="grade-table">
+
+        <thead>
+
+            <tr>
+                <th>#</th>
+                <th>Course</th>
+                <th>Lecturer</th>
+                <th>Score</th>
+                <th>Grade</th>
+                <th>Result</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="gradeReportBody">
+
+            <tr>
+                <td colspan="6">
+                    Loading academic records...
+                </td>
+            </tr>
+
+        </tbody>
+
+    </table>
+
+
+    <div class="summary-box">
+
+        <p>
+            <strong>Total Courses:</strong>
+            <span id="totalCourses">0</span>
+        </p>
+
+        <p>
+            <strong>Average Score:</strong>
+            <span id="averageScore">0.0</span>
+        </p>
+
+        <p>
+            <strong>Highest Grade:</strong>
+            <span id="highestGrade">-</span>
+        </p>
+
+        <p>
+            <strong>Overall Status:</strong>
+            <span id="overallStatus">-</span>
+        </p>
+
+    </div>
+
+<div class="report-signature">
+
+    <div class="signature-line">
+        <div class="signature-space"></div>
+
+        <div class="signature-name">
+            Amb. Christopher N. Touabli Jr.
+        </div>
+
+        <div class="signature-title">
+            Founder / CEO
+        </div>
+
+        <div class="signature-organization">
+            Africa Youth Leadership Institute (AYLI)
+        </div>
+    </div>
+
+</div>
+    <div class="report-actions">
+
+        <button
+            type="button"
+            class="print-button"
+            onclick="window.print()"
+        >
+            🖨️ Download / Print Grade Report
+        </button>
+
+        <a
+            href="student-dashboard.html"
+            class="back-button"
+        >
+            ← Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+
+<script src="Js/student-grade-report.js"></script>
+
+</body>
+</html>
