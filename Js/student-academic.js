@@ -131,7 +131,10 @@ async function loadAcademicRecords() {
                 "Academic records error:",
                 recordsError
             );
-
+alert(
+    "Academic Records Error:\n\n" +
+    recordsError.message
+);
             document.getElementById(
                 "academicRecordsBody"
             ).innerHTML = `
