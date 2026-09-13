@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>AYLI Lecturer - Grade Entry</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            color: #172033;
+        }
+
+        .header {
+            background: #123c73;
+            color: white;
+            padding: 22px;
+        }
+
+        .header h1 {
+            margin: 0 0 6px;
+            font-size: 28px;
+        }
+
+        .header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 12px;
+            padding: 22px;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+        }
+
+        .course-card h2 {
+            margin-top: 0;
+        }
+
+        .course-info {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background: #f1f5f9;
+            padding: 12px 18px;
+            border-radius: 8px;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 700px;
+        }
+
+        th {
+            background: #123c73;
+            color: white;
+            padding: 14px;
+            text-align: left;
+        }
+
+        td {
+            padding: 13px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .score-input {
+            width: 100px;
+            padding: 9px;
+            border: 1px solid #cbd5e1;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .grade {
+            font-weight: bold;
+        }
+
+        .save-btn {
+            background: #123c73;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-size: 15px;
+            margin-top: 20px;
+        }
+
+        .save-btn:hover {
+            opacity: 0.9;
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 7px;
+            display: none;
+        }
+
+        .success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #123c73;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>AYLI Lecturer Portal</h1>
+        <p>Grade Entry</p>
+    </div>
+
+    <div class="container">
+
+        <div class="course-card">
+
+            <h2 id="courseName">
+                Loading course...
+            </h2>
+
+            <div class="course-info">
+
+                <div class="info-box">
+                    <strong>Lecturer:</strong>
+                    <span id="lecturerName">Loading...</span>
+                </div>
+
+                <div class="info-box">
+                    <strong>Cohort:</strong>
+                    <span id="cohortName">Loading...</span>
+                </div>
+
+                <div class="info-box">
+                    <strong>Students:</strong>
+                    <span id="studentCount">0</span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="table-container">
+
+            <h2>Student Grades</h2>
+
+            <div id="loadingMessage" class="loading">
+                Loading students...
+            </div>
+
+            <table id="studentsTable" style="display:none;">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>AYLI ID</th>
+                        <th>Student Name</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody id="studentsBody">
+                </tbody>
+
+            </table>
+
+            <button
+                id="saveGradesBtn"
+                class="save-btn"
+                style="display:none;"
+            >
+                Save Grades
+            </button>
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+            <a
+                href="lecturer-dashboard.html"
+                class="back-btn"
+            >
+                ← Back to Lecturer Dashboard
+            </a>
+
+        </div>
+
+    </div>
+
+    <script src="Js/lecturer-grade-entry.js"></script>
+
+</body>
+</html>
