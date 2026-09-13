@@ -10,42 +10,39 @@
 const ACADEMIC_SUPABASE_URL =
     "https://jutxahzlecbbphgxlouy.supabase.co";
 
-
 const ACADEMIC_SUPABASE_KEY =
     "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
-
 
 const academicSupabaseClient =
     supabase.createClient(
         ACADEMIC_SUPABASE_URL,
-        ACADEMIC_SUPABASE_KEY
+        ACADEMIC_SUPABASE_KEY,
+        {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false,
+                detectSessionInUrl: false
+            }
+        }
     );
-
 
 // ==========================================================
 // CHECK STUDENT LOGIN
 // ==========================================================
 
 const studentLoggedIn =
-    localStorage.getItem(
-        "ayliStudentLoggedIn"
-    );
-
+    localStorage.getItem("ayliStudentLoggedIn");
 
 const ayliId =
-    localStorage.getItem(
-        "ayliCurrentStudentId"
-    );
+    localStorage.getItem("ayliCurrentStudentId");
 
 
 if (
     studentLoggedIn !== "true" ||
     !ayliId
 ) {
-
     window.location.href =
         "student-login.html";
-
 }
 
 
@@ -57,18 +54,25 @@ async function loadAcademicRecords() {
 
     try {
 
-        // ----------------------------------------------
+        console.log(
+            "Loading academic records for:",
+            ayliId
+        );
+
+
+        // ==================================================
         // LOAD STUDENT INFORMATION
-        // ----------------------------------------------
+        // ==================================================
 
         const {
             data: student,
             error: studentError
-        } = await academicSupabaseClient
-            .from("students")
-            .select("*")
-            .eq("ayli_id", ayliId)
-            .single();
+        } =
+            await academicSupabaseClient
+                .from("students")
+                .select("*")
+                .eq("ayli_id", ayliId)
+                .single();
 
 
         if (studentError || !student) {
@@ -84,13 +88,12 @@ async function loadAcademicRecords() {
                 "Student not found";
 
             return;
-
         }
 
 
-        // ----------------------------------------------
+        // ==================================================
         // BUILD STUDENT NAME
-        // ----------------------------------------------
+        // ==================================================
 
         const fullName =
             [
@@ -109,21 +112,34 @@ async function loadAcademicRecords() {
             "Academic Records";
 
 
-        // ----------------------------------------------
-        // LOAD ACADEMIC RECORDS
-        // ----------------------------------------------
+        // ==================================================
+        // LOAD ALL ACADEMIC RECORDS
+        // ==================================================
 
         const {
-    data: records,
-    error: recordsError
-} = await academicSupabaseClient
-    .from("academic_records")
-    .select("*")
-    .eq(
-        "ayli_id",
-        ayliId
-    );
+            data: records,
+            error: recordsError
+        } =
+            await academicSupabaseClient
+                .from("academic_records")
+                .select(
+                    "id, ayli_id, course, lecturer, score, grade, result"
+                )
+                .eq(
+                    "ayli_id",
+                    ayliId
+                )
+                .order(
+                    "id",
+                    {
+                        ascending: true
+                    }
+                );
 
+
+        // ==================================================
+        // HANDLE DATABASE ERROR
+        // ==================================================
 
         if (recordsError) {
 
@@ -131,10 +147,12 @@ async function loadAcademicRecords() {
                 "Academic records error:",
                 recordsError
             );
-alert(
-    "Academic Records Error:\n\n" +
-    recordsError.message
-);
+
+            alert(
+                "Academic Records Error:\n\n" +
+                recordsError.message
+            );
+
             document.getElementById(
                 "academicRecordsBody"
             ).innerHTML = `
@@ -146,19 +164,33 @@ alert(
             `;
 
             return;
-
         }
 
 
-        // ----------------------------------------------
-        // DISPLAY RECORDS
-        // ----------------------------------------------
+        console.log(
+            "Academic records returned:",
+            records
+        );
+
+        console.log(
+            "Number of academic records:",
+            records ? records.length : 0
+        );
+
+
+        // ==================================================
+        // GET TABLE
+        // ==================================================
 
         const recordsBody =
             document.getElementById(
                 "academicRecordsBody"
             );
 
+
+        // ==================================================
+        // NO RECORDS
+        // ==================================================
 
         if (
             !records ||
@@ -179,15 +211,31 @@ alert(
             ).textContent =
                 "0";
 
-            return;
 
+            document.getElementById(
+                "averageScore"
+            ).textContent =
+                "-";
+
+
+            document.getElementById(
+                "highestGrade"
+            ).textContent =
+                "-";
+
+
+            return;
         }
 
+
+        // ==================================================
+        // DISPLAY ALL RECORDS
+        // ==================================================
 
         recordsBody.innerHTML =
             records
                 .map(
-                    record => {
+                    function(record) {
 
                         return `
                             <tr>
@@ -216,9 +264,9 @@ alert(
                 .join("");
 
 
-        // ----------------------------------------------
-        // ACADEMIC STATISTICS
-        // ----------------------------------------------
+        // ==================================================
+        // TOTAL COURSES
+        // ==================================================
 
         document.getElementById(
             "totalCourses"
@@ -226,15 +274,21 @@ alert(
             records.length;
 
 
+        // ==================================================
+        // CALCULATE AVERAGE SCORE
+        // ==================================================
+
         const validScores =
             records
                 .map(
-                    record =>
-                        Number(record.score)
+                    function(record) {
+                        return Number(record.score);
+                    }
                 )
                 .filter(
-                    score =>
-                        !isNaN(score)
+                    function(score) {
+                        return !isNaN(score);
+                    }
                 );
 
 
@@ -244,8 +298,9 @@ alert(
 
             const totalScore =
                 validScores.reduce(
-                    (sum, score) =>
-                        sum + score,
+                    function(sum, score) {
+                        return sum + score;
+                    },
                     0
                 );
 
@@ -260,28 +315,38 @@ alert(
             ).textContent =
                 averageScore.toFixed(1);
 
+        } else {
+
+            document.getElementById(
+                "averageScore"
+            ).textContent =
+                "-";
         }
 
 
-        // ----------------------------------------------
-        // HIGHEST GRADE
-        // ----------------------------------------------
+        // ==================================================
+        // FIND HIGHEST GRADE
+        // ==================================================
 
         const gradeOrder =
             {
-                "A+": 5,
-                "A": 4,
-                "B+": 3,
-                "B": 2,
-                "C": 1
+                "A+": 6,
+                "A": 5,
+                "B+": 4,
+                "B": 3,
+                "C+": 2,
+                "C": 1,
+                "D": 0,
+                "F": -1
             };
 
 
         const grades =
             records
                 .map(
-                    record =>
-                        record.grade
+                    function(record) {
+                        return record.grade;
+                    }
                 )
                 .filter(Boolean);
 
@@ -292,16 +357,24 @@ alert(
 
             const highestGrade =
                 grades.reduce(
-                    (highest, grade) => {
+                    function(highest, grade) {
+
+                        const currentValue =
+                            gradeOrder[grade] ??
+                            -999;
+
+                        const highestValue =
+                            gradeOrder[highest] ??
+                            -999;
+
 
                         if (
-                            gradeOrder[grade] >
-                            gradeOrder[highest]
+                            currentValue >
+                            highestValue
                         ) {
-
                             return grade;
-
                         }
+
 
                         return highest;
 
@@ -314,18 +387,37 @@ alert(
             ).textContent =
                 highestGrade;
 
+        } else {
+
+            document.getElementById(
+                "highestGrade"
+            ).textContent =
+                "-";
         }
 
 
-    } catch (error) {
+        // ==================================================
+        // FINISHED
+        // ==================================================
+
+        console.log(
+            "All academic records displayed successfully."
+        );
+
+    }
+
+    catch (error) {
 
         console.error(
             "Academic page error:",
             error
         );
 
+        alert(
+            "Unable to load Academic Records.\n\n" +
+            error.message
+        );
     }
-
 }
 
 
@@ -333,4 +425,11 @@ alert(
 // START
 // ==========================================================
 
-loadAcademicRecords();
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadAcademicRecords();
+
+    }
+);
