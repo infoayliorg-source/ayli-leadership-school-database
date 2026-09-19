@@ -1,43 +1,501 @@
 <!DOCTYPE html>
-
 <html lang="en">
 
 <head>
 
-```
-<meta charset="UTF-8">
+    <meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
 
-<title>AYLI Student Profile</title>
+    <title>AYLI Student Profile</title>
 
-<link rel="stylesheet"
-      href="css/style.css">
-```
+    <link rel="stylesheet"
+          href="css/style.css">
+
+
+    <style>
+
+        /* =====================================================
+           GRADUATION CLEARANCE
+        ===================================================== */
+
+        .graduation-clearance-card {
+
+            margin-top: 30px;
+            padding: 25px;
+
+            background: #ffffff;
+
+            border-radius: 10px;
+
+            box-shadow:
+                0 4px 15px rgba(0, 0, 0, 0.08);
+
+        }
+
+
+        .graduation-clearance-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 20px;
+
+            margin-bottom: 20px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .graduation-clearance-header h2 {
+
+            margin: 0;
+
+        }
+
+
+        .graduation-date {
+
+            font-weight: 600;
+
+            color: #555;
+
+            margin-top: 6px;
+
+        }
+
+
+        /* =====================================================
+           OVERALL STATUS
+        ===================================================== */
+
+        .clearance-overall {
+
+            padding: 18px;
+
+            margin-bottom: 20px;
+
+            border-radius: 8px;
+
+            background: #f8f9fa;
+
+            border: 1px solid #dee2e6;
+
+        }
+
+
+        .clearance-overall strong {
+
+            display: block;
+
+            margin-bottom: 8px;
+
+        }
+
+
+        .clearance-status {
+
+            display: inline-block;
+
+            padding: 7px 13px;
+
+            border-radius: 20px;
+
+            font-size: 13px;
+
+            font-weight: 700;
+
+        }
+
+
+        .clearance-pending {
+
+            background: #fff3cd;
+
+            color: #856404;
+
+        }
+
+
+        .clearance-progress {
+
+            background: #fff3cd;
+
+            color: #664d03;
+
+        }
+
+
+        .clearance-preliminary {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+        }
+
+
+        .clearance-final {
+
+            background: #cfe2ff;
+
+            color: #084298;
+
+        }
+
+
+        /* =====================================================
+           PROGRESS SECTION
+        ===================================================== */
+
+        .clearance-progress-section {
+
+            margin-top: 20px;
+
+            margin-bottom: 25px;
+
+            padding: 18px;
+
+            background: #f8f9fa;
+
+            border-radius: 10px;
+
+            border: 1px solid #e5e7eb;
+
+        }
+
+
+        .clearance-progress-header {
+
+            display: flex;
+
+            justify-content: space-between;
+
+            align-items: center;
+
+            gap: 10px;
+
+            margin-bottom: 10px;
+
+            flex-wrap: wrap;
+
+        }
+
+
+        .clearance-progress-title {
+
+            font-weight: 700;
+
+            color: #333;
+
+        }
+
+
+        .clearance-progress-count {
+
+            font-weight: 700;
+
+            color: #0b5ed7;
+
+        }
+
+
+        .progress-track {
+
+            width: 100%;
+
+            height: 14px;
+
+            background: #e9ecef;
+
+            border-radius: 20px;
+
+            overflow: hidden;
+
+        }
+
+
+        .progress-bar {
+
+            height: 100%;
+
+            width: 0%;
+
+            background: #0b5ed7;
+
+            border-radius: 20px;
+
+            transition: width 0.4s ease;
+
+        }
+
+
+        .clearance-progress-percentage {
+
+            margin-top: 8px;
+
+            text-align: right;
+
+            font-size: 13px;
+
+            color: #666;
+
+            font-weight: 600;
+
+        }
+
+
+        /* =====================================================
+           CLEARANCE NOTICE
+        ===================================================== */
+
+        .clearance-notice {
+
+            margin-top: 20px;
+
+            margin-bottom: 20px;
+
+            padding: 15px 18px;
+
+            border-radius: 8px;
+
+            border-left: 4px solid #0b5ed7;
+
+            background: #f8f9fa;
+
+            color: #444;
+
+            line-height: 1.6;
+
+        }
+
+
+        .clearance-notice strong {
+
+            display: block;
+
+            margin-bottom: 5px;
+
+            color: #222;
+
+        }
+
+
+        /* =====================================================
+           REQUIREMENTS TABLE
+        ===================================================== */
+
+        .clearance-requirements {
+
+            width: 100%;
+
+            border-collapse: collapse;
+
+        }
+
+
+        .clearance-requirements th,
+        .clearance-requirements td {
+
+            padding: 13px 10px;
+
+            border-bottom: 1px solid #e9ecef;
+
+            text-align: left;
+
+        }
+
+
+        .clearance-requirements th {
+
+            background: #f8f9fa;
+
+        }
+
+
+        .requirement-status {
+
+            display: inline-block;
+
+            padding: 5px 10px;
+
+            border-radius: 15px;
+
+            font-size: 12px;
+
+            font-weight: 700;
+
+        }
+
+
+        .requirement-pending {
+
+            background: #fff3cd;
+
+            color: #856404;
+
+        }
+
+
+        .requirement-cleared {
+
+            background: #d1e7dd;
+
+            color: #0f5132;
+
+        }
+
+
+        .clearance-message {
+
+            text-align: center;
+
+            padding: 25px;
+
+            color: #666;
+
+        }
+
+
+        /* =====================================================
+           FOOTER
+        ===================================================== */
+
+        .clearance-footer {
+
+            margin-top: 20px;
+
+            padding-top: 15px;
+
+            border-top: 1px solid #eee;
+
+            font-size: 13px;
+
+            color: #666;
+
+        }
+
+
+        .clearance-footer p {
+
+            margin: 8px 0;
+
+        }
+
+
+        .clearance-footer strong {
+
+            color: #333;
+
+        }
+
+
+        .clearance-footer-status-cleared {
+
+            color: #0f5132;
+
+            font-weight: 700;
+
+        }
+
+
+        .clearance-footer-status-pending {
+
+            color: #856404;
+
+            font-weight: 700;
+
+        }
+
+
+        .clearance-footer-status-final {
+
+            color: #084298;
+
+            font-weight: 700;
+
+        }
+
+
+        /* =====================================================
+           MOBILE
+        ===================================================== */
+
+        @media (max-width: 700px) {
+
+            .graduation-clearance-card {
+
+                padding: 15px;
+
+            }
+
+
+            .clearance-requirements {
+
+                font-size: 13px;
+
+            }
+
+
+            .clearance-requirements th,
+            .clearance-requirements td {
+
+                padding: 10px 7px;
+
+            }
+
+
+            .clearance-progress-header {
+
+                align-items: flex-start;
+
+                flex-direction: column;
+
+            }
+
+        }
+
+    </style>
 
 </head>
 
+
 <body>
 
-```
+
 <div class="container">
 
+
+    <!-- =====================================================
+         AYLI LOGO
+    ====================================================== -->
+
     <div class="profile-logo">
-        <img 
+
+        <img
             src="assets/images/AYLI LOGO.png"
             alt="AYLI Official Logo"
         >
+
     </div>
 
+
     <h1>👤 AYLI Student Profile</h1>
+
 
     <p>
         Complete student information and AYLI records.
     </p>
 
 
-    <!-- Student Profile -->
+    <!-- =====================================================
+         STUDENT PROFILE
+    ====================================================== -->
 
     <div class="stat-card">
 
@@ -45,60 +503,72 @@
             Loading Student...
         </h2>
 
+
         <p>
             <strong>AYLI ID:</strong>
             <span id="studentId">-</span>
         </p>
+
 
         <p>
             <strong>Gender:</strong>
             <span id="studentGender">-</span>
         </p>
 
+
         <p>
             <strong>Date of Birth:</strong>
             <span id="studentDOB">-</span>
         </p>
+
 
         <p>
             <strong>Nationality:</strong>
             <span id="studentNationality">-</span>
         </p>
 
+
         <p>
             <strong>Country:</strong>
             <span id="studentCountry">-</span>
         </p>
+
 
         <p>
             <strong>City:</strong>
             <span id="studentCity">-</span>
         </p>
 
+
         <p>
             <strong>Phone:</strong>
             <span id="studentPhone">-</span>
         </p>
+
 
         <p>
             <strong>WhatsApp:</strong>
             <span id="studentWhatsApp">-</span>
         </p>
 
+
         <p>
             <strong>Email:</strong>
             <span id="studentEmail">-</span>
         </p>
+
 
         <p>
             <strong>Cohort:</strong>
             <span id="studentCohort">-</span>
         </p>
 
+
         <p>
             <strong>Chapter:</strong>
             <span id="studentChapter">-</span>
         </p>
+
 
         <p>
             <strong>Status:</strong>
@@ -108,9 +578,223 @@
     </div>
 
 
-    <!-- Academic Records -->
+    <!-- =====================================================
+         GRADUATION CLEARANCE
+    ====================================================== -->
+
+    <div class="graduation-clearance-card">
+
+
+        <div class="graduation-clearance-header">
+
+            <div>
+
+                <h2>
+                    🎓 Graduation Clearance
+                </h2>
+
+                <div class="graduation-date">
+
+                    Graduation Date:
+
+                    <span id="graduationDate">
+                        October 3, 2026
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             OVERALL STATUS
+        ================================================== -->
+
+        <div class="clearance-overall">
+
+            <strong>
+                Overall Clearance Status
+            </strong>
+
+
+            <span
+                id="overallClearanceStatus"
+                class="clearance-status clearance-pending"
+            >
+                Loading...
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             PROGRESS
+        ================================================== -->
+
+        <div class="clearance-progress-section">
+
+            <div class="clearance-progress-header">
+
+                <span class="clearance-progress-title">
+                    Graduation Clearance Progress
+                </span>
+
+                <span
+                    id="clearanceProgressCount"
+                    class="clearance-progress-count">
+                    0 / 7 Requirements Cleared
+                </span>
+
+            </div>
+
+
+            <div class="progress-track">
+
+                <div
+                    id="clearanceProgressBar"
+                    class="progress-bar">
+                </div>
+
+            </div>
+
+
+            <div
+                id="clearanceProgressPercentage"
+                class="clearance-progress-percentage">
+                0%
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             CLEARANCE NOTICE
+        ================================================== -->
+
+        <div
+            id="clearanceNotice"
+            class="clearance-notice">
+
+            <strong>
+                Graduation Clearance
+            </strong>
+
+            <span id="clearanceNoticeText">
+                Loading graduation clearance information...
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             REQUIREMENTS
+        ================================================== -->
+
+        <div class="table-container">
+
+            <table class="clearance-requirements">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Graduation Requirement
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="graduationClearanceBody">
+
+                    <tr>
+
+                        <td
+                            colspan="2"
+                            class="clearance-message"
+                        >
+
+                            Loading graduation clearance...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- =================================================
+             PRELIMINARY / FINAL
+        ================================================== -->
+
+        <div class="clearance-footer">
+
+            <p>
+
+                <strong>
+                    Preliminary Clearance:
+                </strong>
+
+                <span
+                    id="preliminaryClearance"
+                    class="clearance-footer-status-pending">
+                    Pending
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Final Clearance:
+                </strong>
+
+                <span
+                    id="finalClearance"
+                    class="clearance-footer-status-pending">
+                    Pending
+                </span>
+
+            </p>
+
+
+            <p>
+
+                <strong>
+                    Administrative Remarks:
+                </strong>
+
+                <span id="clearanceRemarks">
+                    -
+                </span>
+
+            </p>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =====================================================
+         ACADEMIC RECORDS
+    ====================================================== -->
 
     <h2>📚 Academic Records</h2>
+
 
     <div class="table-container">
 
@@ -119,13 +803,19 @@
             <thead>
 
                 <tr>
+
                     <th>Course</th>
+
                     <th>Lecturer</th>
+
                     <th>Score</th>
+
                     <th>Grade</th>
+
                 </tr>
 
             </thead>
+
 
             <tbody id="academicProfileBody">
 
@@ -136,9 +826,12 @@
     </div>
 
 
-    <!-- Leadership -->
+    <!-- =====================================================
+         LEADERSHIP
+    ====================================================== -->
 
     <h2>👔 Leadership</h2>
+
 
     <div class="table-container">
 
@@ -147,13 +840,19 @@
             <thead>
 
                 <tr>
+
                     <th>Position</th>
+
                     <th>Start Date</th>
+
                     <th>Chapter</th>
+
                     <th>Status</th>
+
                 </tr>
 
             </thead>
+
 
             <tbody id="leadershipProfileBody">
 
@@ -164,9 +863,12 @@
     </div>
 
 
-    <!-- Certificates -->
+    <!-- =====================================================
+         CERTIFICATES
+    ====================================================== -->
 
     <h2>📜 Certificates</h2>
+
 
     <div class="table-container">
 
@@ -175,13 +877,19 @@
             <thead>
 
                 <tr>
+
                     <th>Certificate Number</th>
+
                     <th>Type</th>
+
                     <th>Issue Date</th>
+
                     <th>Status</th>
+
                 </tr>
 
             </thead>
+
 
             <tbody id="certificateProfileBody">
 
@@ -194,67 +902,71 @@
 
     <br>
 
+
     <button onclick="window.history.back()">
+
         ← Back to Students
+
     </button>
+
 
 </div>
 
 
-<!-- LOAD SUPABASE -->
+<!-- =========================================================
+     SUPABASE
+========================================================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 
 <script>
 
-    // ==========================================================
-    // SUPABASE CONNECTION
-    // ==========================================================
 
-    const PROFILE_SUPABASE_URL =
-        "https://jutxahzlecbbphgxlouy.supabase.co";
+// ==========================================================
+// SUPABASE CONNECTION
+// ==========================================================
 
-
-    const PROFILE_SUPABASE_KEY =
-        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+const PROFILE_SUPABASE_URL =
+    "https://jutxahzlecbbphgxlouy.supabase.co";
 
 
-    const profileSupabaseClient =
-        supabase.createClient(
-            PROFILE_SUPABASE_URL,
-            PROFILE_SUPABASE_KEY
-        );
+const PROFILE_SUPABASE_KEY =
+    "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
 
 
-   // ==========================================================
+const profileSupabaseClient =
+    supabase.createClient(
+        PROFILE_SUPABASE_URL,
+        PROFILE_SUPABASE_KEY
+    );
+
+
+// ==========================================================
 // GET STUDENT ID
 // ==========================================================
 
-// Get student ID from the URL
 const params =
     new URLSearchParams(
         window.location.search
     );
 
+
 const urlAyliId =
     params.get("id");
 
 
-// Get logged-in student ID
 const loggedInAyliId =
     localStorage.getItem(
         "ayliCurrentStudentId"
     );
 
 
-// Use URL ID for Administrator View Profile.
-// Use logged-in ID for Student Login.
 const ayliId =
-    urlAyliId || loggedInAyliId;
+    urlAyliId ||
+    loggedInAyliId;
 
 
-// If no student ID exists, return to Student Login
 if (!ayliId) {
 
     window.location.href =
@@ -262,13 +974,51 @@ if (!ayliId) {
 
 }
 
-    // ==========================================================
-    // LOAD STUDENT PROFILE
-    // ==========================================================
 
-    async function loadStudentProfile() {
+// ==========================================================
+// LOAD STUDENT PROFILE
+// ==========================================================
 
-        if (!ayliId) {
+async function loadStudentProfile() {
+
+    if (!ayliId) {
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            "Student not found";
+
+        return;
+
+    }
+
+
+    try {
+
+        const {
+            data: student,
+            error
+        } =
+            await profileSupabaseClient
+                .from("students")
+                .select("*")
+                .eq(
+                    "ayli_id",
+                    ayliId
+                )
+                .single();
+
+
+        if (
+            error ||
+            !student
+        ) {
+
+            console.error(
+                "Student loading error:",
+                error
+            );
+
 
             document.getElementById(
                 "studentName"
@@ -280,239 +1030,883 @@ if (!ayliId) {
         }
 
 
-        try {
+        // ==================================================
+        // STUDENT NAME
+        // ==================================================
 
-            const {
-                data: student,
-                error
-            } = await profileSupabaseClient
-                .from("students")
-                .select("*")
-                .eq("ayli_id", ayliId)
-                .single();
+        const fullName = [
 
+            student.first_name ||
+            student.firstName,
 
-            if (error || !student) {
+            student.middle_name ||
+            student.middleName,
 
-                console.error(
-                    "Student loading error:",
-                    error
-                );
+            student.last_name ||
+            student.lastName
 
-
-                document.getElementById(
-                    "studentName"
-                ).textContent =
-                    "Student not found";
-
-                return;
-
-            }
+        ]
+        .filter(Boolean)
+        .join(" ");
 
 
-            // ==================================================
-            // STUDENT NAME
-            // ==================================================
-
-            const fullName =
-                [
-
-                    student.first_name ||
-                    student.firstName,
-
-                    student.middle_name ||
-                    student.middleName,
-
-                    student.last_name ||
-                    student.lastName
-
-                ]
-                .filter(Boolean)
-                .join(" ");
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            fullName ||
+            "Student Profile";
 
 
-            document.getElementById(
-                "studentName"
-            ).textContent =
-                fullName || "Student Profile";
+        // ==================================================
+        // PERSONAL INFORMATION
+        // ==================================================
+
+        document.getElementById(
+            "studentId"
+        ).textContent =
+            student.ayli_id ||
+            student.ayliId ||
+            "-";
 
 
-            // ==================================================
-            // PERSONAL INFORMATION
-            // ==================================================
-
-            document.getElementById(
-                "studentId"
-            ).textContent =
-                student.ayli_id ||
-                student.ayliId ||
-                "-";
+        document.getElementById(
+            "studentGender"
+        ).textContent =
+            student.gender ||
+            "-";
 
 
-            document.getElementById(
-                "studentGender"
-            ).textContent =
-                student.gender || "-";
+        document.getElementById(
+            "studentDOB"
+        ).textContent =
+            student.date_of_birth ||
+            student.dateOfBirth ||
+            "-";
 
 
-            document.getElementById(
-                "studentDOB"
-            ).textContent =
-                student.date_of_birth ||
-                student.dateOfBirth ||
-                "-";
+        document.getElementById(
+            "studentNationality"
+        ).textContent =
+            student.nationality ||
+            "-";
 
 
-            document.getElementById(
-                "studentNationality"
-            ).textContent =
-                student.nationality || "-";
+        document.getElementById(
+            "studentCountry"
+        ).textContent =
+            student.country ||
+            "-";
 
 
-            document.getElementById(
-                "studentCountry"
-            ).textContent =
-                student.country || "-";
+        document.getElementById(
+            "studentCity"
+        ).textContent =
+            student.city ||
+            "-";
 
 
-            document.getElementById(
-                "studentCity"
-            ).textContent =
-                student.city || "-";
+        document.getElementById(
+            "studentPhone"
+        ).textContent =
+            student.phone ||
+            "-";
 
 
-            document.getElementById(
-                "studentPhone"
-            ).textContent =
-                student.phone || "-";
+        document.getElementById(
+            "studentWhatsApp"
+        ).textContent =
+            student.whatsapp ||
+            "-";
 
 
-            document.getElementById(
-                "studentWhatsApp"
-            ).textContent =
-                student.whatsapp || "-";
+        document.getElementById(
+            "studentEmail"
+        ).textContent =
+            student.email ||
+            "-";
 
 
-            document.getElementById(
-                "studentEmail"
-            ).textContent =
-                student.email || "-";
+        document.getElementById(
+            "studentCohort"
+        ).textContent =
+            student.cohort ||
+            "-";
 
 
-            document.getElementById(
-                "studentCohort"
-            ).textContent =
-                student.cohort || "-";
+        document.getElementById(
+            "studentChapter"
+        ).textContent =
+            student.chapter ||
+            "-";
 
 
-            document.getElementById(
-                "studentChapter"
-            ).textContent =
-                student.chapter || "-";
+        document.getElementById(
+            "studentStatus"
+        ).textContent =
+            student.status ||
+            "-";
 
 
-            document.getElementById(
-                "studentStatus"
-            ).textContent =
-                student.status || "-";
+        // ==================================================
+        // LOAD GRADUATION CLEARANCE
+        // ==================================================
+
+        await loadGraduationClearance(
+            ayliId
+        );
 
 
-            // ==================================================
-            // LOAD ACADEMIC RECORDS
-            // ==================================================
+        // ==================================================
+        // LOAD ACADEMIC RECORDS
+        // ==================================================
 
-            await loadAcademicRecords(ayliId);
-
-
-            // ==================================================
-            // LOAD LEADERSHIP RECORDS
-            // ==================================================
-
-            await loadLeadership(ayliId);
+        await loadAcademicRecords(
+            ayliId
+        );
 
 
-            // ==================================================
-            // LOAD CERTIFICATES
-            // ==================================================
+        // ==================================================
+        // LOAD LEADERSHIP
+        // ==================================================
 
-           await loadCertificates(ayliId);
-
-
-        }
-        catch (error) {
-
-            console.error(
-                "Unexpected profile error:",
-                error
-            );
+        await loadLeadership(
+            ayliId
+        );
 
 
-            document.getElementById(
-                "studentName"
-            ).textContent =
-                "Error loading student";
+        // ==================================================
+        // LOAD CERTIFICATES
+        // ==================================================
 
-        }
+        await loadCertificates(
+            ayliId
+        );
+
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unexpected profile error:",
+            error
+        );
+
+
+        document.getElementById(
+            "studentName"
+        ).textContent =
+            "Error loading student";
 
     }
 
+}
 
-    // ==========================================================
-    // LOAD ACADEMIC RECORDS
-    // ==========================================================
 
-    async function loadAcademicRecords(studentAyliId) {
+// ==========================================================
+// LOAD GRADUATION CLEARANCE
+// ==========================================================
 
-        const academicBody =
-            document.getElementById(
-                "academicProfileBody"
-            );
+async function loadGraduationClearance(
+    studentAyliId
+) {
 
+    const body =
+        document.getElementById(
+            "graduationClearanceBody"
+        );
+
+
+    const overallElement =
+        document.getElementById(
+            "overallClearanceStatus"
+        );
+
+
+    const preliminaryElement =
+        document.getElementById(
+            "preliminaryClearance"
+        );
+
+
+    const finalElement =
+        document.getElementById(
+            "finalClearance"
+        );
+
+
+    const remarksElement =
+        document.getElementById(
+            "clearanceRemarks"
+        );
+
+
+    const progressCountElement =
+        document.getElementById(
+            "clearanceProgressCount"
+        );
+
+
+    const progressBarElement =
+        document.getElementById(
+            "clearanceProgressBar"
+        );
+
+
+    const progressPercentageElement =
+        document.getElementById(
+            "clearanceProgressPercentage"
+        );
+
+
+    const noticeTextElement =
+        document.getElementById(
+            "clearanceNoticeText"
+        );
+
+
+    try {
 
         const {
-            data: records,
+            data: clearance,
             error
-        } = await profileSupabaseClient
-            .from("academic_records")
-            .select("*")
-            .eq("ayli_id", studentAyliId);
+        } =
+            await profileSupabaseClient
+                .from(
+                    "graduation_clearances"
+                )
+                .select("*")
+                .eq(
+                    "ayli_id",
+                    studentAyliId
+                )
+                .maybeSingle();
 
 
         if (error) {
 
             console.error(
-                "Academic records error:",
+                "Graduation clearance error:",
                 error
             );
 
-            return;
 
-        }
-
-
-        academicBody.innerHTML = "";
-
-
-        if (!records || records.length === 0) {
-
-            academicBody.innerHTML = `
+            body.innerHTML = `
                 <tr>
-                    <td colspan="4"
-                        style="text-align:center;">
-                        No academic records found.
+
+                    <td
+                        colspan="2"
+                        class="clearance-message"
+                    >
+
+                        Unable to load graduation
+                        clearance.
+
+                        <br><br>
+
+                        Please contact AYLI Administration.
+
                     </td>
+
                 </tr>
             `;
 
+
+            overallElement.textContent =
+                "Unable to Load";
+
+
+            overallElement.className =
+                "clearance-status clearance-pending";
+
+
+            progressCountElement.textContent =
+                "Unable to calculate progress";
+
+
+            progressBarElement.style.width =
+                "0%";
+
+
+            progressPercentageElement.textContent =
+                "0%";
+
+
+            noticeTextElement.textContent =
+                "Your graduation clearance information could not be loaded. Please contact AYLI Administration.";
+
+
             return;
 
         }
 
 
-        records.forEach(function (record) {
+        // ==================================================
+        // NO CLEARANCE RECORD
+        // ==================================================
+
+        if (!clearance) {
+
+            body.innerHTML = `
+                <tr>
+
+                    <td
+                        colspan="2"
+                        class="clearance-message"
+                    >
+
+                        Graduation clearance has not
+                        yet been generated for this
+                        student.
+
+                    </td>
+
+                </tr>
+            `;
+
+
+            overallElement.textContent =
+                "Pending";
+
+
+            overallElement.className =
+                "clearance-status clearance-pending";
+
+
+            preliminaryElement.textContent =
+                "Pending";
+
+
+            preliminaryElement.className =
+                "clearance-footer-status-pending";
+
+
+            finalElement.textContent =
+                "Pending";
+
+
+            finalElement.className =
+                "clearance-footer-status-pending";
+
+
+            remarksElement.textContent =
+                "-";
+
+
+            progressCountElement.textContent =
+                "0 / 7 Requirements Cleared";
+
+
+            progressBarElement.style.width =
+                "0%";
+
+
+            progressPercentageElement.textContent =
+                "0%";
+
+
+            noticeTextElement.textContent =
+                "Your graduation clearance process has not yet been generated. Please check back later or contact AYLI Administration.";
+
+
+            return;
+
+        }
+
+
+        // ==================================================
+        // GRADUATION DATE
+        // ==================================================
+
+        if (
+            clearance.graduation_date
+        ) {
+
+            const date =
+                new Date(
+                    clearance.graduation_date
+                );
+
+
+            if (
+                !isNaN(
+                    date.getTime()
+                )
+            ) {
+
+                document.getElementById(
+                    "graduationDate"
+                ).textContent =
+                    date.toLocaleDateString(
+                        "en-US",
+                        {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric"
+                        }
+                    );
+
+            }
+
+        }
+
+
+        // ==================================================
+        // REQUIREMENTS
+        // ==================================================
+
+        const requirements = [
+
+            {
+                label:
+                    "Registration",
+
+                status:
+                    clearance.registration_status
+            },
+
+            {
+                label:
+                    "Academic Requirements",
+
+                status:
+                    clearance.academic_status
+            },
+
+            {
+                label:
+                    "Course Completion",
+
+                status:
+                    clearance.course_completion_status
+            },
+
+            {
+                label:
+                    "Examination",
+
+                status:
+                    clearance.examination_status
+            },
+
+            {
+                label:
+                    "Presentation",
+
+                status:
+                    clearance.presentation_status
+            },
+
+            {
+                label:
+                    "Graduation Fee",
+
+                status:
+                    clearance.graduation_fee_status
+            },
+
+            {
+                label:
+                    "Administrative Clearance",
+
+                status:
+                    clearance.administrative_status
+            }
+
+        ];
+
+
+        body.innerHTML = "";
+
+
+        // ==================================================
+        // COUNT CLEARED REQUIREMENTS
+        // ==================================================
+
+        let clearedCount = 0;
+
+
+        requirements.forEach(
+            function(requirement) {
+
+                const status =
+                    String(
+                        requirement.status ||
+                        "pending"
+                    ).toLowerCase();
+
+
+                const isCleared =
+                    status ===
+                    "cleared";
+
+
+                if (isCleared) {
+
+                    clearedCount++;
+
+                }
+
+
+                const row =
+                    document.createElement(
+                        "tr"
+                    );
+
+
+                row.innerHTML = `
+
+                    <td>
+                        ${requirement.label}
+                    </td>
+
+                    <td>
+
+                        <span
+                            class="
+                                requirement-status
+                                ${
+                                    isCleared
+                                        ? "requirement-cleared"
+                                        : "requirement-pending"
+                                }
+                            "
+                        >
+
+                            ${
+                                isCleared
+                                    ? "✓ Cleared"
+                                    : "Pending"
+                            }
+
+                        </span>
+
+                    </td>
+
+                `;
+
+
+                body.appendChild(
+                    row
+                );
+
+            }
+        );
+
+
+        // ==================================================
+        // PROGRESS CALCULATION
+        // ==================================================
+
+        const totalRequirements =
+            requirements.length;
+
+
+        const percentage =
+            Math.round(
+                (
+                    clearedCount /
+                    totalRequirements
+                ) * 100
+            );
+
+
+        progressCountElement.textContent =
+            `${clearedCount} / ${totalRequirements} Requirements Cleared`;
+
+
+        progressBarElement.style.width =
+            `${percentage}%`;
+
+
+        progressPercentageElement.textContent =
+            `${percentage}%`;
+
+
+        // ==================================================
+        // PRELIMINARY STATUS
+        // ==================================================
+
+        const preliminary =
+            String(
+                clearance.preliminary_status ||
+                "pending"
+            ).toLowerCase();
+
+
+        if (
+            preliminary ===
+            "cleared"
+        ) {
+
+            preliminaryElement.textContent =
+                "✓ Cleared";
+
+
+            preliminaryElement.className =
+                "clearance-footer-status-cleared";
+
+        }
+        else {
+
+            preliminaryElement.textContent =
+                "Pending";
+
+
+            preliminaryElement.className =
+                "clearance-footer-status-pending";
+
+        }
+
+
+        // ==================================================
+        // FINAL STATUS
+        // ==================================================
+
+        const finalStatus =
+            String(
+                clearance.final_status ||
+                "pending"
+            ).toLowerCase();
+
+
+        if (
+            finalStatus ===
+            "cleared"
+        ) {
+
+            finalElement.textContent =
+                "✓ Cleared";
+
+
+            finalElement.className =
+                "clearance-footer-status-final";
+
+        }
+        else {
+
+            finalElement.textContent =
+                "Pending";
+
+
+            finalElement.className =
+                "clearance-footer-status-pending";
+
+        }
+
+
+        // ==================================================
+        // REMARKS
+        // ==================================================
+
+        remarksElement.textContent =
+            clearance.remarks ||
+            "-";
+
+
+        // ==================================================
+        // OVERALL STATUS
+        // ==================================================
+
+        if (
+            finalStatus ===
+            "cleared"
+        ) {
+
+            overallElement.textContent =
+                "Final Cleared";
+
+
+            overallElement.className =
+                "clearance-status clearance-final";
+
+
+            noticeTextElement.textContent =
+                "Congratulations! You have been finally cleared for graduation by AYLI Administration.";
+
+        }
+
+        else if (
+            preliminary ===
+            "cleared"
+        ) {
+
+            overallElement.textContent =
+                "Preliminary Cleared";
+
+
+            overallElement.className =
+                "clearance-status clearance-preliminary";
+
+
+            noticeTextElement.textContent =
+                "Congratulations! You have successfully completed your preliminary graduation clearance. Final clearance is subject to AYLI Administration's final approval.";
+
+        }
+
+        else if (
+            clearedCount > 0
+        ) {
+
+            overallElement.textContent =
+                "In Progress";
+
+
+            overallElement.className =
+                "clearance-status clearance-progress";
+
+
+            noticeTextElement.textContent =
+                `Your graduation clearance is currently in progress. You have cleared ${clearedCount} of ${totalRequirements} graduation requirements. Please complete the remaining requirements.`;
+
+        }
+
+        else {
+
+            overallElement.textContent =
+                "Pending";
+
+
+            overallElement.className =
+                "clearance-status clearance-pending";
+
+
+            noticeTextElement.textContent =
+                "Your graduation clearance process is currently pending. Please ensure that all graduation requirements are completed.";
+
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "Unexpected graduation clearance error:",
+            error
+        );
+
+
+        body.innerHTML = `
+            <tr>
+
+                <td
+                    colspan="2"
+                    class="clearance-message"
+                >
+
+                    Unable to load graduation
+                    clearance.
+
+                </td>
+
+            </tr>
+        `;
+
+
+        overallElement.textContent =
+            "Unable to Load";
+
+
+        overallElement.className =
+            "clearance-status clearance-pending";
+
+
+        progressCountElement.textContent =
+            "Unable to calculate progress";
+
+
+        progressBarElement.style.width =
+            "0%";
+
+
+        progressPercentageElement.textContent =
+            "0%";
+
+
+        noticeTextElement.textContent =
+            "Unable to load your graduation clearance information.";
+
+    }
+
+}
+
+
+// ==========================================================
+// LOAD ACADEMIC RECORDS
+// ==========================================================
+
+async function loadAcademicRecords(
+    studentAyliId
+) {
+
+    const academicBody =
+        document.getElementById(
+            "academicProfileBody"
+        );
+
+
+    const {
+        data: records,
+        error
+    } =
+        await profileSupabaseClient
+            .from(
+                "academic_records"
+            )
+            .select("*")
+            .eq(
+                "ayli_id",
+                studentAyliId
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Academic records error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    academicBody.innerHTML = "";
+
+
+    if (
+        !records ||
+        records.length === 0
+    ) {
+
+        academicBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    style="text-align:center;"
+                >
+
+                    No academic records found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    records.forEach(
+        function(record) {
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             row.innerHTML = `
@@ -526,7 +1920,7 @@ if (!ayliId) {
                 </td>
 
                 <td>
-                    ${record.score || "-"}
+                    ${record.score ?? "-"}
                 </td>
 
                 <td>
@@ -536,69 +1930,92 @@ if (!ayliId) {
             `;
 
 
-            academicBody.appendChild(row);
+            academicBody.appendChild(
+                row
+            );
 
-        });
+        }
+    );
+
+}
+
+
+// ==========================================================
+// LOAD LEADERSHIP
+// ==========================================================
+
+async function loadLeadership(
+    studentAyliId
+) {
+
+    const leadershipBody =
+        document.getElementById(
+            "leadershipProfileBody"
+        );
+
+
+    const {
+        data: leaders,
+        error
+    } =
+        await profileSupabaseClient
+            .from("leadership")
+            .select("*")
+            .eq(
+                "ayli_id",
+                studentAyliId
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Leadership error:",
+            error
+        );
+
+        return;
 
     }
 
 
-    // ==========================================================
-    // LOAD LEADERSHIP
-    // ==========================================================
-
-    async function loadLeadership(studentAyliId) {
-
-        const leadershipBody =
-            document.getElementById(
-                "leadershipProfileBody"
-            );
+    leadershipBody.innerHTML = "";
 
 
-        const {
-            data: leaders,
-            error
-        } = await profileSupabaseClient
-            .from("leadership")
-            .select("*")
-            .eq("ayli_id", studentAyliId);
+    if (
+        !leaders ||
+        leaders.length === 0
+    ) {
+
+        leadershipBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    style="text-align:center;"
+                >
+
+                    No leadership record found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
 
 
-        if (error) {
-
-            console.error(
-                "Leadership error:",
-                error
-            );
-
-            return;
-
-        }
-
-
-        leadershipBody.innerHTML = "";
-
-
-        if (!leaders || leaders.length === 0) {
-
-            leadershipBody.innerHTML = `
-                <tr>
-                    <td colspan="4"
-                        style="text-align:center;">
-                        No leadership record found.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        leaders.forEach(function (leader) {
+    leaders.forEach(
+        function(leader) {
 
             const row =
-                document.createElement("tr");
+                document.createElement(
+                    "tr"
+                );
 
 
             row.innerHTML = `
@@ -626,141 +2043,169 @@ if (!ayliId) {
             `;
 
 
-            leadershipBody.appendChild(row);
-
-        });
-
-    }
-
-
-    // ==========================================================
-    // LOAD CERTIFICATES
-    // ==========================================================
-
-    async function loadCertificates(studentAyliId) {
-
-        const certificateBody =
-            document.getElementById(
-                "certificateProfileBody"
+            leadershipBody.appendChild(
+                row
             );
-
-
-        const {
-            data: certificates,
-            error
-        } = await profileSupabaseClient
-            .from("certificates")
-            .select("*")
-            .eq("ayli_id", studentAyliId);
-
-
-        if (error) {
-
-            console.error(
-                "Certificate error:",
-                error
-            );
-
-            return;
-
-        }
-
-
-        certificateBody.innerHTML = "";
-
-
-        if (
-            !certificates ||
-            certificates.length === 0
-        ) {
-
-            certificateBody.innerHTML = `
-                <tr>
-                    <td colspan="4"
-                        style="text-align:center;">
-                        No certificates found.
-                    </td>
-                </tr>
-            `;
-
-            return;
-
-        }
-
-
-        certificates.forEach(
-            function (certificate) {
-
-                const row =
-                    document.createElement(
-                        "tr"
-                    );
-
-
-                row.innerHTML = `
-
-                    <td>
-                        ${
-                            certificate.certificate_number ||
-                            certificate.certificateNumber ||
-                            "-"
-                        }
-                    </td>
-
-                    <td>
-                        ${
-                            certificate.type ||
-                            "Certificate of Completion"
-                        }
-                    </td>
-
-                    <td>
-                        ${
-                            certificate.issue_date ||
-                            certificate.issueDate ||
-                            "-"
-                        }
-                    </td>
-
-                    <td>
-                        ${
-                            certificate.status ||
-                            "Issued"
-                        }
-                    </td>
-
-                `;
-
-
-                certificateBody
-                    .appendChild(row);
-
-            }
-        );
-
-    }
-
-
-    // ==========================================================
-    // START
-    // ==========================================================
-
-    document.addEventListener(
-        "DOMContentLoaded",
-        function () {
-
-            loadStudentProfile();
 
         }
     );
 
+}
+
+
+// ==========================================================
+// LOAD CERTIFICATES
+// ==========================================================
+
+async function loadCertificates(
+    studentAyliId
+) {
+
+    const certificateBody =
+        document.getElementById(
+            "certificateProfileBody"
+        );
+
+
+    const {
+        data: certificates,
+        error
+    } =
+        await profileSupabaseClient
+            .from("certificates")
+            .select("*")
+            .eq(
+                "ayli_id",
+                studentAyliId
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Certificate error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    certificateBody.innerHTML = "";
+
+
+    if (
+        !certificates ||
+        certificates.length === 0
+    ) {
+
+        certificateBody.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="4"
+                    style="text-align:center;"
+                >
+
+                    No certificates found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+        return;
+
+    }
+
+
+    certificates.forEach(
+        function(certificate) {
+
+            const row =
+                document.createElement(
+                    "tr"
+                );
+
+
+            row.innerHTML = `
+
+                <td>
+
+                    ${
+                        certificate.certificate_number ||
+                        certificate.certificateNumber ||
+                        "-"
+                    }
+
+                </td>
+
+                <td>
+
+                    ${
+                        certificate.type ||
+                        "Certificate of Completion"
+                    }
+
+                </td>
+
+                <td>
+
+                    ${
+                        certificate.issue_date ||
+                        certificate.issueDate ||
+                        "-"
+                    }
+
+                </td>
+
+                <td>
+
+                    ${
+                        certificate.status ||
+                        "Issued"
+                    }
+
+                </td>
+
+            `;
+
+
+            certificateBody.appendChild(
+                row
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// START
+// ==========================================================
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function() {
+
+        loadStudentProfile();
+
+    }
+);
+
 </script>
 
 
-<!-- ADMIN AUTHENTICATION -->
+<!-- =========================================================
+     AUTHENTICATION
+========================================================= -->
 
 <script src="Js/auth.js"></script>
-```
+
 
 </body>
 
