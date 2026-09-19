@@ -1,0 +1,2267 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>AYLI Inquiries</title>
+
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+
+        /* ==========================================
+           PAGE HEADER
+        ========================================== */
+
+        .page-header {
+            background: #ffffff;
+            padding: 25px 35px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        .page-header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+
+        .page-header p {
+            color: #6b7280;
+        }
+
+
+        /* ==========================================
+           MAIN CONTAINER
+        ========================================== */
+
+        .container {
+            width: 94%;
+            max-width: 1400px;
+            margin: 30px auto;
+        }
+
+
+        /* ==========================================
+           STATISTICS
+        ========================================== */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+
+        .stat-card {
+            background: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+
+        .stat-card span {
+            display: block;
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+
+        .stat-card h2 {
+            font-size: 30px;
+        }
+
+
+        /* ==========================================
+           INQUIRIES CARD
+        ========================================== */
+
+        .inquiries-card {
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+
+        .card-header {
+            padding: 22px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+
+        .card-header h2 {
+            font-size: 21px;
+        }
+
+
+        .inquiry-controls-header p {
+            margin-top: 5px;
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+
+        /* ==========================================
+           REFRESH BUTTON
+        ========================================== */
+
+        .refresh-button {
+            border: none;
+            background: #111827;
+            color: #ffffff;
+            padding: 10px 18px;
+            border-radius: 7px;
+            cursor: pointer;
+        }
+
+
+        .refresh-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* ==========================================
+           FILTERS
+        ========================================== */
+
+        .inquiry-filters {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 15px;
+            padding: 20px 25px;
+            background: #f9fafb;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        .filter-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            margin-bottom: 7px;
+            text-transform: uppercase;
+        }
+
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 11px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 7px;
+            background: #ffffff;
+            font: inherit;
+            outline: none;
+        }
+
+
+        .filter-group input:focus,
+        .filter-group select:focus {
+            border-color: #6b7280;
+        }
+
+
+        /* ==========================================
+           TABLE
+        ========================================== */
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+
+        th,
+        td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+            white-space: nowrap;
+        }
+
+
+        th {
+            background: #f9fafb;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #6b7280;
+        }
+
+
+        td {
+            font-size: 14px;
+        }
+
+
+        /* ==========================================
+           STATUS
+        ========================================== */
+
+        .status {
+            display: inline-block;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        .status-new {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+
+        .status-in-review {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+
+        .status-responded {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+
+        .status-closed {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+
+        /* ==========================================
+           VIEW BUTTON
+        ========================================== */
+
+        .view-button {
+            border: none;
+            background: #111827;
+            color: #ffffff;
+            padding: 8px 13px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+
+        .view-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* ==========================================
+           EMPTY / ERROR
+        ========================================== */
+
+        .empty-message {
+            text-align: center;
+            padding: 50px;
+            color: #6b7280;
+        }
+
+
+        .error-message {
+            text-align: center;
+            padding: 30px;
+            color: #b91c1c;
+        }
+
+
+        /* ==========================================
+           INQUIRY MODAL
+        ========================================== */
+
+        .inquiry-modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 9999;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+
+        .inquiry-modal-content {
+            width: 100%;
+            max-width: 850px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+        }
+
+
+        .inquiry-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+
+        .modal-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+
+        .inquiry-modal-header h2 {
+            font-size: 24px;
+        }
+
+
+        .modal-close {
+            width: 40px;
+            height: 40px;
+            border: none;
+            background: #f3f4f6;
+            border-radius: 50%;
+            font-size: 25px;
+            cursor: pointer;
+        }
+
+
+        .modal-close:hover {
+            background: #e5e7eb;
+        }
+
+
+        /* ==========================================
+           INQUIRY DETAILS
+        ========================================== */
+
+        .inquiry-details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+
+        .detail-item {
+            padding: 18px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+
+        .detail-item span,
+        .message-box > span {
+            display: block;
+            font-size: 12px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+
+        .detail-item strong {
+            display: block;
+            word-break: break-word;
+        }
+
+
+        /* ==========================================
+           MESSAGE
+        ========================================== */
+
+        .message-box {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+
+        .message-box p {
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+
+        /* ==========================================
+           MANAGEMENT
+        ========================================== */
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            font: inherit;
+            background: #ffffff;
+        }
+
+
+        .form-group textarea {
+            resize: vertical;
+        }
+
+
+        .modal-message-status {
+            min-height: 20px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding-top: 15px;
+        }
+
+
+        .modal-cancel-button,
+        .modal-save-button {
+            border: none;
+            padding: 11px 20px;
+            border-radius: 7px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+
+        .modal-cancel-button {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+
+        .modal-save-button {
+            background: #111827;
+            color: #ffffff;
+        }
+
+
+        .modal-save-button:hover,
+        .modal-cancel-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* ==========================================
+           RESPONSIVE
+        ========================================== */
+
+        @media (max-width: 1000px) {
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+
+        @media (max-width: 900px) {
+
+            .inquiry-filters {
+                grid-template-columns: 1fr 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 650px) {
+
+            .inquiry-modal {
+                padding: 15px;
+            }
+
+
+            .inquiry-modal-content {
+                padding: 20px;
+            }
+
+
+            .inquiry-details-grid,
+            .management-grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+
+        @media (max-width: 600px) {
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+
+            .page-header {
+                padding: 20px;
+            }
+
+
+            .container {
+                width: 95%;
+            }
+
+
+            .inquiry-filters {
+                grid-template-columns: 1fr;
+            }
+
+
+            .inquiry-controls-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         PAGE HEADER
+    ========================================== -->
+
+    <header class="page-header">
+
+        <h1>
+            AYLI Inquiries
+        </h1>
+
+        <p>
+            Website Contact Inquiries Management
+        </p>
+
+    </header>
+
+
+    <!-- ==========================================
+         MAIN CONTENT
+    ========================================== -->
+
+    <main class="container">
+
+
+        <!-- ==========================================
+             STATISTICS
+        ========================================== -->
+
+        <section class="stats-grid">
+
+
+            <div class="stat-card">
+
+                <span>
+                    Total Inquiries
+                </span>
+
+                <h2 id="totalInquiries">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    New
+                </span>
+
+                <h2 id="newInquiries">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    In Review
+                </span>
+
+                <h2 id="reviewInquiries">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Responded
+                </span>
+
+                <h2 id="respondedInquiries">
+                    0
+                </h2>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span>
+                    Closed
+                </span>
+
+                <h2 id="closedInquiries">
+                    0
+                </h2>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ==========================================
+             INQUIRIES CARD
+        ========================================== -->
+
+        <section class="inquiries-card">
+
+
+            <!-- CARD HEADER -->
+
+            <div class="card-header inquiry-controls-header">
+
+                <div>
+
+                    <h2>
+                        Recent Inquiries
+                    </h2>
+
+                    <p>
+                        Search and manage website inquiries.
+                    </p>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="refresh-button"
+                    onclick="loadInquiries()"
+                >
+                    Refresh
+                </button>
+
+            </div>
+
+
+            <!-- FILTERS -->
+
+            <div class="inquiry-filters">
+
+
+                <div class="filter-group">
+
+                    <label for="inquirySearch">
+                        Search
+                    </label>
+
+                    <input
+                        type="text"
+                        id="inquirySearch"
+                        placeholder="Search name, email or subject..."
+                    >
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="officeFilter">
+                        Office
+                    </label>
+
+                    <select id="officeFilter">
+
+                        <option value="">
+                            All Offices
+                        </option>
+
+                        <option value="Executive Office">
+                            Executive Office
+                        </option>
+
+                        <option value="Academic Affairs">
+                            Academic Affairs
+                        </option>
+
+                        <option value="Admissions & Records">
+                            Admissions & Records
+                        </option>
+
+                        <option value="Programs">
+                            Programs
+                        </option>
+
+                        <option value="Communications">
+                            Communications
+                        </option>
+
+                        <option value="General AYLI Contact">
+                            General AYLI Contact
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="statusFilter">
+                        Status
+                    </label>
+
+                    <select id="statusFilter">
+
+                        <option value="">
+                            All Statuses
+                        </option>
+
+                        <option value="New">
+                            New
+                        </option>
+
+                        <option value="In Review">
+                            In Review
+                        </option>
+
+                        <option value="Responded">
+                            Responded
+                        </option>
+
+                        <option value="Closed">
+                            Closed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="filter-group">
+
+                    <label for="dateSort">
+                        Date
+                    </label>
+
+                    <select id="dateSort">
+
+                        <option value="newest">
+                            Newest First
+                        </option>
+
+                        <option value="oldest">
+                            Oldest First
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- TABLE -->
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>
+                                Name
+                            </th>
+
+                            <th>
+                                Email
+                            </th>
+
+                            <th>
+                                Country
+                            </th>
+
+                            <th>
+                                Subject
+                            </th>
+
+                            <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Date
+                            </th>
+
+                            <th>
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="inquiriesTableBody">
+
+                        <tr>
+
+                            <td
+                                colspan="7"
+                                class="empty-message"
+                            >
+                                Loading inquiries...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+        </section>
+
+
+    </main>
+
+
+    <!-- ==========================================
+         INQUIRY MANAGEMENT MODAL
+    ========================================== -->
+
+    <div
+        id="inquiryModal"
+        class="inquiry-modal"
+        style="display: none;"
+    >
+
+
+        <div class="inquiry-modal-content">
+
+
+            <!-- MODAL HEADER -->
+
+            <div class="inquiry-modal-header">
+
+                <div>
+
+                    <span class="modal-label">
+                        INQUIRY DETAILS
+                    </span>
+
+                    <h2 id="modalInquirySubject">
+                        Inquiry
+                    </h2>
+
+                </div>
+
+
+                <button
+                    type="button"
+                    class="modal-close"
+                    onclick="closeInquiry()"
+                    aria-label="Close inquiry"
+                >
+                    &times;
+                </button>
+
+            </div>
+
+
+            <!-- DETAILS -->
+
+            <div class="inquiry-details-grid">
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Full Name
+                    </span>
+
+                    <strong id="modalFullName">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Email
+                    </span>
+
+                    <strong id="modalEmail">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Country
+                    </span>
+
+                    <strong id="modalCountry">
+                        —
+                    </strong>
+
+                </div>
+
+
+                <div class="detail-item">
+
+                    <span>
+                        Date Received
+                    </span>
+
+                    <strong id="modalDate">
+                        —
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div class="message-box">
+
+                <span>
+                    MESSAGE
+                </span>
+
+                <p id="modalMessage">
+                    —
+                </p>
+
+            </div>
+
+
+            <!-- MANAGEMENT -->
+
+            <div class="management-grid">
+
+
+                <div class="form-group">
+
+                    <label for="assignedOffice">
+                        Assign to Office
+                    </label>
+
+                    <select id="assignedOffice">
+
+                        <option value="">
+                            Select Office
+                        </option>
+
+                        <option value="Executive Office">
+                            Executive Office
+                        </option>
+
+                        <option value="Academic Affairs">
+                            Academic Affairs
+                        </option>
+
+                        <option value="Admissions & Records">
+                            Admissions & Records
+                        </option>
+
+                        <option value="Programs">
+                            Programs
+                        </option>
+
+                        <option value="Communications">
+                            Communications
+                        </option>
+
+                        <option value="General AYLI Contact">
+                            General AYLI Contact
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label for="inquiryStatus">
+                        Status
+                    </label>
+
+                    <select id="inquiryStatus">
+
+                        <option value="New">
+                            New
+                        </option>
+
+                        <option value="In Review">
+                            In Review
+                        </option>
+
+                        <option value="Responded">
+                            Responded
+                        </option>
+
+                        <option value="Closed">
+                            Closed
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ADMIN NOTES -->
+
+            <div class="form-group">
+
+                <label for="adminNotes">
+                    Internal Admin Notes
+                </label>
+
+                <textarea
+                    id="adminNotes"
+                    rows="5"
+                    placeholder="Add private administrative notes..."
+                ></textarea>
+
+            </div>
+
+
+            <!-- STATUS MESSAGE -->
+
+            <div
+                id="modalMessageStatus"
+                class="modal-message-status"
+            ></div>
+
+
+            <!-- ACTIONS -->
+
+            <div class="modal-actions">
+
+                <button
+                    type="button"
+                    class="modal-cancel-button"
+                    onclick="closeInquiry()"
+                >
+                    Close
+                </button>
+
+
+                <button
+                    type="button"
+                    class="modal-save-button"
+                    onclick="saveInquiryChanges()"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- ==========================================
+         AYLI AUTHENTICATION
+    ========================================== -->
+
+    <script src="Js/auth.js"></script>
+
+
+    <!-- ==========================================
+         AYLI INQUIRY MANAGEMENT JAVASCRIPT
+    ========================================== -->
+
+    <script>
+
+
+        // ==========================================
+        // GLOBAL VARIABLES
+        // ==========================================
+
+        let allInquiries = [];
+        let currentInquiryId = null;
+
+
+        // ==========================================
+        // SECURITY HELPER
+        // ==========================================
+
+        function escapeHtml(value) {
+
+            return String(value ?? "")
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        // ==========================================
+        // LOAD INQUIRIES
+        // ==========================================
+
+        async function loadInquiries() {
+
+            const tableBody =
+                document.getElementById(
+                    "inquiriesTableBody"
+                );
+
+
+            if (!tableBody) {
+
+                console.error(
+                    "AYLI Error: Inquiry table not found."
+                );
+
+                return;
+
+            }
+
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td
+                        colspan="7"
+                        class="empty-message"
+                    >
+                        Loading inquiries...
+                    </td>
+                </tr>
+            `;
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from("contact_inquiries")
+                    .select("*")
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "AYLI Inquiry Error:",
+                        error
+                    );
+
+
+                    tableBody.innerHTML = `
+                        <tr>
+                            <td
+                                colspan="7"
+                                class="error-message"
+                            >
+                                Unable to load inquiries.
+                            </td>
+                        </tr>
+                    `;
+
+                    return;
+
+                }
+
+
+                allInquiries =
+                    data || [];
+
+
+                updateStatistics(
+                    allInquiries
+                );
+
+
+                filterInquiries();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "AYLI Inquiry Loading Error:",
+                    error
+                );
+
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="error-message"
+                        >
+                            Unable to load inquiries.
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // UPDATE STATISTICS
+        // ==========================================
+
+        function updateStatistics(data) {
+
+            const total =
+                document.getElementById(
+                    "totalInquiries"
+                );
+
+
+            const newCount =
+                document.getElementById(
+                    "newInquiries"
+                );
+
+
+            const reviewCount =
+                document.getElementById(
+                    "reviewInquiries"
+                );
+
+
+            const respondedCount =
+                document.getElementById(
+                    "respondedInquiries"
+                );
+
+
+            const closedCount =
+                document.getElementById(
+                    "closedInquiries"
+                );
+
+
+            if (total) {
+
+                total.textContent =
+                    data.length;
+
+            }
+
+
+            if (newCount) {
+
+                newCount.textContent =
+                    data.filter(
+                        item =>
+                            item.status === "New"
+                    ).length;
+
+            }
+
+
+            if (reviewCount) {
+
+                reviewCount.textContent =
+                    data.filter(
+                        item =>
+                            item.status === "In Review"
+                    ).length;
+
+            }
+
+
+            if (respondedCount) {
+
+                respondedCount.textContent =
+                    data.filter(
+                        item =>
+                            item.status === "Responded"
+                    ).length;
+
+            }
+
+
+            if (closedCount) {
+
+                closedCount.textContent =
+                    data.filter(
+                        item =>
+                            item.status === "Closed"
+                    ).length;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // DISPLAY INQUIRIES
+        // ==========================================
+
+        function displayInquiries(data) {
+
+            const tableBody =
+                document.getElementById(
+                    "inquiriesTableBody"
+                );
+
+
+            if (!tableBody) {
+
+                return;
+
+            }
+
+
+            if (!data.length) {
+
+                tableBody.innerHTML = `
+                    <tr>
+                        <td
+                            colspan="7"
+                            class="empty-message"
+                        >
+                            No inquiries have been received yet.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+
+            tableBody.innerHTML =
+                data.map(
+                    function(item) {
+
+                        const date =
+                            item.created_at
+                                ? new Date(
+                                    item.created_at
+                                ).toLocaleDateString()
+                                : "—";
+
+
+                        const status =
+                            item.status ||
+                            "New";
+
+
+                        const statusClass =
+                            String(status)
+                                .toLowerCase()
+                                .replace(
+                                    /\s+/g,
+                                    "-"
+                                );
+
+
+                        return `
+
+                            <tr>
+
+                                <td>
+                                    ${escapeHtml(
+                                        item.full_name
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        item.email
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        item.country || "-"
+                                    )}
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        item.subject
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <span
+                                        class="status status-${statusClass}"
+                                    >
+                                        ${escapeHtml(
+                                            status
+                                        )}
+                                    </span>
+
+                                </td>
+
+                                <td>
+                                    ${escapeHtml(
+                                        date
+                                    )}
+                                </td>
+
+                                <td>
+
+                                    <button
+                                        type="button"
+                                        class="view-button"
+                                        onclick="viewInquiry('${item.id}')"
+                                    >
+                                        View
+                                    </button>
+
+                                </td>
+
+                            </tr>
+
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+
+        // ==========================================
+        // FILTER INQUIRIES
+        // ==========================================
+
+        function filterInquiries() {
+
+            const searchInput =
+                document.getElementById(
+                    "inquirySearch"
+                );
+
+
+            const officeFilter =
+                document.getElementById(
+                    "officeFilter"
+                );
+
+
+            const statusFilter =
+                document.getElementById(
+                    "statusFilter"
+                );
+
+
+            const dateSort =
+                document.getElementById(
+                    "dateSort"
+                );
+
+
+            const search =
+                searchInput
+                    ? searchInput.value
+                        .trim()
+                        .toLowerCase()
+                    : "";
+
+
+            const office =
+                officeFilter
+                    ? officeFilter.value
+                    : "";
+
+
+            const status =
+                statusFilter
+                    ? statusFilter.value
+                    : "";
+
+
+            const sortOrder =
+                dateSort
+                    ? dateSort.value
+                    : "newest";
+
+
+            let filtered =
+                allInquiries.filter(
+                    function(inquiry) {
+
+                        const fullName =
+                            String(
+                                inquiry.full_name || ""
+                            ).toLowerCase();
+
+
+                        const email =
+                            String(
+                                inquiry.email || ""
+                            ).toLowerCase();
+
+
+                        const subject =
+                            String(
+                                inquiry.subject || ""
+                            ).toLowerCase();
+
+
+                        const matchesSearch =
+                            !search ||
+                            fullName.includes(search) ||
+                            email.includes(search) ||
+                            subject.includes(search);
+
+
+                        const matchesOffice =
+                            !office ||
+                            inquiry.assigned_office === office;
+
+
+                        const matchesStatus =
+                            !status ||
+                            inquiry.status === status;
+
+
+                        return (
+                            matchesSearch &&
+                            matchesOffice &&
+                            matchesStatus
+                        );
+
+                    }
+                );
+
+
+            filtered.sort(
+                function(a, b) {
+
+                    const dateA =
+                        new Date(
+                            a.created_at
+                        ).getTime();
+
+
+                    const dateB =
+                        new Date(
+                            b.created_at
+                        ).getTime();
+
+
+                    if (
+                        sortOrder === "oldest"
+                    ) {
+
+                        return dateA - dateB;
+
+                    }
+
+
+                    return dateB - dateA;
+
+                }
+            );
+
+
+            displayInquiries(
+                filtered
+            );
+
+        }
+
+
+        // ==========================================
+        // VIEW INQUIRY
+        // ==========================================
+
+        async function viewInquiry(id) {
+
+            currentInquiryId =
+                id;
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await supabaseClient
+                    .from("contact_inquiries")
+                    .select("*")
+                    .eq(
+                        "id",
+                        id
+                    )
+                    .single();
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to load inquiry:",
+                        error
+                    );
+
+
+                    alert(
+                        "Unable to load this inquiry."
+                    );
+
+
+                    currentInquiryId =
+                        null;
+
+
+                    return;
+
+                }
+
+
+                if (!data) {
+
+                    alert(
+                        "Inquiry not found."
+                    );
+
+
+                    currentInquiryId =
+                        null;
+
+
+                    return;
+
+                }
+
+
+                const subject =
+                    document.getElementById(
+                        "modalInquirySubject"
+                    );
+
+
+                const fullName =
+                    document.getElementById(
+                        "modalFullName"
+                    );
+
+
+                const email =
+                    document.getElementById(
+                        "modalEmail"
+                    );
+
+
+                const country =
+                    document.getElementById(
+                        "modalCountry"
+                    );
+
+
+                const date =
+                    document.getElementById(
+                        "modalDate"
+                    );
+
+
+                const message =
+                    document.getElementById(
+                        "modalMessage"
+                    );
+
+
+                const assignedOffice =
+                    document.getElementById(
+                        "assignedOffice"
+                    );
+
+
+                const inquiryStatus =
+                    document.getElementById(
+                        "inquiryStatus"
+                    );
+
+
+                const adminNotes =
+                    document.getElementById(
+                        "adminNotes"
+                    );
+
+
+                const modalStatus =
+                    document.getElementById(
+                        "modalMessageStatus"
+                    );
+
+
+                const modal =
+                    document.getElementById(
+                        "inquiryModal"
+                    );
+
+
+                if (subject) {
+
+                    subject.textContent =
+                        data.subject ||
+                        "Inquiry";
+
+                }
+
+
+                if (fullName) {
+
+                    fullName.textContent =
+                        data.full_name ||
+                        "—";
+
+                }
+
+
+                if (email) {
+
+                    email.textContent =
+                        data.email ||
+                        "—";
+
+                }
+
+
+                if (country) {
+
+                    country.textContent =
+                        data.country ||
+                        "—";
+
+                }
+
+
+                if (date) {
+
+                    date.textContent =
+                        data.created_at
+                            ? new Date(
+                                data.created_at
+                            ).toLocaleString()
+                            : "—";
+
+                }
+
+
+                if (message) {
+
+                    message.textContent =
+                        data.message ||
+                        "—";
+
+                }
+
+
+                if (assignedOffice) {
+
+                    assignedOffice.value =
+                        data.assigned_office ||
+                        "";
+
+                }
+
+
+                if (inquiryStatus) {
+
+                    inquiryStatus.value =
+                        data.status ||
+                        "New";
+
+                }
+
+
+                if (adminNotes) {
+
+                    adminNotes.value =
+                        data.admin_notes ||
+                        "";
+
+                }
+
+
+                if (modalStatus) {
+
+                    modalStatus.textContent =
+                        "";
+
+                }
+
+
+                if (modal) {
+
+                    modal.style.display =
+                        "block";
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(
+                    "AYLI View Inquiry Error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to load this inquiry."
+                );
+
+
+                currentInquiryId =
+                    null;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // CLOSE INQUIRY
+        // ==========================================
+
+        function closeInquiry() {
+
+            const modal =
+                document.getElementById(
+                    "inquiryModal"
+                );
+
+
+            if (modal) {
+
+                modal.style.display =
+                    "none";
+
+            }
+
+
+            currentInquiryId =
+                null;
+
+        }
+
+
+        // ==========================================
+        // SAVE INQUIRY CHANGES
+        // ==========================================
+
+        async function saveInquiryChanges() {
+
+            if (!currentInquiryId) {
+
+                return;
+
+            }
+
+
+            const assignedOffice =
+                document.getElementById(
+                    "assignedOffice"
+                );
+
+
+            const inquiryStatus =
+                document.getElementById(
+                    "inquiryStatus"
+                );
+
+
+            const adminNotes =
+                document.getElementById(
+                    "adminNotes"
+                );
+
+
+            const statusMessage =
+                document.getElementById(
+                    "modalMessageStatus"
+                );
+
+
+            if (
+                !assignedOffice ||
+                !inquiryStatus ||
+                !adminNotes
+            ) {
+
+                console.error(
+                    "AYLI Error: Inquiry management fields are missing."
+                );
+
+                return;
+
+            }
+
+
+            const office =
+                assignedOffice.value;
+
+
+            const status =
+                inquiryStatus.value;
+
+
+            const notes =
+                adminNotes.value.trim();
+
+
+            if (statusMessage) {
+
+                statusMessage.textContent =
+                    "Saving changes...";
+
+            }
+
+
+            const updateData = {
+
+                assigned_office:
+                    office || null,
+
+                status:
+                    status,
+
+                admin_notes:
+                    notes || null,
+
+                updated_at:
+                    new Date().toISOString()
+
+            };
+
+
+            if (
+                status === "Responded"
+            ) {
+
+                updateData.responded_at =
+                    new Date().toISOString();
+
+            }
+            else {
+
+                updateData.responded_at =
+                    null;
+
+            }
+
+
+            try {
+
+                const {
+                    error
+                } = await supabaseClient
+                    .from("contact_inquiries")
+                    .update(
+                        updateData
+                    )
+                    .eq(
+                        "id",
+                        currentInquiryId
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Unable to save inquiry:",
+                        error
+                    );
+
+
+                    if (statusMessage) {
+
+                        statusMessage.textContent =
+                            "Unable to save changes.";
+
+                    }
+
+
+                    return;
+
+                }
+
+
+                if (statusMessage) {
+
+                    statusMessage.textContent =
+                        "Changes saved successfully.";
+
+                }
+
+
+                await loadInquiries();
+
+
+                setTimeout(
+                    function() {
+
+                        closeInquiry();
+
+                    },
+                    700
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "AYLI Save Inquiry Error:",
+                    error
+                );
+
+
+                if (statusMessage) {
+
+                    statusMessage.textContent =
+                        "Unable to save changes.";
+
+                }
+
+            }
+
+        }
+
+
+        // ==========================================
+        // WAIT FOR SUPABASE CLIENT
+        // ==========================================
+
+        function waitForAuthentication() {
+
+            return new Promise(
+                function(resolve) {
+
+                    const checkInterval =
+                        setInterval(
+                            function() {
+
+                                if (
+                                    typeof supabaseClient !==
+                                    "undefined"
+                                    &&
+                                    supabaseClient
+                                ) {
+
+                                    clearInterval(
+                                        checkInterval
+                                    );
+
+
+                                    resolve();
+
+                                }
+
+                            },
+                            100
+                        );
+
+                }
+            );
+
+        }
+
+
+        // ==========================================
+        // START INQUIRY PAGE
+        // ==========================================
+
+        async function startInquiryPage() {
+
+            await waitForAuthentication();
+
+
+            await loadInquiries();
+
+        }
+
+
+        // ==========================================
+        // FILTER EVENT LISTENERS
+        // ==========================================
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                const search =
+                    document.getElementById(
+                        "inquirySearch"
+                    );
+
+
+                const office =
+                    document.getElementById(
+                        "officeFilter"
+                    );
+
+
+                const status =
+                    document.getElementById(
+                        "statusFilter"
+                    );
+
+
+                const dateSort =
+                    document.getElementById(
+                        "dateSort"
+                    );
+
+
+                if (search) {
+
+                    search.addEventListener(
+                        "input",
+                        filterInquiries
+                    );
+
+                }
+
+
+                if (office) {
+
+                    office.addEventListener(
+                        "change",
+                        filterInquiries
+                    );
+
+                }
+
+
+                if (status) {
+
+                    status.addEventListener(
+                        "change",
+                        filterInquiries
+                    );
+
+                }
+
+
+                if (dateSort) {
+
+                    dateSort.addEventListener(
+                        "change",
+                        filterInquiries
+                    );
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // START AYLI INQUIRY SYSTEM
+        // ==========================================
+
+        startInquiryPage();
+
+
+    </script>
+
+
+</body>
+
+</html>

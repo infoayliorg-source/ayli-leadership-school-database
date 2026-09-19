@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Applications | AYLI Leadership School Database System</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: #f5f7fa;
+            color: #1f2937;
+        }
+
+        /* =========================
+           SIDEBAR
+        ========================= */
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            height: 100vh;
+            background: #111827;
+            color: white;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-brand {
+            padding: 25px 20px;
+            border-bottom: 1px solid #374151;
+            text-align: center;
+        }
+
+        .sidebar-brand img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-brand h2 {
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        .sidebar-brand p {
+            font-size: 11px;
+            color: #9ca3af;
+            margin-top: 5px;
+        }
+
+        .nav-section {
+            padding: 20px 15px 8px;
+            font-size: 10px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .sidebar nav a {
+            display: block;
+            padding: 13px 20px;
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .sidebar nav a:hover {
+            background: #1f2937;
+            color: white;
+        }
+
+        .sidebar nav a.active {
+            background: #c9a227;
+            color: white;
+            font-weight: bold;
+        }
+
+        .logout-btn {
+            width: calc(100% - 30px);
+            margin: 20px 15px;
+            padding: 12px;
+            border: 1px solid #4b5563;
+            background: transparent;
+            color: #d1d5db;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background: #374151;
+        }
+
+        /* =========================
+           MAIN
+        ========================= */
+
+        .main-content {
+            margin-left: 250px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: white;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 18px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .topbar h1 {
+            font-size: 22px;
+            color: #111827;
+        }
+
+        .administrator {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .page-content {
+            padding: 30px;
+        }
+
+        /* =========================
+           STATS
+        ========================= */
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 18px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .stat-card h3 {
+            font-size: 12px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111827;
+        }
+
+        /* =========================
+           CONTROLS
+        ========================= */
+
+        .controls {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr auto;
+            gap: 12px;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            padding: 11px 12px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #c9a227;
+        }
+
+        button {
+            border: none;
+            border-radius: 6px;
+            padding: 11px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .refresh-btn {
+            background: #111827;
+            color: white;
+        }
+
+        .refresh-btn:hover {
+            background: #374151;
+        }
+
+        /* =========================
+           TABLE
+        ========================= */
+
+        .table-card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            padding: 20px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .table-header h2 {
+            font-size: 18px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th,
+        td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #eef0f3;
+            font-size: 13px;
+        }
+
+        th {
+            background: #f9fafb;
+            color: #4b5563;
+            font-size: 11px;
+            text-transform: uppercase;
+        }
+
+        tr:hover td {
+            background: #fafafa;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            background: #fff7ed;
+            color: #c2410c;
+        }
+
+        .status-review {
+            background: #eff6ff;
+            color: #1d4ed8;
+        }
+
+        .status-accepted {
+            background: #ecfdf5;
+            color: #047857;
+        }
+
+        .status-rejected {
+            background: #fef2f2;
+            color: #b91c1c;
+        }
+
+        .status-enrolled {
+            background: #f0fdf4;
+            color: #166534;
+        }
+
+        .view-btn {
+            background: #111827;
+            color: white;
+            padding: 7px 11px;
+            font-size: 12px;
+        }
+
+        .view-btn:hover {
+            background: #374151;
+        }
+
+        .empty-state {
+            padding: 50px;
+            text-align: center;
+            color: #6b7280;
+        }
+
+        /* =========================
+           MODAL
+        ========================= */
+
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 2000;
+            overflow-y: auto;
+            padding: 30px;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        .modal-content {
+            background: white;
+            max-width: 900px;
+            margin: 30px auto;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .modal-header {
+            padding: 20px 25px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close-btn {
+            background: #f3f4f6;
+            color: #374151;
+            width: 36px;
+            height: 36px;
+            padding: 0;
+            font-size: 20px;
+        }
+
+        .modal-body {
+            padding: 25px;
+        }
+
+        .application-section {
+            margin-bottom: 25px;
+        }
+
+        .application-section h3 {
+            font-size: 14px;
+            color: #c9a227;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 15px;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 14px 25px;
+        }
+
+        .detail-item label {
+            display: block;
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .detail-item p {
+            font-size: 14px;
+            color: #111827;
+            line-height: 1.5;
+            word-break: break-word;
+        }
+
+        .long-text {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            padding: 15px;
+            border-radius: 7px;
+            line-height: 1.6;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        /* =========================
+           MANAGEMENT
+        ========================= */
+
+        .management-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .management-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .management-full {
+            grid-column: 1 / -1;
+        }
+
+        .management-box label {
+            display: block;
+            font-size: 12px;
+            font-weight: bold;
+            color: #374151;
+            margin-bottom: 7px;
+        }
+
+        .save-btn {
+            background: #c9a227;
+            color: white;
+            margin-top: 15px;
+        }
+
+        .save-btn:hover {
+            background: #a88619;
+        }
+
+        /* =========================
+           ENROLLMENT
+        ========================= */
+
+        .enrollment-box {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 8px;
+            border: 1px solid #dbeafe;
+            background: #eff6ff;
+        }
+
+        .enrollment-box h4 {
+            margin-bottom: 7px;
+            color: #1e40af;
+        }
+
+        .enrollment-box p {
+            font-size: 13px;
+            line-height: 1.5;
+            color: #374151;
+        }
+
+        .enroll-btn {
+            background: #166534;
+            color: white;
+            margin-top: 12px;
+        }
+
+        .enroll-btn:hover {
+            background: #14532d;
+        }
+
+        .enrolled-box {
+            background: #ecfdf5;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+
+        /* =========================
+           FOOTER
+        ========================= */
+
+        footer {
+            padding: 25px 30px;
+            color: #6b7280;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        /* =========================
+           RESPONSIVE
+        ========================= */
+
+        @media (max-width: 1100px) {
+            .stats-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .refresh-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 800px) {
+            .sidebar {
+                width: 210px;
+            }
+
+            .main-content {
+                margin-left: 210px;
+            }
+
+            .page-content {
+                padding: 20px;
+            }
+
+            .details-grid,
+            .management-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .management-full {
+                grid-column: auto;
+            }
+        }
+
+        @media (max-width: 650px) {
+            .sidebar {
+                position: relative;
+                width: 100%;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- =========================
+         SIDEBAR
+    ========================= -->
+
+    <aside class="sidebar">
+
+        <div class="sidebar-brand">
+
+            <img src="assets/logos/ayli-logo.png"
+                 alt="AYLI Logo">
+
+            <h2>AYLI Leadership School</h2>
+
+            <p>Database Management System</p>
+
+        </div>
+
+        <nav>
+
+            <div class="nav-section">
+                Main
+            </div>
+
+            <a href="index.html">
+                Dashboard
+            </a>
+
+            <a href="students.html">
+                Students
+            </a>
+
+            <a href="applications.html" class="active">
+                Applications
+            </a>
+
+            <a href="inquiries.html">
+                Inquiries
+            </a>
+
+            <div class="nav-section">
+                Academic
+            </div>
+
+            <a href="cohorts.html">
+                Cohorts
+            </a>
+
+            <a href="chapters.html">
+                Chapters
+            </a>
+
+            <a href="academic.html">
+                Academic Records
+            </a>
+
+            <div class="nav-section">
+                Administration
+            </div>
+
+            <a href="leadership.html">
+                Leadership
+            </a>
+
+            <a href="certificates.html">
+                Certificates
+            </a>
+
+            <a href="alumni.html">
+                Alumni
+            </a>
+
+            <a href="reports.html">
+                Reports
+            </a>
+
+        </nav>
+
+        <button class="logout-btn" onclick="logoutUser()">
+            Logout
+        </button>
+
+    </aside>
+
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================= -->
+
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <h1>Applications Management</h1>
+
+            <div class="administrator">
+                Administrator
+            </div>
+
+        </header>
+
+
+        <section class="page-content">
+
+
+            <!-- =========================
+                 STATISTICS
+            ========================= -->
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+                    <h3>Total Applications</h3>
+                    <div class="stat-number" id="totalApplications">
+                        0
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Pending</h3>
+                    <div class="stat-number" id="pendingApplications">
+                        0
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Under Review</h3>
+                    <div class="stat-number" id="reviewApplications">
+                        0
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Accepted</h3>
+                    <div class="stat-number" id="acceptedApplications">
+                        0
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <h3>Rejected</h3>
+                    <div class="stat-number" id="rejectedApplications">
+                        0
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 SEARCH / FILTER
+            ========================= -->
+
+            <div class="controls">
+
+                <div class="controls-grid">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="Search applicant, application number or email..."
+                    >
+
+                    <select id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Under Review">Under Review</option>
+                        <option value="Accepted">Accepted</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+
+                    <select id="countryFilter">
+                        <option value="">All Countries</option>
+                    </select>
+
+                    <select id="cohortFilter">
+                        <option value="">All Cohorts</option>
+                    </select>
+
+                    <button class="refresh-btn" onclick="loadApplications()">
+                        Refresh
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 APPLICATION TABLE
+            ========================= -->
+
+            <div class="table-card">
+
+                <div class="table-header">
+
+                    <h2>
+                        Submitted Applications
+                    </h2>
+
+                </div>
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Application No.</th>
+
+                                <th>Applicant</th>
+
+                                <th>Country</th>
+
+                                <th>Program</th>
+
+                                <th>Cohort</th>
+
+                                <th>Status</th>
+
+                                <th>Date</th>
+
+                                <th>Action</th>
+
+                            </tr>
+
+                        </thead>
+
+                        <tbody id="applicationsTable">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <footer>
+            Africa Youth Leadership Institute (AYLI) —
+            Leadership School Database System
+        </footer>
+
+    </main>
+
+
+    <!-- =========================
+         APPLICATION MODAL
+    ========================= -->
+
+    <div class="modal" id="applicationModal">
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+
+                <h2 id="modalTitle">
+                    Application Details
+                </h2>
+
+                <button
+                    class="close-btn"
+                    onclick="closeApplicationModal()">
+                    ×
+                </button>
+
+            </div>
+
+            <div class="modal-body" id="modalBody">
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- SUPABASE -->
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="Js/auth.js"></script>
+
+
+    <!-- APPLICATION MANAGEMENT -->
+
+    <script>
+
+        const APPLICATIONS_SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+        const APPLICATIONS_SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+        const applicationsClient =
+            window.supabase.createClient(
+                APPLICATIONS_SUPABASE_URL,
+                APPLICATIONS_SUPABASE_KEY
+            );
+
+
+        let applications = [];
+
+        let selectedApplication = null;
+
+
+        /* ==========================================
+           LOAD APPLICATIONS
+        ========================================== */
+
+        async function loadApplications() {
+
+            const table =
+                document.getElementById(
+                    "applicationsTable"
+                );
+
+            table.innerHTML = `
+                <tr>
+                    <td colspan="8"
+                        style="text-align:center;padding:40px;">
+                        Loading applications...
+                    </td>
+                </tr>
+            `;
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await applicationsClient
+                    .from("applications")
+                    .select("*")
+                    .order("created_at", {
+                        ascending: false
+                    });
+
+                if (error) {
+
+                    console.error(error);
+
+                    throw error;
+
+                }
+
+                applications =
+                    data || [];
+
+                updateStatistics();
+
+                populateFilters();
+
+                renderApplications();
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Application loading error:",
+                    error
+                );
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8"
+                            style="text-align:center;padding:40px;color:#b91c1c;">
+                            Unable to load applications.
+                            <br><br>
+                            ${escapeHtml(error.message)}
+                        </td>
+                    </tr>
+                `;
+
+            }
+
+        }
+
+
+        /* ==========================================
+           STATISTICS
+        ========================================== */
+
+        function updateStatistics() {
+
+            document.getElementById(
+                "totalApplications"
+            ).textContent =
+                applications.length;
+
+            document.getElementById(
+                "pendingApplications"
+            ).textContent =
+                applications.filter(
+                    app => app.status === "Pending"
+                ).length;
+
+            document.getElementById(
+                "reviewApplications"
+            ).textContent =
+                applications.filter(
+                    app => app.status === "Under Review"
+                ).length;
+
+            document.getElementById(
+                "acceptedApplications"
+            ).textContent =
+                applications.filter(
+                    app => app.status === "Accepted"
+                ).length;
+
+            document.getElementById(
+                "rejectedApplications"
+            ).textContent =
+                applications.filter(
+                    app => app.status === "Rejected"
+                ).length;
+
+        }
+
+
+        /* ==========================================
+           FILTER OPTIONS
+        ========================================== */
+
+        function populateFilters() {
+
+            const countryFilter =
+                document.getElementById(
+                    "countryFilter"
+                );
+
+            const cohortFilter =
+                document.getElementById(
+                    "cohortFilter"
+                );
+
+            const countries =
+                [
+                    ...new Set(
+                        applications
+                            .map(app => app.country)
+                            .filter(Boolean)
+                    )
+                ]
+                .sort();
+
+            const cohorts =
+                [
+                    ...new Set(
+                        applications
+                            .map(app => app.cohort)
+                            .filter(Boolean)
+                    )
+                ]
+                .sort();
+
+            countryFilter.innerHTML =
+                `<option value="">All Countries</option>`;
+
+            countries.forEach(country => {
+
+                countryFilter.innerHTML += `
+                    <option value="${escapeAttribute(country)}">
+                        ${escapeHtml(country)}
+                    </option>
+                `;
+
+            });
+
+
+            cohortFilter.innerHTML =
+                `<option value="">All Cohorts</option>`;
+
+            cohorts.forEach(cohort => {
+
+                cohortFilter.innerHTML += `
+                    <option value="${escapeAttribute(cohort)}">
+                        ${escapeHtml(cohort)}
+                    </option>
+                `;
+
+            });
+
+        }
+
+
+        /* ==========================================
+           RENDER APPLICATIONS
+        ========================================== */
+
+        function renderApplications() {
+
+            const table =
+                document.getElementById(
+                    "applicationsTable"
+                );
+
+            const search =
+                document.getElementById(
+                    "searchInput"
+                )
+                .value
+                .toLowerCase()
+                .trim();
+
+            const status =
+                document.getElementById(
+                    "statusFilter"
+                ).value;
+
+            const country =
+                document.getElementById(
+                    "countryFilter"
+                ).value;
+
+            const cohort =
+                document.getElementById(
+                    "cohortFilter"
+                ).value;
+
+
+            const filtered =
+                applications.filter(app => {
+
+                    const matchesSearch =
+                        !search ||
+                        String(app.full_name || "")
+                            .toLowerCase()
+                            .includes(search) ||
+                        String(app.application_number || "")
+                            .toLowerCase()
+                            .includes(search) ||
+                        String(app.email || "")
+                            .toLowerCase()
+                            .includes(search);
+
+                    const matchesStatus =
+                        !status ||
+                        app.status === status;
+
+                    const matchesCountry =
+                        !country ||
+                        app.country === country;
+
+                    const matchesCohort =
+                        !cohort ||
+                        app.cohort === cohort;
+
+                    return (
+                        matchesSearch &&
+                        matchesStatus &&
+                        matchesCountry &&
+                        matchesCohort
+                    );
+
+                });
+
+
+            if (!filtered.length) {
+
+                table.innerHTML = `
+                    <tr>
+                        <td colspan="8"
+                            class="empty-state">
+                            No applications found.
+                        </td>
+                    </tr>
+                `;
+
+                return;
+
+            }
+
+
+            table.innerHTML =
+                filtered.map(app => {
+
+                    return `
+                        <tr>
+
+                            <td>
+                                <strong>
+                                    ${escapeHtml(
+                                        app.application_number
+                                    )}
+                                </strong>
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    app.full_name
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    app.country
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    app.program
+                                )}
+                            </td>
+
+                            <td>
+                                ${escapeHtml(
+                                    app.cohort
+                                )}
+                            </td>
+
+                            <td>
+                                ${getStatusBadge(
+                                    app.status
+                                )}
+                            </td>
+
+                            <td>
+                                ${formatDate(
+                                    app.created_at
+                                )}
+                            </td>
+
+                            <td>
+
+                                <button
+                                    class="view-btn"
+                                    onclick="viewApplication('${app.id}')">
+
+                                    View
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    `;
+
+                })
+                .join("");
+
+        }
+
+
+        /* ==========================================
+           STATUS BADGE
+        ========================================== */
+
+        function getStatusBadge(status) {
+
+            let className =
+                "status-pending";
+
+            if (status === "Under Review") {
+                className = "status-review";
+            }
+
+            if (status === "Accepted") {
+                className = "status-accepted";
+            }
+
+            if (status === "Rejected") {
+                className = "status-rejected";
+            }
+
+            return `
+                <span class="status ${className}">
+                    ${escapeHtml(status || "Pending")}
+                </span>
+            `;
+
+        }
+
+
+        /* ==========================================
+           VIEW APPLICATION
+        ========================================== */
+
+        function viewApplication(id) {
+
+            selectedApplication =
+                applications.find(
+                    app => app.id === id
+                );
+
+            if (!selectedApplication) {
+                return;
+            }
+
+            const app =
+                selectedApplication;
+
+            document.getElementById(
+                "modalTitle"
+            ).textContent =
+                app.application_number;
+
+
+            let enrollmentHTML = "";
+
+
+            if (app.enrolled_as_student === true) {
+
+                enrollmentHTML = `
+
+                    <div class="enrollment-box enrolled-box">
+
+                        <h4>
+                            ✓ Student Enrollment Completed
+                        </h4>
+
+                        <p>
+                            This applicant has already been
+                            enrolled into the AYLI Students database.
+                        </p>
+
+                        <p style="margin-top:8px;">
+                            <strong>AYLI Student ID:</strong>
+                            ${escapeHtml(
+                                app.enrolled_student_ayli_id || "Not available"
+                            )}
+                        </p>
+
+                        <p style="margin-top:5px;">
+                            <strong>Enrolled:</strong>
+                            ${formatDateTime(
+                                app.enrolled_at
+                            )}
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+            else if (app.status === "Accepted") {
+
+                enrollmentHTML = `
+
+                    <div class="enrollment-box">
+
+                        <h4>
+                            ✓ Application Accepted
+                        </h4>
+
+                        <p>
+                            This applicant has been accepted.
+                            You can now enroll the applicant into
+                            the existing AYLI Students database.
+                        </p>
+
+                        <button
+                            class="enroll-btn"
+                            onclick="enrollAsStudent()">
+
+                            📝 Enroll as Student
+
+                        </button>
+
+                    </div>
+
+                `;
+
+            }
+            else {
+
+                enrollmentHTML = `
+
+                    <div class="enrollment-box">
+
+                        <h4>
+                            Student Enrollment
+                        </h4>
+
+                        <p>
+                            The application must be marked
+                            <strong>Accepted</strong> before the
+                            applicant can be enrolled as an AYLI student.
+                        </p>
+
+                    </div>
+
+                `;
+
+            }
+
+
+            document.getElementById(
+                "modalBody"
+            ).innerHTML = `
+
+                <div class="application-section">
+
+                    <h3>
+                        Application Information
+                    </h3>
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+                            <label>Application Number</label>
+                            <p>
+                                ${escapeHtml(
+                                    app.application_number
+                                )}
+                            </p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Application Date</label>
+                            <p>
+                                ${formatDateTime(
+                                    app.created_at
+                                )}
+                            </p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Status</label>
+                            <p>
+                                ${getStatusBadge(
+                                    app.status
+                                )}
+                            </p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Assigned Office</label>
+                            <p>
+                                ${escapeHtml(
+                                    app.assigned_office || "Not assigned"
+                                )}
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Personal Information
+                    </h3>
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+                            <label>Full Name</label>
+                            <p>${escapeHtml(app.full_name)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Gender</label>
+                            <p>${escapeHtml(app.gender)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Date of Birth</label>
+                            <p>${escapeHtml(app.date_of_birth)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Nationality</label>
+                            <p>${escapeHtml(app.nationality)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Country</label>
+                            <p>${escapeHtml(app.country)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>City</label>
+                            <p>${escapeHtml(app.city)}</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Contact Information
+                    </h3>
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+                            <label>Phone</label>
+                            <p>${escapeHtml(app.phone)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>WhatsApp</label>
+                            <p>${escapeHtml(app.whatsapp || "Not provided")}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Email</label>
+                            <p>${escapeHtml(app.email)}</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Educational Background
+                    </h3>
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+                            <label>Education Level</label>
+                            <p>
+                                ${escapeHtml(
+                                    app.education_level
+                                )}
+                            </p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Institution</label>
+                            <p>
+                                ${escapeHtml(
+                                    app.institution || "Not provided"
+                                )}
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Program Information
+                    </h3>
+
+                    <div class="details-grid">
+
+                        <div class="detail-item">
+                            <label>Preferred Program</label>
+                            <p>${escapeHtml(app.program)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Cohort</label>
+                            <p>${escapeHtml(app.cohort)}</p>
+                        </div>
+
+                        <div class="detail-item">
+                            <label>Chapter / Country</label>
+                            <p>${escapeHtml(app.chapter || app.country || "Not provided")}</p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Leadership Motivation
+                    </h3>
+
+                    <div style="margin-bottom:15px;">
+
+                        <label style="
+                            display:block;
+                            font-size:12px;
+                            color:#6b7280;
+                            margin-bottom:6px;
+                            font-weight:bold;
+                        ">
+                            Motivation
+                        </label>
+
+                        <div class="long-text">
+                            ${escapeHtml(
+                                app.motivation || "Not provided"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div style="margin-bottom:15px;">
+
+                        <label style="
+                            display:block;
+                            font-size:12px;
+                            color:#6b7280;
+                            margin-bottom:6px;
+                            font-weight:bold;
+                        ">
+                            Leadership Experience
+                        </label>
+
+                        <div class="long-text">
+                            ${escapeHtml(
+                                app.leadership_experience || "Not provided"
+                            )}
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <label style="
+                            display:block;
+                            font-size:12px;
+                            color:#6b7280;
+                            margin-bottom:6px;
+                            font-weight:bold;
+                        ">
+                            Leadership Goals
+                        </label>
+
+                        <div class="long-text">
+                            ${escapeHtml(
+                                app.goals || "Not provided"
+                            )}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="application-section">
+
+                    <h3>
+                        Application Management
+                    </h3>
+
+                    <div class="management-box">
+
+                        <div class="management-grid">
+
+                            <div>
+
+                                <label>
+                                    Status
+                                </label>
+
+                                <select id="editStatus">
+
+                                    <option value="Pending"
+                                        ${app.status === "Pending" ? "selected" : ""}>
+                                        Pending
+                                    </option>
+
+                                    <option value="Under Review"
+                                        ${app.status === "Under Review" ? "selected" : ""}>
+                                        Under Review
+                                    </option>
+
+                                    <option value="Accepted"
+                                        ${app.status === "Accepted" ? "selected" : ""}>
+                                        Accepted
+                                    </option>
+
+                                    <option value="Rejected"
+                                        ${app.status === "Rejected" ? "selected" : ""}>
+                                        Rejected
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+
+                            <div>
+
+                                <label>
+                                    Assigned Office
+                                </label>
+
+                                <select id="editOffice">
+
+                                    <option value="">
+                                        Not Assigned
+                                    </option>
+
+                                    <option value="Executive Office"
+                                        ${app.assigned_office === "Executive Office" ? "selected" : ""}>
+                                        Executive Office
+                                    </option>
+
+                                    <option value="Academic Affairs"
+                                        ${app.assigned_office === "Academic Affairs" ? "selected" : ""}>
+                                        Academic Affairs
+                                    </option>
+
+                                    <option value="Admissions & Records"
+                                        ${app.assigned_office === "Admissions & Records" ? "selected" : ""}>
+                                        Admissions & Records
+                                    </option>
+
+                                    <option value="Programs"
+                                        ${app.assigned_office === "Programs" ? "selected" : ""}>
+                                        Programs
+                                    </option>
+
+                                    <option value="Communications"
+                                        ${app.assigned_office === "Communications" ? "selected" : ""}>
+                                        Communications
+                                    </option>
+
+                                </select>
+
+                            </div>
+
+                            <div>
+
+    <label>
+        Assigned Cohort
+    </label>
+
+    <select id="editCohort">
+
+        <option value="">
+            Select Cohort
+        </option>
+
+        <option value="Cohort 1"
+            ${app.cohort === "Cohort 1" ? "selected" : ""}>
+            Cohort 1
+        </option>
+
+        <option value="Cohort 2"
+            ${app.cohort === "Cohort 2" ? "selected" : ""}>
+            Cohort 2
+        </option>
+
+        <option value="Cohort 3"
+            ${app.cohort === "Cohort 3" ? "selected" : ""}>
+            Cohort 3
+        </option>
+
+        <option value="Cohort 4"
+            ${app.cohort === "Cohort 4" ? "selected" : ""}>
+            Cohort 4
+        </option>
+
+        <option value="Cohort 5"
+            ${app.cohort === "Cohort 5" ? "selected" : ""}>
+            Cohort 5
+        </option>
+
+        <option value="Cohort 6"
+            ${app.cohort === "Cohort 6" ? "selected" : ""}>
+            Cohort 6
+        </option>
+
+        <option value="Cohort 7"
+            ${app.cohort === "Cohort 7" ? "selected" : ""}>
+            Cohort 7
+        </option>
+
+        <option value="Cohort 8"
+            ${app.cohort === "Cohort 8" ? "selected" : ""}>
+            Cohort 8
+        </option>
+
+        <option value="Cohort 9"
+            ${app.cohort === "Cohort 9" ? "selected" : ""}>
+            Cohort 9
+        </option>
+
+        <option value="Cohort 10"
+            ${app.cohort === "Cohort 10" ? "selected" : ""}>
+            Cohort 10
+        </option>
+
+        <option value="Cohort 11"
+            ${app.cohort === "Cohort 11" ? "selected" : ""}>
+            Cohort 11
+        </option>
+
+        <option value="Cohort 12"
+            ${app.cohort === "Cohort 12" ? "selected" : ""}>
+            Cohort 12
+        </option>
+
+        <option value="Future Cohort"
+            ${app.cohort === "Future Cohort" ? "selected" : ""}>
+            Future Cohort
+        </option>
+
+    </select>
+
+</div>
+
+
+                            <div class="management-full">
+
+                                <label>
+                                    Administrative Notes
+                                </label>
+
+                                <textarea
+                                    id="editNotes"
+                                    rows="5"
+                                    placeholder="Enter administrative notes..."
+                                >${escapeHtml(
+                                    app.admin_notes || ""
+                                )}</textarea>
+
+                            </div>
+
+                        </div>
+
+
+                        <button
+                            class="save-btn"
+                            onclick="saveApplicationChanges()">
+
+                            Save Changes
+
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                ${enrollmentHTML}
+
+            `;
+
+
+            document.getElementById(
+                "applicationModal"
+            ).classList.add("show");
+
+        }
+
+
+        /* ==========================================
+           SAVE APPLICATION
+        ========================================== */
+
+        async function saveApplicationChanges() {
+
+            if (!selectedApplication) {
+                return;
+            }
+
+            const status =
+                document.getElementById(
+                    "editStatus"
+                ).value;
+
+            const assignedOffice =
+    document.getElementById(
+        "editOffice"
+    ).value;
+
+const assignedCohort =
+    document.getElementById(
+        "editCohort"
+    ).value;
+
+const adminNotes =
+    document.getElementById(
+        "editNotes"
+    ).value;
+
+
+            try {
+
+                const {
+                    data,
+                    error
+                } = await applicationsClient
+                    .from("applications")
+                    .update({
+
+    status: status,
+
+    assigned_office:
+        assignedOffice || null,
+
+    cohort:
+        assignedCohort || null,
+
+    admin_notes:
+        adminNotes || null,
+
+    reviewed_at:
+        new Date().toISOString(),
+
+    updated_at:
+        new Date().toISOString()
+
+})
+                    .eq(
+                        "id",
+                        selectedApplication.id
+                    )
+                    .select()
+                    .single();
+
+
+                if (error) {
+                    throw error;
+                }
+
+
+                const index =
+                    applications.findIndex(
+                        app =>
+                            app.id ===
+                            selectedApplication.id
+                    );
+
+
+                if (index !== -1) {
+
+                    applications[index] =
+                        data;
+
+                }
+
+
+                selectedApplication =
+                    data;
+
+
+                updateStatistics();
+
+                renderApplications();
+
+                alert(
+                    "Application updated successfully."
+                );
+
+                viewApplication(
+                    data.id
+                );
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                alert(
+                    "Unable to save application changes:\n\n" +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* ==========================================
+           ENROLL AS STUDENT
+        ========================================== */
+
+        async function enrollAsStudent() {
+
+            if (!selectedApplication) {
+                return;
+            }
+
+            const app =
+                selectedApplication;
+
+
+            if (app.enrolled_as_student === true) {
+
+                alert(
+                    "This applicant has already been enrolled as a student."
+                );
+
+                return;
+
+            }
+
+
+            if (app.status !== "Accepted") {
+
+                alert(
+                    "The application must be Accepted before enrollment."
+                );
+
+                return;
+
+            }
+
+
+            /*
+             * A numbered cohort is required
+             * for the AYLI Student ID.
+             */
+
+            const cohortText =
+                String(
+                    app.cohort || ""
+                );
+
+
+            const cohortMatch =
+                cohortText.match(/\d+/);
+
+
+            if (!cohortMatch) {
+
+                alert(
+                    "This application does not have a numbered AYLI cohort.\n\n" +
+                    "Please assign the applicant to a specific cohort before enrollment."
+                );
+
+                return;
+
+            }
+
+
+            const cohortNumber =
+                cohortMatch[0];
+
+
+            const confirmed =
+                confirm(
+                    "Enroll " +
+                    app.full_name +
+                    " into the AYLI Students database?\n\n" +
+                    "Cohort: " +
+                    cohortText +
+                    "\n\n" +
+                    "This will create a new student record."
+                );
+
+
+            if (!confirmed) {
+                return;
+            }
+
+
+            try {
+
+                /*
+                 * Prevent duplicate enrollment.
+                 */
+
+                const {
+                    data: existingEnrollment,
+                    error: enrollmentCheckError
+                } = await applicationsClient
+                    .from("applications")
+                    .select(
+                        "enrolled_as_student,enrolled_student_ayli_id"
+                    )
+                    .eq(
+                        "id",
+                        app.id
+                    )
+                    .single();
+
+
+                if (enrollmentCheckError) {
+                    throw enrollmentCheckError;
+                }
+
+
+                if (
+                    existingEnrollment &&
+                    existingEnrollment.enrolled_as_student === true
+                ) {
+
+                    alert(
+                        "This application has already been enrolled."
+                    );
+
+                    await loadApplications();
+
+                    return;
+
+                }
+
+
+                /*
+                 * Check whether the application
+                 * already created a student.
+                 */
+
+                const {
+                    data: existingStudent,
+                    error: existingStudentError
+                } = await applicationsClient
+                    .from("students")
+                    .select(
+                        "id,ayli_id,source_application_number"
+                    )
+                    .eq(
+                        "source_application_number",
+                        app.application_number
+                    )
+                    .maybeSingle();
+
+
+                if (existingStudentError) {
+
+                    /*
+                     * If the column is not yet accessible,
+                     * report the actual database error.
+                     */
+
+                    throw existingStudentError;
+
+                }
+
+
+                if (existingStudent) {
+
+                    await applicationsClient
+                        .from("applications")
+                        .update({
+
+                            enrolled_as_student:
+                                true,
+
+                            enrolled_student_ayli_id:
+                                existingStudent.ayli_id,
+
+                            enrolled_at:
+                                new Date().toISOString(),
+
+                            updated_at:
+                                new Date().toISOString()
+
+                        })
+                        .eq(
+                            "id",
+                            app.id
+                        );
+
+
+                    alert(
+                        "This application already has a student record.\n\n" +
+                        "AYLI Student ID: " +
+                        existingStudent.ayli_id
+                    );
+
+                    await loadApplications();
+
+                    viewApplication(
+                        app.id
+                    );
+
+                    return;
+
+                }
+
+
+                /*
+                 * Get existing students for this cohort
+                 * so the new AYLI ID follows the same
+                 * numbering system.
+                 */
+
+                const {
+                    data: cohortStudents,
+                    error: cohortError
+                } = await applicationsClient
+                    .from("students")
+                    .select("ayli_id")
+                    .like(
+                        "ayli_id",
+                        "AYLI-C" +
+                        cohortNumber +
+                        "-%"
+                    );
+
+
+                if (cohortError) {
+                    throw cohortError;
+                }
+
+
+                let highestNumber = 0;
+
+
+                (cohortStudents || [])
+                    .forEach(student => {
+
+                        const id =
+                            String(
+                                student.ayli_id || ""
+                            );
+
+                        const match =
+                            id.match(
+                                new RegExp(
+                                    "^AYLI-C" +
+                                    cohortNumber +
+                                    "-(\\d+)$"
+                                )
+                            );
+
+                        if (match) {
+
+                            const number =
+                                parseInt(
+                                    match[1],
+                                    10
+                                );
+
+                            if (
+                                number >
+                                highestNumber
+                            ) {
+
+                                highestNumber =
+                                    number;
+
+                            }
+
+                        }
+
+                    });
+
+
+                const nextNumber =
+                    String(
+                        highestNumber + 1
+                    ).padStart(
+                        3,
+                        "0"
+                    );
+
+
+                const newAyliId =
+                    "AYLI-C" +
+                    cohortNumber +
+                    "-" +
+                    nextNumber;
+
+
+                /*
+                 * Split applicant's full name.
+                 */
+
+                const nameParts =
+                    String(
+                        app.full_name || ""
+                    )
+                    .trim()
+                    .split(/\s+/);
+
+
+                const firstName =
+                    nameParts[0] || "";
+
+                const lastName =
+                    nameParts.length > 1
+                        ? nameParts[nameParts.length - 1]
+                        : "";
+
+                const middleName =
+                    nameParts.length > 2
+                        ? nameParts
+                            .slice(
+                                1,
+                                -1
+                            )
+                            .join(" ")
+                        : "";
+
+
+                /*
+                 * Create student record
+                 * in the EXISTING students table.
+                 */
+
+                const studentRecord = {
+
+                    ayli_id:
+                        newAyliId,
+
+                    first_name:
+                        firstName,
+
+                    middle_name:
+                        middleName || null,
+
+                    last_name:
+                        lastName,
+
+                    gender:
+                        app.gender,
+
+                    date_of_birth:
+                        app.date_of_birth,
+
+                    nationality:
+                        app.nationality,
+
+                    country:
+                        app.country,
+
+                    city:
+                        app.city,
+
+                    phone:
+                        app.phone,
+
+                    whatsapp:
+                        app.whatsapp || null,
+
+                    email:
+                        app.email,
+
+                    photo_url:
+                        app.profile_photo_url || null,
+
+                    cohort:
+                        app.cohort,
+
+                    chapter:
+                        app.chapter || app.country,
+
+                    status:
+                        "Active",
+
+                    source_application_number:
+                        app.application_number
+
+                };
+
+
+                const {
+                    data: newStudent,
+                    error: studentError
+                } = await applicationsClient
+                    .from("students")
+                    .insert(
+                        studentRecord
+                    )
+                    .select()
+                    .single();
+
+
+                if (studentError) {
+                    throw studentError;
+                }
+
+
+                /*
+                 * Mark application as enrolled.
+                 */
+
+                const {
+                    data: updatedApplication,
+                    error: applicationUpdateError
+                } = await applicationsClient
+                    .from("applications")
+                    .update({
+
+                        enrolled_as_student:
+                            true,
+
+                        enrolled_student_ayli_id:
+                            newStudent.ayli_id,
+
+                        enrolled_at:
+                            new Date().toISOString(),
+
+                        updated_at:
+                            new Date().toISOString()
+
+                    })
+                    .eq(
+                        "id",
+                        app.id
+                    )
+                    .select()
+                    .single();
+
+
+                if (applicationUpdateError) {
+                    throw applicationUpdateError;
+                }
+
+
+                selectedApplication =
+                    updatedApplication;
+
+
+                const index =
+                    applications.findIndex(
+                        item =>
+                            item.id ===
+                            app.id
+                    );
+
+
+                if (index !== -1) {
+
+                    applications[index] =
+                        updatedApplication;
+
+                }
+
+
+                alert(
+                    "Student enrolled successfully!\n\n" +
+                    "AYLI Student ID: " +
+                    newStudent.ayli_id
+                );
+
+
+                updateStatistics();
+
+                renderApplications();
+
+                viewApplication(
+                    app.id
+                );
+
+            }
+            catch (error) {
+
+                console.error(
+                    "Enrollment error:",
+                    error
+                );
+
+                alert(
+                    "Student enrollment failed.\n\n" +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+        /* ==========================================
+           CLOSE MODAL
+        ========================================== */
+
+        function closeApplicationModal() {
+
+            document.getElementById(
+                "applicationModal"
+            ).classList.remove("show");
+
+            selectedApplication =
+                null;
+
+        }
+
+
+        document.getElementById(
+            "applicationModal"
+        ).addEventListener(
+            "click",
+            function(event) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closeApplicationModal();
+
+                }
+
+            }
+        );
+
+
+        /* ==========================================
+           SEARCH / FILTER EVENTS
+        ========================================== */
+
+        document.getElementById(
+            "searchInput"
+        ).addEventListener(
+            "input",
+            renderApplications
+        );
+
+        document.getElementById(
+            "statusFilter"
+        ).addEventListener(
+            "change",
+            renderApplications
+        );
+
+        document.getElementById(
+            "countryFilter"
+        ).addEventListener(
+            "change",
+            renderApplications
+        );
+
+        document.getElementById(
+            "cohortFilter"
+        ).addEventListener(
+            "change",
+            renderApplications
+        );
+
+
+        /* ==========================================
+           LOGOUT
+        ========================================== */
+
+        async function logoutUser() {
+
+            try {
+
+                if (
+                    typeof supabaseClient !==
+                    "undefined" &&
+                    supabaseClient
+                ) {
+
+                    await supabaseClient
+                        .auth
+                        .signOut();
+
+                }
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+            }
+
+            window.location.href =
+                "login.html";
+
+        }
+
+
+        /* ==========================================
+           HELPERS
+        ========================================== */
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+                return "";
+            }
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        function escapeAttribute(value) {
+
+            return escapeHtml(value);
+
+        }
+
+
+        function formatDate(value) {
+
+            if (!value) {
+                return "—";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "—";
+            }
+
+            return date.toLocaleDateString(
+                undefined,
+                {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                }
+            );
+
+        }
+
+
+        function formatDateTime(value) {
+
+            if (!value) {
+                return "—";
+            }
+
+            const date =
+                new Date(value);
+
+            if (
+                Number.isNaN(
+                    date.getTime()
+                )
+            ) {
+                return "—";
+            }
+
+            return date.toLocaleString(
+                undefined,
+                {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit"
+                }
+            );
+
+        }
+
+
+        /* ==========================================
+           INITIALIZE
+        ========================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function() {
+
+                loadApplications();
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>

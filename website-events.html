@@ -1,0 +1,2346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Events & Appointments | AYLI
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="css/style.css"
+    >
+
+    <style>
+
+        /* =====================================================
+           EVENTS MANAGEMENT
+        ===================================================== */
+
+        .website-page {
+            padding: 30px;
+        }
+
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+
+        .page-header h2 {
+            margin: 0 0 6px;
+        }
+
+
+        .page-header p {
+            margin: 0;
+            color: #666;
+        }
+
+
+        .primary-button {
+            border: none;
+            background: #c9a227;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+
+        .primary-button:hover {
+            opacity: 0.9;
+        }
+
+
+        .events-table-card {
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+
+        .events-table-wrapper {
+            overflow-x: auto;
+        }
+
+
+        .events-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+
+        .events-table th,
+        .events-table td {
+            padding: 14px 12px;
+            border-bottom: 1px solid #eeeeee;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+
+        .events-table th {
+            font-size: 13px;
+            color: #555;
+            background: #fafafa;
+        }
+
+
+        .event-title {
+            font-weight: 700;
+            color: #222;
+        }
+
+
+        .event-description {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+
+        .event-date {
+            font-weight: 600;
+        }
+
+
+        .event-time {
+            font-size: 12px;
+            color: #777;
+            margin-top: 4px;
+        }
+
+
+        .status-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+
+        .status-draft {
+            background: #eeeeee;
+            color: #555555;
+        }
+
+
+        .status-published {
+            background: #e7f7ed;
+            color: #187a3d;
+        }
+
+
+        .status-cancelled {
+            background: #fbeaea;
+            color: #a52a2a;
+        }
+
+
+        .status-archived {
+            background: #f0edf8;
+            color: #5d4b86;
+        }
+
+
+        .action-buttons {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+
+        .small-button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+
+        .edit-button {
+            background: #eef3f8;
+            color: #24445f;
+        }
+
+
+        .publish-button {
+            background: #e7f7ed;
+            color: #187a3d;
+        }
+
+
+        .cancel-button {
+            background: #fbeaea;
+            color: #a52a2a;
+        }
+
+
+        .archive-button {
+            background: #fff3df;
+            color: #8a5b00;
+        }
+
+
+        .delete-button {
+            background: #fbeaea;
+            color: #a52a2a;
+        }
+
+
+        .empty-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #777;
+        }
+
+
+        /* =====================================================
+           MODAL
+        ===================================================== */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            z-index: 5000;
+        }
+
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+
+        .modal {
+            width: 100%;
+            max-width: 850px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 10px;
+            padding: 25px;
+        }
+
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+
+        .modal-header h3 {
+            margin: 0;
+        }
+
+
+        .close-button {
+            border: none;
+            background: transparent;
+            font-size: 25px;
+            cursor: pointer;
+            color: #666;
+        }
+
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 7px;
+        }
+
+
+        .form-group.full {
+            grid-column: 1 / -1;
+        }
+
+
+        .form-group label {
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid #d9d9d9;
+            border-radius: 6px;
+            padding: 11px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+
+        .form-group textarea {
+            min-height: 140px;
+            resize: vertical;
+        }
+
+
+        .form-help {
+            font-size: 12px;
+            color: #777;
+        }
+
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+
+        .secondary-button {
+            border: 1px solid #cccccc;
+            background: #ffffff;
+            color: #444;
+            padding: 11px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+
+        .save-button {
+            border: none;
+            background: #c9a227;
+            color: #ffffff;
+            padding: 11px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+
+        .message {
+            margin-bottom: 18px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: none;
+        }
+
+
+        .message.success {
+            display: block;
+            background: #e7f7ed;
+            color: #187a3d;
+        }
+
+
+        .message.error {
+            display: block;
+            background: #fbeaea;
+            color: #a52a2a;
+        }
+
+
+        @media (max-width: 700px) {
+
+            .website-page {
+                padding: 20px 15px;
+            }
+
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-group.full {
+                grid-column: auto;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+
+    <!-- =====================================================
+         SIDEBAR
+    ====================================================== -->
+
+    <aside class="sidebar">
+
+        <div class="logo-area">
+
+            <div class="logo">
+                AYLI
+            </div>
+
+            <div class="logo-text">
+
+                <h2>
+                    AYLI
+                </h2>
+
+                <p>
+                    LEADERSHIP SCHOOL
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <nav class="menu">
+
+            <div class="menu-title">
+                Main Menu
+            </div>
+
+
+            <a href="index.html">
+                <span class="menu-icon">📊</span>
+                Dashboard
+            </a>
+
+
+            <a href="students.html">
+                <span class="menu-icon">👨‍🎓</span>
+                Students
+            </a>
+
+
+            <a href="cohorts.html">
+                <span class="menu-icon">🎓</span>
+                Cohorts
+            </a>
+
+
+            <a href="chapters.html">
+                <span class="menu-icon">🌍</span>
+                Chapters
+            </a>
+
+
+            <a href="academic.html">
+                <span class="menu-icon">📚</span>
+                Academic Records
+            </a>
+
+
+            <a href="leadership.html">
+                <span class="menu-icon">👔</span>
+                Leadership
+            </a>
+
+
+            <a href="certificates.html">
+                <span class="menu-icon">📜</span>
+                Certificates
+            </a>
+
+
+            <a href="alumni.html">
+                <span class="menu-icon">🏆</span>
+                Alumni
+            </a>
+
+
+            <a href="applications.html">
+                <span class="menu-icon">📝</span>
+                Applications
+            </a>
+
+
+            <a href="inquiries.html">
+                <span class="menu-icon">✉️</span>
+                Inquiries
+            </a>
+
+
+            <div class="menu-title">
+                Website Management
+            </div>
+
+
+            <a href="website-news.html">
+
+                <span class="menu-icon">
+                    📰
+                </span>
+
+                News & Announcements
+
+            </a>
+
+
+            <a
+                href="website-events.html"
+                class="active"
+            >
+
+                <span class="menu-icon">
+                    📅
+                </span>
+
+                Events & Appointments
+
+            </a>
+
+
+            <a href="reports.html">
+
+                <span class="menu-icon">
+                    📊
+                </span>
+
+                Reports
+
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- =====================================================
+         MAIN
+    ====================================================== -->
+
+    <main class="main">
+
+
+        <!-- TOP BAR -->
+
+        <header class="topbar">
+
+            <div class="page-title">
+
+                <h1>
+                    Events & Appointments
+                </h1>
+
+                <p>
+                    Manage events and official activities published on the AYLI public website
+                </p>
+
+            </div>
+
+
+            <div class="admin">
+
+                <div class="admin-avatar">
+                    A
+                </div>
+
+
+                <div class="admin-info">
+
+                    <strong>
+                        Administrator
+                    </strong>
+
+                    <span>
+                        Website Management
+                    </span>
+
+                </div>
+
+
+                <button
+                    onclick="logout()"
+                    class="logout-button"
+                >
+                    Logout
+                </button>
+
+            </div>
+
+        </header>
+
+
+        <!-- CONTENT -->
+
+        <section class="website-page">
+
+
+            <div class="page-header">
+
+                <div>
+
+                    <h2>
+                        Events & Appointments
+                    </h2>
+
+                    <p>
+                        Create, edit, publish and manage AYLI events and official activities.
+                    </p>
+
+                </div>
+
+
+                <button
+                    class="primary-button"
+                    onclick="openCreateModal()"
+                >
+
+                    + Create Event
+
+                </button>
+
+            </div>
+
+
+            <div
+                id="message"
+                class="message"
+            ></div>
+
+
+            <div class="events-table-card">
+
+                <div class="events-table-wrapper">
+
+                    <table class="events-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>
+                                    Event
+                                </th>
+
+                                <th>
+                                    Type
+                                </th>
+
+                                <th>
+                                    Date
+                                </th>
+
+                                <th>
+                                    Time
+                                </th>
+
+                                <th>
+                                    Location
+                                </th>
+
+                                <th>
+                                    Status
+                                </th>
+
+                                <th>
+                                    Actions
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody id="eventsTableBody">
+
+                            <tr>
+
+                                <td
+                                    colspan="7"
+                                    class="empty-state"
+                                >
+                                    Loading events...
+
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- FOOTER -->
+
+        <footer class="footer">
+
+            <strong>
+                Africa Youth Leadership Institute (AYLI)
+            </strong>
+
+            <br>
+
+            Professional Leadership School
+            Management System © 2026
+
+        </footer>
+
+    </main>
+
+</div>
+
+
+
+<!-- =====================================================
+     CREATE / EDIT MODAL
+====================================================== -->
+
+<div
+    id="eventModal"
+    class="modal-overlay"
+>
+
+    <div class="modal">
+
+
+        <div class="modal-header">
+
+            <h3 id="modalTitle">
+                Create Event
+            </h3>
+
+
+            <button
+                class="close-button"
+                onclick="closeModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="eventForm">
+
+
+            <input
+                type="hidden"
+                id="eventId"
+            >
+
+
+            <div class="form-grid">
+
+
+                <!-- TITLE -->
+
+                <div class="form-group full">
+
+                    <label for="title">
+                        Event Title *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="title"
+                        required
+                        placeholder="Enter event or appointment title"
+                    >
+
+                </div>
+
+
+                <!-- EVENT TYPE -->
+
+                <div class="form-group">
+
+                    <label for="eventType">
+                        Event Type *
+                    </label>
+
+                    <select
+                        id="eventType"
+                        required
+                    >
+
+                        <option value="General">
+                            General
+                        </option>
+
+                        <option value="Leadership Summit">
+                            Leadership Summit
+                        </option>
+
+                        <option value="Conference">
+                            Conference
+                        </option>
+
+                        <option value="Webinar">
+                            Webinar
+                        </option>
+
+                        <option value="Retreat">
+                            Retreat
+                        </option>
+
+                        <option value="Graduation">
+                            Graduation
+                        </option>
+
+                        <option value="Chapter Activity">
+                            Chapter Activity
+                        </option>
+
+                        <option value="Training">
+                            Training
+                        </option>
+
+                        <option value="Meeting">
+                            Meeting
+                        </option>
+
+                        <option value="Appointment">
+                            Appointment
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- STATUS -->
+
+                <div class="form-group">
+
+                    <label for="status">
+                        Status *
+                    </label>
+
+                    <select
+                        id="status"
+                        required
+                    >
+
+                        <option value="Draft">
+                            Draft
+                        </option>
+
+                        <option value="Published">
+                            Published
+                        </option>
+
+                        <option value="Cancelled">
+                            Cancelled
+                        </option>
+
+                        <option value="Archived">
+                            Archived
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- DATE -->
+
+                <div class="form-group">
+
+                    <label for="eventDate">
+                        Event Date *
+                    </label>
+
+                    <input
+                        type="date"
+                        id="eventDate"
+                        required
+                    >
+
+                </div>
+
+
+                <!-- START TIME -->
+
+                <div class="form-group">
+
+                    <label for="startTime">
+                        Start Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="startTime"
+                    >
+
+                </div>
+
+
+                <!-- END TIME -->
+
+                <div class="form-group">
+
+                    <label for="endTime">
+                        End Time
+                    </label>
+
+                    <input
+                        type="time"
+                        id="endTime"
+                    >
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="form-group full">
+
+                    <label for="location">
+                        Location
+                    </label>
+
+                    <input
+                        type="text"
+                        id="location"
+                        placeholder="Venue, city, country or Online"
+                    >
+
+                </div>
+
+
+                <!-- ORGANIZER -->
+
+                <div class="form-group">
+
+                    <label for="organizer">
+                        Organizer / Office
+                    </label>
+
+                    <input
+                        type="text"
+                        id="organizer"
+                        placeholder="e.g. AYLI Executive Office"
+                    >
+
+                </div>
+
+
+                <!-- REGISTRATION URL -->
+
+                <div class="form-group">
+
+                    <label for="registrationUrl">
+                        Registration / Information Link
+                    </label>
+
+                    <input
+                        type="url"
+                        id="registrationUrl"
+                        placeholder="https://..."
+                    >
+
+                </div>
+
+
+                <!-- DESCRIPTION -->
+
+                <div class="form-group full">
+
+                    <label for="description">
+                        Event Description *
+                    </label>
+
+                    <textarea
+                        id="description"
+                        required
+                        placeholder="Write the full event description here..."
+                    ></textarea>
+
+                </div>
+
+
+                <!-- IMAGE -->
+
+                <div class="form-group full">
+
+                    <label for="featuredImage">
+                        Featured Image URL
+                    </label>
+
+                    <input
+                        type="url"
+                        id="featuredImage"
+                        placeholder="https://..."
+                    >
+
+                    <span class="form-help">
+                        Image uploading will be added with the AYLI Media Library.
+                    </span>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="modal-footer">
+
+                <button
+                    type="button"
+                    class="secondary-button"
+                    onclick="closeModal()"
+                >
+                    Cancel
+                </button>
+
+
+                <button
+                    type="submit"
+                    class="save-button"
+                >
+                    Save Event
+                </button>
+
+            </div>
+
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     SUPABASE
+====================================================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<script>
+
+    // =====================================================
+    // SUPABASE CONNECTION
+    // =====================================================
+
+    const SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+    const SUPABASE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+    const supabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_KEY
+        );
+
+
+    let editingEventId = null;
+
+
+    // =====================================================
+    // AUTHENTICATION
+    // =====================================================
+
+    async function checkAuthentication() {
+
+        const {
+            data: { session },
+            error
+        } =
+            await supabaseClient.auth.getSession();
+
+
+        if (
+            error ||
+            !session
+        ) {
+
+            window.location.href =
+                "login.html";
+
+            return;
+
+        }
+
+
+        loadEvents();
+
+    }
+
+
+    // =====================================================
+    // LOGOUT
+    // =====================================================
+
+    async function logout() {
+
+        await supabaseClient.auth.signOut();
+
+        window.location.href =
+            "login.html";
+
+    }
+
+
+    // =====================================================
+    // LOAD EVENTS
+    // =====================================================
+
+    async function loadEvents() {
+
+        const tableBody =
+            document.getElementById(
+                "eventsTableBody"
+            );
+
+
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty-state">
+                    Loading events...
+                </td>
+            </tr>
+        `;
+
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .select("*")
+                .order(
+                    "event_date",
+                    {
+                        ascending: true
+                    }
+                );
+
+
+        if (error) {
+
+            console.error(error);
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-state">
+                        Unable to load events.
+                    </td>
+                </tr>
+            `;
+
+            showMessage(
+                "Unable to load website events.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        if (
+            !data ||
+            data.length === 0
+        ) {
+
+            tableBody.innerHTML = `
+                <tr>
+                    <td colspan="7" class="empty-state">
+
+                        No events have been created yet.
+
+                        <br><br>
+
+                        Click "Create Event" to add the first event.
+
+                    </td>
+                </tr>
+            `;
+
+            return;
+
+        }
+
+
+        tableBody.innerHTML =
+            data.map(
+                function(event) {
+
+                    return createEventRow(
+                        event
+                    );
+
+                }
+            ).join("");
+
+    }
+
+
+    // =====================================================
+    // CREATE TABLE ROW
+    // =====================================================
+
+    function createEventRow(event) {
+
+        const statusClass =
+            event.status === "Published"
+                ? "status-published"
+                : event.status === "Cancelled"
+                    ? "status-cancelled"
+                    : event.status === "Archived"
+                        ? "status-archived"
+                        : "status-draft";
+
+
+        const time =
+            formatTimeRange(
+                event.start_time,
+                event.end_time
+            );
+
+
+        let actionButtons = `
+            <button
+                class="small-button edit-button"
+                onclick="editEvent('${event.id}')"
+            >
+                Edit
+            </button>
+        `;
+
+
+        if (
+            event.status === "Published"
+        ) {
+
+            actionButtons += `
+                <button
+                    class="small-button cancel-button"
+                    onclick="cancelEvent('${event.id}')"
+                >
+                    Cancel
+                </button>
+            `;
+
+
+            actionButtons += `
+                <button
+                    class="small-button archive-button"
+                    onclick="archiveEvent('${event.id}')"
+                >
+                    Archive
+                </button>
+            `;
+
+        }
+        else if (
+            event.status === "Draft"
+        ) {
+
+            actionButtons += `
+                <button
+                    class="small-button publish-button"
+                    onclick="publishEvent('${event.id}')"
+                >
+                    Publish
+                </button>
+            `;
+
+        }
+
+
+        actionButtons += `
+            <button
+                class="small-button delete-button"
+                onclick="deleteEvent('${event.id}')"
+            >
+                Delete
+            </button>
+        `;
+
+
+        return `
+
+            <tr>
+
+                <td>
+
+                    <div class="event-title">
+                        ${escapeHtml(event.title)}
+                    </div>
+
+                    <div class="event-description">
+                        ${escapeHtml(
+                            createExcerpt(
+                                event.description
+                            )
+                        )}
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        event.event_type || "General"
+                    )}
+                </td>
+
+
+                <td>
+
+                    <div class="event-date">
+                        ${formatDate(event.event_date)}
+                    </div>
+
+                </td>
+
+
+                <td>
+
+                    <div class="event-time">
+                        ${time}
+                    </div>
+
+                </td>
+
+
+                <td>
+                    ${escapeHtml(
+                        event.location || "—"
+                    )}
+                </td>
+
+
+                <td>
+
+                    <span
+                        class="status-badge ${statusClass}"
+                    >
+                        ${escapeHtml(event.status)}
+                    </span>
+
+                </td>
+
+
+                <td>
+
+                    <div class="action-buttons">
+
+                        ${actionButtons}
+
+                    </div>
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    // =====================================================
+    // CREATE EVENT
+    // =====================================================
+
+    function openCreateModal() {
+
+        editingEventId = null;
+
+
+        document.getElementById(
+            "modalTitle"
+        ).textContent =
+            "Create Event";
+
+
+        document.getElementById(
+            "eventForm"
+        ).reset();
+
+
+        document.getElementById(
+            "eventId"
+        ).value = "";
+
+
+        document.getElementById(
+            "status"
+        ).value =
+            "Draft";
+
+
+        document.getElementById(
+            "eventModal"
+        ).classList.add(
+            "active"
+        );
+
+    }
+
+
+    // =====================================================
+    // CLOSE MODAL
+    // =====================================================
+
+    function closeModal() {
+
+        document.getElementById(
+            "eventModal"
+        ).classList.remove(
+            "active"
+        );
+
+    }
+
+
+    // =====================================================
+    // EDIT EVENT
+    // =====================================================
+
+    async function editEvent(id) {
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .select("*")
+                .eq(
+                    "id",
+                    id
+                )
+                .single();
+
+
+        if (error) {
+
+            showMessage(
+                "Unable to load this event.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        editingEventId =
+            id;
+
+
+        document.getElementById(
+            "modalTitle"
+        ).textContent =
+            "Edit Event";
+
+
+        document.getElementById(
+            "eventId"
+        ).value =
+            data.id;
+
+
+        document.getElementById(
+            "title"
+        ).value =
+            data.title || "";
+
+
+        document.getElementById(
+            "eventType"
+        ).value =
+            data.event_type || "General";
+
+
+        document.getElementById(
+            "status"
+        ).value =
+            data.status || "Draft";
+
+
+        document.getElementById(
+            "eventDate"
+        ).value =
+            data.event_date || "";
+
+
+        document.getElementById(
+            "startTime"
+        ).value =
+            data.start_time || "";
+
+
+        document.getElementById(
+            "endTime"
+        ).value =
+            data.end_time || "";
+
+
+        document.getElementById(
+            "location"
+        ).value =
+            data.location || "";
+
+
+        document.getElementById(
+            "organizer"
+        ).value =
+            data.organizer || "";
+
+
+        document.getElementById(
+            "registrationUrl"
+        ).value =
+            data.registration_url || "";
+
+
+        document.getElementById(
+            "description"
+        ).value =
+            data.description || "";
+
+
+        document.getElementById(
+            "featuredImage"
+        ).value =
+            data.featured_image_url || "";
+
+
+        document.getElementById(
+            "eventModal"
+        ).classList.add(
+            "active"
+        );
+
+    }
+
+
+    // =====================================================
+    // SAVE EVENT
+    // =====================================================
+
+    document.getElementById(
+        "eventForm"
+    ).addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const title =
+                document.getElementById(
+                    "title"
+                ).value.trim();
+
+
+            const eventType =
+                document.getElementById(
+                    "eventType"
+                ).value;
+
+
+            const status =
+                document.getElementById(
+                    "status"
+                ).value;
+
+
+            const eventDate =
+                document.getElementById(
+                    "eventDate"
+                ).value;
+
+
+            const startTime =
+                document.getElementById(
+                    "startTime"
+                ).value ||
+                null;
+
+
+            const endTime =
+                document.getElementById(
+                    "endTime"
+                ).value ||
+                null;
+
+
+            const location =
+                document.getElementById(
+                    "location"
+                ).value.trim();
+
+
+            const organizer =
+                document.getElementById(
+                    "organizer"
+                ).value.trim();
+
+
+            const registrationUrl =
+                document.getElementById(
+                    "registrationUrl"
+                ).value.trim();
+
+
+            const description =
+                document.getElementById(
+                    "description"
+                ).value.trim();
+
+
+            const featuredImage =
+                document.getElementById(
+                    "featuredImage"
+                ).value.trim();
+
+
+            if (
+                !title ||
+                !eventDate ||
+                !description
+            ) {
+
+                showMessage(
+                    "Please enter the event title, date and description.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            if (
+                startTime &&
+                endTime &&
+                startTime >= endTime
+            ) {
+
+                showMessage(
+                    "End time must be later than start time.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            const eventData = {
+
+                title:
+                    title,
+
+                slug:
+                    createSlug(title),
+
+                event_type:
+                    eventType,
+
+                description:
+                    description,
+
+                event_date:
+                    eventDate,
+
+                start_time:
+                    startTime,
+
+                end_time:
+                    endTime,
+
+                location:
+                    location || null,
+
+                organizer:
+                    organizer || null,
+
+                featured_image_url:
+                    featuredImage || null,
+
+                registration_url:
+                    registrationUrl || null,
+
+                status:
+                    status,
+
+                updated_at:
+                    new Date().toISOString()
+
+            };
+
+
+            if (
+                status === "Published"
+            ) {
+
+                eventData.published_at =
+                    new Date().toISOString();
+
+            }
+
+
+            let result;
+
+
+            if (
+                editingEventId
+            ) {
+
+                result =
+                    await supabaseClient
+                        .from("website_events")
+                        .update(
+                            eventData
+                        )
+                        .eq(
+                            "id",
+                            editingEventId
+                        );
+
+            }
+            else {
+
+                result =
+                    await supabaseClient
+                        .from("website_events")
+                        .insert(
+                            eventData
+                        );
+
+            }
+
+
+            if (
+                result.error
+            ) {
+
+                console.error(
+                    result.error
+                );
+
+
+                showMessage(
+                    result.error.message ||
+                    "Unable to save event.",
+                    "error"
+                );
+
+                return;
+
+            }
+
+
+            closeModal();
+
+
+            showMessage(
+                status === "Published"
+                    ? "Event published successfully."
+                    : "Event saved successfully.",
+                "success"
+            );
+
+
+            loadEvents();
+
+        }
+    );
+
+
+    // =====================================================
+    // PUBLISH EVENT
+    // =====================================================
+
+    async function publishEvent(id) {
+
+        const confirmed =
+            confirm(
+                "Publish this event on the public AYLI website?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .update({
+
+                    status:
+                        "Published",
+
+                    published_at:
+                        new Date().toISOString(),
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            showMessage(
+                error.message ||
+                "Unable to publish event.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Event published successfully.",
+            "success"
+        );
+
+
+        loadEvents();
+
+    }
+
+
+    // =====================================================
+    // CANCEL EVENT
+    // =====================================================
+
+    async function cancelEvent(id) {
+
+        const confirmed =
+            confirm(
+                "Mark this event as cancelled?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .update({
+
+                    status:
+                        "Cancelled",
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            showMessage(
+                error.message ||
+                "Unable to cancel event.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Event marked as cancelled.",
+            "success"
+        );
+
+
+        loadEvents();
+
+    }
+
+
+    // =====================================================
+    // ARCHIVE EVENT
+    // =====================================================
+
+    async function archiveEvent(id) {
+
+        const confirmed =
+            confirm(
+                "Archive this event?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .update({
+
+                    status:
+                        "Archived",
+
+                    updated_at:
+                        new Date().toISOString()
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            showMessage(
+                error.message ||
+                "Unable to archive event.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Event archived successfully.",
+            "success"
+        );
+
+
+        loadEvents();
+
+    }
+
+
+    // =====================================================
+    // DELETE EVENT
+    // =====================================================
+
+    async function deleteEvent(id) {
+
+        const confirmed =
+            confirm(
+                "Are you sure you want to permanently delete this event?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        const {
+            error
+        } =
+            await supabaseClient
+                .from("website_events")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (error) {
+
+            showMessage(
+                error.message ||
+                "Unable to delete event.",
+                "error"
+            );
+
+            return;
+
+        }
+
+
+        showMessage(
+            "Event deleted successfully.",
+            "success"
+        );
+
+
+        loadEvents();
+
+    }
+
+
+    // =====================================================
+    // CREATE SLUG
+    // =====================================================
+
+    function createSlug(text) {
+
+        return text
+            .toLowerCase()
+            .trim()
+            .replace(
+                /[^a-z0-9\s-]/g,
+                ""
+            )
+            .replace(
+                /\s+/g,
+                "-"
+            )
+            .replace(
+                /-+/g,
+                "-"
+            );
+
+    }
+
+
+    // =====================================================
+    // FORMAT DATE
+    // =====================================================
+
+    function formatDate(dateString) {
+
+        if (
+            !dateString
+        ) {
+
+            return "—";
+
+        }
+
+
+        const date =
+            new Date(
+                dateString + "T00:00:00"
+            );
+
+
+        return date.toLocaleDateString(
+            "en-US",
+            {
+                year: "numeric",
+                month: "short",
+                day: "numeric"
+            }
+        );
+
+    }
+
+
+    // =====================================================
+    // FORMAT TIME
+    // =====================================================
+
+    function formatTimeRange(
+        startTime,
+        endTime
+    ) {
+
+        if (
+            !startTime &&
+            !endTime
+        ) {
+
+            return "—";
+
+        }
+
+
+        if (
+            startTime &&
+            !endTime
+        ) {
+
+            return formatTime(
+                startTime
+            );
+
+        }
+
+
+        if (
+            !startTime &&
+            endTime
+        ) {
+
+            return formatTime(
+                endTime
+            );
+
+        }
+
+
+        return (
+            formatTime(startTime) +
+            " – " +
+            formatTime(endTime)
+        );
+
+    }
+
+
+    function formatTime(
+        timeString
+    ) {
+
+        const parts =
+            timeString.split(":");
+
+
+        let hours =
+            parseInt(
+                parts[0],
+                10
+            );
+
+
+        const minutes =
+            parts[1];
+
+
+        const suffix =
+            hours >= 12
+                ? "PM"
+                : "AM";
+
+
+        hours =
+            hours % 12 ||
+            12;
+
+
+        return (
+            hours +
+            ":" +
+            minutes +
+            " " +
+            suffix
+        );
+
+    }
+
+
+    // =====================================================
+    // EXCERPT
+    // =====================================================
+
+    function createExcerpt(
+        content
+    ) {
+
+        if (
+            !content
+        ) {
+
+            return "";
+
+        }
+
+
+        const cleanText =
+            String(
+                content
+            )
+            .replace(
+                /\s+/g,
+                " "
+            )
+            .trim();
+
+
+        if (
+            cleanText.length <= 100
+        ) {
+
+            return cleanText;
+
+        }
+
+
+        return (
+            cleanText.substring(
+                0,
+                100
+            ) +
+            "..."
+        );
+
+    }
+
+
+    // =====================================================
+    // HTML SECURITY
+    // =====================================================
+
+    function escapeHtml(
+        value
+    ) {
+
+        return String(
+            value || ""
+        )
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+    }
+
+
+    // =====================================================
+    // MESSAGE
+    // =====================================================
+
+    function showMessage(
+        message,
+        type
+    ) {
+
+        const element =
+            document.getElementById(
+                "message"
+            );
+
+
+        element.textContent =
+            message;
+
+
+        element.className =
+            "message " +
+            type;
+
+
+        setTimeout(
+            function() {
+
+                element.className =
+                    "message";
+
+            },
+            4000
+        );
+
+    }
+
+
+    // =====================================================
+    // CLOSE MODAL OUTSIDE
+    // =====================================================
+
+    document.getElementById(
+        "eventModal"
+    ).addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target === this
+            ) {
+
+                closeModal();
+
+            }
+
+        }
+    );
+
+
+    // =====================================================
+    // START
+    // =====================================================
+
+    checkAuthentication();
+
+</script>
+
+</body>
+
+</html>

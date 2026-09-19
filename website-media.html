@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Photos & Media | AYLI Administration
+    </title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+
+        /* ==========================================
+           PAGE
+        =========================================== */
+
+        .media-page {
+            padding: 30px;
+        }
+
+        .media-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .media-header h1 {
+            margin: 0 0 8px;
+        }
+
+        .media-header p {
+            margin: 0;
+            color: #777;
+        }
+
+        .media-primary-button {
+            border: none;
+            background: #c9a227;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .media-primary-button:hover {
+            opacity: 0.9;
+        }
+
+
+        /* ==========================================
+           STATS
+        =========================================== */
+
+        .media-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .media-stat-card {
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 8px;
+            padding: 22px;
+        }
+
+        .media-stat-card span {
+            display: block;
+            color: #777;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .media-stat-card strong {
+            display: block;
+            font-size: 28px;
+            color: #17202a;
+        }
+
+
+        /* ==========================================
+           TOOLBAR
+        =========================================== */
+
+        .media-toolbar {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .media-toolbar input,
+        .media-toolbar select {
+            padding: 11px 13px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            background: #ffffff;
+        }
+
+        .media-toolbar input {
+            min-width: 260px;
+            flex: 1;
+        }
+
+
+        /* ==========================================
+           MEDIA TABLE
+        =========================================== */
+
+        .media-table-wrapper {
+            background: #ffffff;
+            border: 1px solid #eeeeee;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .media-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 850px;
+        }
+
+        .media-table th,
+        .media-table td {
+            padding: 14px;
+            border-bottom: 1px solid #eeeeee;
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        .media-table th {
+            background: #f8f8f8;
+            font-size: 13px;
+        }
+
+        .media-thumbnail {
+            width: 75px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 5px;
+            display: block;
+        }
+
+
+        /* ==========================================
+           STATUS
+        =========================================== */
+
+        .media-status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .media-status-published {
+            background: #e7f6ec;
+            color: #217a3a;
+        }
+
+        .media-status-draft {
+            background: #fff5d6;
+            color: #876900;
+        }
+
+        .media-status-archived {
+            background: #eeeeee;
+            color: #666666;
+        }
+
+
+        /* ==========================================
+           ACTIONS
+        =========================================== */
+
+        .media-actions {
+            display: flex;
+            gap: 7px;
+            flex-wrap: wrap;
+        }
+
+        .media-action-button {
+            border: none;
+            padding: 7px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            background: #eeeeee;
+            color: #333333;
+        }
+
+        .media-action-button:hover {
+            opacity: 0.85;
+        }
+
+        .media-action-publish {
+            background: #217a3a;
+            color: #ffffff;
+        }
+
+        .media-action-archive {
+            background: #666666;
+            color: #ffffff;
+        }
+
+        .media-action-delete {
+            background: #b3261e;
+            color: #ffffff;
+        }
+
+
+        /* ==========================================
+           MODAL
+        =========================================== */
+
+        .media-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0, 0, 0, 0.65);
+            padding: 25px;
+            overflow-y: auto;
+        }
+
+        .media-modal.active {
+            display: block;
+        }
+
+        .media-modal-content {
+            width: 100%;
+            max-width: 760px;
+            background: #ffffff;
+            border-radius: 8px;
+            margin: 30px auto;
+            padding: 30px;
+            position: relative;
+        }
+
+        .media-modal-close {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            border: none;
+            background: transparent;
+            font-size: 28px;
+            cursor: pointer;
+        }
+
+
+        /* ==========================================
+           FORM
+        =========================================== */
+
+        .media-form-group {
+            margin-bottom: 18px;
+        }
+
+        .media-form-group label {
+            display: block;
+            font-weight: 600;
+            font-size: 13px;
+            margin-bottom: 7px;
+        }
+
+        .media-form-group input,
+        .media-form-group textarea,
+        .media-form-group select {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 11px 12px;
+            border: 1px solid #dddddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+
+        .media-form-group textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        .media-form-group small {
+            display: block;
+            color: #777;
+            margin-top: 6px;
+            font-size: 12px;
+        }
+
+        .media-upload-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .media-upload-preview img {
+            max-width: 100%;
+            max-height: 280px;
+            object-fit: contain;
+            border-radius: 6px;
+            border: 1px solid #eeeeee;
+        }
+
+        .media-progress {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .media-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #eeeeee;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .media-progress-bar-inner {
+            width: 0%;
+            height: 100%;
+            background: #c9a227;
+            transition: width 0.2s ease;
+        }
+
+        .media-progress-text {
+            display: block;
+            margin-top: 6px;
+            font-size: 12px;
+            color: #777;
+        }
+
+        .media-form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 25px;
+        }
+
+        .media-secondary-button {
+            border: 1px solid #dddddd;
+            background: #ffffff;
+            color: #333333;
+            padding: 11px 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+
+        /* ==========================================
+           EMPTY STATE
+        =========================================== */
+
+        .media-empty-state {
+            padding: 50px 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        .media-empty-state h3 {
+            color: #17202a;
+            margin-bottom: 8px;
+        }
+
+
+        /* ==========================================
+           RESPONSIVE
+        =========================================== */
+
+        @media (max-width: 1000px) {
+
+            .media-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+        }
+
+        @media (max-width: 650px) {
+
+            .media-page {
+                padding: 20px;
+            }
+
+            .media-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .media-toolbar {
+                flex-direction: column;
+            }
+
+            .media-toolbar input {
+                min-width: 0;
+            }
+
+            .media-modal {
+                padding: 10px;
+            }
+
+            .media-modal-content {
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <div class="media-page">
+
+
+        <!-- ==========================================
+             HEADER
+        =========================================== -->
+
+        <div class="media-header">
+
+            <div>
+
+                <h1>
+                    Photos & Media
+                </h1>
+
+                <p>
+                    Manage photographs and media displayed
+                    across the AYLI public website.
+                </p>
+
+            </div>
+
+
+            <button
+                type="button"
+                class="media-primary-button"
+                id="openUploadButton"
+            >
+                + Upload Photo
+            </button>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             STATS
+        =========================================== -->
+
+        <div class="media-stats">
+
+            <div class="media-stat-card">
+
+                <span>
+                    Total Media
+                </span>
+
+                <strong id="totalMedia">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="media-stat-card">
+
+                <span>
+                    Published
+                </span>
+
+                <strong id="publishedMedia">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="media-stat-card">
+
+                <span>
+                    Drafts
+                </span>
+
+                <strong id="draftMedia">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="media-stat-card">
+
+                <span>
+                    Archived
+                </span>
+
+                <strong id="archivedMedia">
+                    0
+                </strong>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             FILTERS
+        =========================================== -->
+
+        <div class="media-toolbar">
+
+            <input
+                type="search"
+                id="mediaSearch"
+                placeholder="Search photos by title or caption..."
+            >
+
+
+            <select id="mediaCategoryFilter">
+
+                <option value="">
+                    All Categories
+                </option>
+
+                <option value="General">
+                    General
+                </option>
+
+                <option value="Leadership">
+                    Leadership
+                </option>
+
+                <option value="Programs">
+                    Programs
+                </option>
+
+                <option value="Events">
+                    Events
+                </option>
+
+                <option value="Graduation">
+                    Graduation
+                </option>
+
+                <option value="Chapters">
+                    Chapters
+                </option>
+
+                <option value="Students">
+                    Students
+                </option>
+
+                <option value="Community">
+                    Community
+                </option>
+
+                <option value="Media">
+                    Media
+                </option>
+
+            </select>
+
+
+            <select id="mediaStatusFilter">
+
+                <option value="">
+                    All Statuses
+                </option>
+
+                <option value="Draft">
+                    Draft
+                </option>
+
+                <option value="Published">
+                    Published
+                </option>
+
+                <option value="Archived">
+                    Archived
+                </option>
+
+            </select>
+
+        </div>
+
+
+
+        <!-- ==========================================
+             TABLE
+        =========================================== -->
+
+        <div class="media-table-wrapper">
+
+            <table class="media-table">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Photo
+                        </th>
+
+                        <th>
+                            Title
+                        </th>
+
+                        <th>
+                            Category
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                        <th>
+                            Created
+                        </th>
+
+                        <th>
+                            Actions
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="mediaTableBody">
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="media-empty-state"
+                        >
+
+                            Loading media...
+
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ==========================================
+         UPLOAD / EDIT MODAL
+    =========================================== -->
+
+    <div
+        class="media-modal"
+        id="mediaModal"
+    >
+
+        <div class="media-modal-content">
+
+
+            <button
+                type="button"
+                class="media-modal-close"
+                id="closeMediaModal"
+            >
+                ×
+            </button>
+
+
+            <h2 id="mediaModalTitle">
+                Upload Photo
+            </h2>
+
+
+            <form id="mediaForm">
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaTitle">
+                        Photo Title *
+                    </label>
+
+                    <input
+                        type="text"
+                        id="mediaTitle"
+                        required
+                        placeholder="Example: AYLI Cohort 12 Orientation"
+                    >
+
+                </div>
+
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaCaption">
+                        Caption
+                    </label>
+
+                    <textarea
+                        id="mediaCaption"
+                        placeholder="Describe the photograph..."
+                    ></textarea>
+
+                </div>
+
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaCategory">
+                        Category *
+                    </label>
+
+                    <select
+                        id="mediaCategory"
+                        required
+                    >
+
+                        <option value="General">
+                            General
+                        </option>
+
+                        <option value="Leadership">
+                            Leadership
+                        </option>
+
+                        <option value="Programs">
+                            Programs
+                        </option>
+
+                        <option value="Events">
+                            Events
+                        </option>
+
+                        <option value="Graduation">
+                            Graduation
+                        </option>
+
+                        <option value="Chapters">
+                            Chapters
+                        </option>
+
+                        <option value="Students">
+                            Students
+                        </option>
+
+                        <option value="Community">
+                            Community
+                        </option>
+
+                        <option value="Media">
+                            Media
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaAltText">
+                        Alternative Text
+                    </label>
+
+                    <input
+                        type="text"
+                        id="mediaAltText"
+                        placeholder="Describe the image for accessibility"
+                    >
+
+                </div>
+
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaStatus">
+                        Status
+                    </label>
+
+                    <select id="mediaStatus">
+
+                        <option value="Draft">
+                            Draft
+                        </option>
+
+                        <option value="Published">
+                            Published
+                        </option>
+
+                        <option value="Archived">
+                            Archived
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+
+                <div class="media-form-group">
+
+                    <label for="mediaFile">
+                        Photo *
+                    </label>
+
+                    <input
+                        type="file"
+                        id="mediaFile"
+                        accept="image/jpeg,image/png,image/webp,image/gif"
+                    >
+
+                    <small>
+                        Supported formats: JPG, PNG, WEBP and GIF.
+                    </small>
+
+
+                    <div
+                        class="media-upload-preview"
+                        id="mediaUploadPreview"
+                    >
+
+                        <img
+                            id="mediaPreviewImage"
+                            src=""
+                            alt="Photo preview"
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <div
+                    class="media-progress"
+                    id="mediaProgress"
+                >
+
+                    <div class="media-progress-bar">
+
+                        <div
+                            class="media-progress-bar-inner"
+                            id="mediaProgressBar"
+                        ></div>
+
+                    </div>
+
+                    <span
+                        class="media-progress-text"
+                        id="mediaProgressText"
+                    >
+                        Uploading...
+                    </span>
+
+                </div>
+
+
+
+                <div class="media-form-actions">
+
+                    <button
+                        type="button"
+                        class="media-secondary-button"
+                        id="cancelMediaButton"
+                    >
+                        Cancel
+                    </button>
+
+
+                    <button
+                        type="submit"
+                        class="media-primary-button"
+                        id="saveMediaButton"
+                    >
+                        Upload Photo
+                    </button>
+
+                </div>
+
+
+            </form>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ==========================================
+         SUPABASE
+    =========================================== -->
+
+    <script>
+
+        const SUPABASE_URL =
+            "https://jutxahzlecbbphgxlouy.supabase.co";
+
+
+        const SUPABASE_KEY =
+            "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+        let supabaseClient;
+
+        let mediaRecords = [];
+
+        let editingMediaId = null;
+
+
+
+        /* ==========================================
+           LOAD SUPABASE
+        =========================================== */
+
+        function loadSupabase() {
+
+            return new Promise(function (
+                resolve,
+                reject
+            ) {
+
+                if (window.supabase) {
+
+                    resolve();
+
+                    return;
+
+                }
+
+
+                const script =
+                    document.createElement("script");
+
+
+                script.src =
+                    "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
+
+
+                script.onload =
+                    function () {
+
+                        resolve();
+
+                    };
+
+
+                script.onerror =
+                    function () {
+
+                        reject(
+                            new Error(
+                                "Failed to load Supabase."
+                            )
+                        );
+
+                    };
+
+
+                document.head.appendChild(
+                    script
+                );
+
+            });
+
+        }
+
+
+
+        /* ==========================================
+           ESCAPE HTML
+        =========================================== */
+
+        function escapeHtml(value) {
+
+            if (
+                value === null ||
+                value === undefined
+            ) {
+
+                return "";
+
+            }
+
+
+            return String(value)
+
+                .replace(
+                    /&/g,
+                    "&amp;"
+                )
+
+                .replace(
+                    /</g,
+                    "&lt;"
+                )
+
+                .replace(
+                    />/g,
+                    "&gt;"
+                )
+
+                .replace(
+                    /"/g,
+                    "&quot;"
+                )
+
+                .replace(
+                    /'/g,
+                    "&#039;"
+                );
+
+        }
+
+
+
+        /* ==========================================
+           FORMAT DATE
+        =========================================== */
+
+        function formatDate(value) {
+
+            if (!value) {
+
+                return "";
+
+            }
+
+
+            return new Date(
+                value
+            ).toLocaleDateString(
+                "en-US",
+                {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric"
+                }
+            );
+
+        }
+
+
+
+        /* ==========================================
+           INITIALIZE
+        =========================================== */
+
+        async function initializeMedia() {
+
+            try {
+
+                await loadSupabase();
+
+
+                supabaseClient =
+                    window.supabase.createClient(
+                        SUPABASE_URL,
+                        SUPABASE_KEY
+                    );
+
+
+                const {
+                    data: {
+                        session
+                    }
+                } =
+                    await supabaseClient.auth.getSession();
+
+
+                if (!session) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                if (
+                    session.user.email
+                        .toLowerCase() !==
+                    "infoayli.org@gmail.com"
+                ) {
+
+                    alert(
+                        "Administrator access is required."
+                    );
+
+
+                    window.location.href =
+                        "index.html";
+
+                    return;
+
+                }
+
+
+                await loadMedia();
+
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Media initialization error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to initialize the media management system."
+                );
+
+            }
+
+        }
+
+
+
+        /* ==========================================
+           LOAD MEDIA
+        =========================================== */
+
+        async function loadMedia() {
+
+            const {
+                data,
+                error
+            } =
+                await supabaseClient
+
+                    .from("website_media")
+
+                    .select("*")
+
+                    .order(
+                        "created_at",
+                        {
+                            ascending: false
+                        }
+                    );
+
+
+            if (error) {
+
+                console.error(
+                    "Media loading error:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "mediaTableBody"
+                ).innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="media-empty-state"
+                        >
+
+                            <h3>
+                                Unable to Load Media
+                            </h3>
+
+                            <p>
+                                ${escapeHtml(
+                                    error.message
+                                )}
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            mediaRecords =
+                data || [];
+
+
+            updateMediaStats();
+
+            renderMediaTable();
+
+        }
+
+
+
+        /* ==========================================
+           STATS
+        =========================================== */
+
+        function updateMediaStats() {
+
+            document.getElementById(
+                "totalMedia"
+            ).textContent =
+                mediaRecords.length;
+
+
+            document.getElementById(
+                "publishedMedia"
+            ).textContent =
+                mediaRecords.filter(
+                    item =>
+                        item.status ===
+                        "Published"
+                ).length;
+
+
+            document.getElementById(
+                "draftMedia"
+            ).textContent =
+                mediaRecords.filter(
+                    item =>
+                        item.status ===
+                        "Draft"
+                ).length;
+
+
+            document.getElementById(
+                "archivedMedia"
+            ).textContent =
+                mediaRecords.filter(
+                    item =>
+                        item.status ===
+                        "Archived"
+                ).length;
+
+        }
+
+
+
+        /* ==========================================
+           RENDER TABLE
+        =========================================== */
+
+        function renderMediaTable() {
+
+            const search =
+                document.getElementById(
+                    "mediaSearch"
+                ).value
+                    .trim()
+                    .toLowerCase();
+
+
+            const category =
+                document.getElementById(
+                    "mediaCategoryFilter"
+                ).value;
+
+
+            const status =
+                document.getElementById(
+                    "mediaStatusFilter"
+                ).value;
+
+
+            const filtered =
+                mediaRecords.filter(
+                    function (item) {
+
+                        const matchesSearch =
+                            !search ||
+                            (
+                                item.title || ""
+                            )
+                                .toLowerCase()
+                                .includes(search) ||
+                            (
+                                item.caption || ""
+                            )
+                                .toLowerCase()
+                                .includes(search);
+
+
+                        const matchesCategory =
+                            !category ||
+                            item.category ===
+                            category;
+
+
+                        const matchesStatus =
+                            !status ||
+                            item.status ===
+                            status;
+
+
+                        return (
+                            matchesSearch &&
+                            matchesCategory &&
+                            matchesStatus
+                        );
+
+                    }
+                );
+
+
+            const tbody =
+                document.getElementById(
+                    "mediaTableBody"
+                );
+
+
+            if (filtered.length === 0) {
+
+                tbody.innerHTML = `
+
+                    <tr>
+
+                        <td
+                            colspan="6"
+                            class="media-empty-state"
+                        >
+
+                            <h3>
+                                No Media Found
+                            </h3>
+
+                            <p>
+                                Upload your first AYLI photograph
+                                to begin building the media library.
+                            </p>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            tbody.innerHTML =
+                filtered
+                    .map(
+                        function (item) {
+
+                            return `
+
+                                <tr>
+
+                                    <td>
+
+                                        <img
+                                            src="${escapeHtml(
+                                                item.image_url
+                                            )}"
+                                            alt="${escapeHtml(
+                                                item.alt_text ||
+                                                item.title
+                                            )}"
+                                            class="media-thumbnail"
+                                        >
+
+                                    </td>
+
+
+                                    <td>
+
+                                        <strong>
+                                            ${escapeHtml(
+                                                item.title
+                                            )}
+                                        </strong>
+
+                                        ${
+                                            item.caption
+                                                ? `
+                                                    <div
+                                                        style="
+                                                            color:#777;
+                                                            font-size:12px;
+                                                            margin-top:4px;
+                                                        "
+                                                    >
+                                                        ${escapeHtml(
+                                                            item.caption
+                                                        )}
+                                                    </div>
+                                                `
+                                                : ""
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+                                        ${escapeHtml(
+                                            item.category
+                                        )}
+                                    </td>
+
+
+                                    <td>
+
+                                        <span
+                                            class="
+                                                media-status
+                                                ${
+                                                    item.status ===
+                                                    "Published"
+                                                        ? "media-status-published"
+                                                        : item.status ===
+                                                          "Draft"
+                                                            ? "media-status-draft"
+                                                            : "media-status-archived"
+                                                }
+                                            "
+                                        >
+                                            ${escapeHtml(
+                                                item.status
+                                            )}
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+                                        ${escapeHtml(
+                                            formatDate(
+                                                item.created_at
+                                            )
+                                        )}
+                                    </td>
+
+
+                                    <td>
+
+                                        <div
+                                            class="media-actions"
+                                        >
+
+                                            ${
+                                                item.status !==
+                                                "Published"
+                                                    ? `
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                media-action-button
+                                                                media-action-publish
+                                                            "
+                                                            onclick="changeMediaStatus(
+                                                                '${item.id}',
+                                                                'Published'
+                                                            )"
+                                                        >
+                                                            Publish
+                                                        </button>
+                                                    `
+                                                    : ""
+                                            }
+
+
+                                            ${
+                                                item.status !==
+                                                "Archived"
+                                                    ? `
+                                                        <button
+                                                            type="button"
+                                                            class="
+                                                                media-action-button
+                                                                media-action-archive
+                                                            "
+                                                            onclick="changeMediaStatus(
+                                                                '${item.id}',
+                                                                'Archived'
+                                                            )"
+                                                        >
+                                                            Archive
+                                                        </button>
+                                                    `
+                                                    : ""
+                                            }
+
+
+                                            <button
+                                                type="button"
+                                                class="media-action-button"
+                                                onclick="editMedia(
+                                                    '${item.id}'
+                                                )"
+                                            >
+                                                Edit
+                                            </button>
+
+
+                                            <button
+                                                type="button"
+                                                class="
+                                                    media-action-button
+                                                    media-action-delete
+                                                "
+                                                onclick="deleteMedia(
+                                                    '${item.id}'
+                                                )"
+                                            >
+                                                Delete
+                                            </button>
+
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+
+                            `;
+
+                        }
+                    )
+                    .join("");
+
+        }
+
+
+
+        /* ==========================================
+           OPEN MODAL
+        =========================================== */
+
+        function openMediaModal() {
+
+            editingMediaId = null;
+
+
+            document.getElementById(
+                "mediaModalTitle"
+            ).textContent =
+                "Upload Photo";
+
+
+            document.getElementById(
+                "saveMediaButton"
+            ).textContent =
+                "Upload Photo";
+
+
+            document.getElementById(
+                "mediaForm"
+            ).reset();
+
+
+            document.getElementById(
+                "mediaUploadPreview"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "mediaProgress"
+            ).style.display =
+                "none";
+
+
+            document.getElementById(
+                "mediaModal"
+            ).classList.add("active");
+
+        }
+
+
+
+        /* ==========================================
+           CLOSE MODAL
+        =========================================== */
+
+        function closeMediaModal() {
+
+            document.getElementById(
+                "mediaModal"
+            ).classList.remove("active");
+
+            editingMediaId = null;
+
+        }
+
+
+
+        /* ==========================================
+           PREVIEW IMAGE
+        =========================================== */
+
+        document.getElementById(
+            "mediaFile"
+        ).addEventListener(
+            "change",
+            function () {
+
+                const file =
+                    this.files[0];
+
+
+                if (!file) {
+
+                    document.getElementById(
+                        "mediaUploadPreview"
+                    ).style.display =
+                        "none";
+
+                    return;
+
+                }
+
+
+                const reader =
+                    new FileReader();
+
+
+                reader.onload =
+                    function (event) {
+
+                        document.getElementById(
+                            "mediaPreviewImage"
+                        ).src =
+                            event.target.result;
+
+
+                        document.getElementById(
+                            "mediaUploadPreview"
+                        ).style.display =
+                            "block";
+
+                    };
+
+
+                reader.readAsDataURL(file);
+
+            }
+        );
+
+
+
+        /* ==========================================
+           UPLOAD FILE
+        =========================================== */
+
+        async function uploadImage(file) {
+
+            if (!file) {
+
+                return null;
+
+            }
+
+
+            const fileExtension =
+                file.name
+                    .split(".")
+                    .pop()
+                    .toLowerCase();
+
+
+            const uniqueName =
+                "ayli-" +
+                Date.now() +
+                "-" +
+                Math.random()
+                    .toString(36)
+                    .substring(2, 10) +
+                "." +
+                fileExtension;
+
+
+            const filePath =
+                uniqueName;
+
+
+            const {
+                error
+            } =
+                await supabaseClient.storage
+
+                    .from("website-media")
+
+                    .upload(
+                        filePath,
+                        file,
+                        {
+                            cacheControl:
+                                "3600",
+
+                            upsert:
+                                false
+                        }
+                    );
+
+
+            if (error) {
+
+                throw error;
+
+            }
+
+
+            const {
+                data
+            } =
+                supabaseClient.storage
+
+                    .from("website-media")
+
+                    .getPublicUrl(
+                        filePath
+                    );
+
+
+            return data.publicUrl;
+
+        }
+
+
+
+        /* ==========================================
+           SAVE MEDIA
+        =========================================== */
+
+        document.getElementById(
+            "mediaForm"
+        ).addEventListener(
+            "submit",
+            async function (event) {
+
+                event.preventDefault();
+
+
+                const title =
+                    document.getElementById(
+                        "mediaTitle"
+                    ).value.trim();
+
+
+                const caption =
+                    document.getElementById(
+                        "mediaCaption"
+                    ).value.trim();
+
+
+                const category =
+                    document.getElementById(
+                        "mediaCategory"
+                    ).value;
+
+
+                const altText =
+                    document.getElementById(
+                        "mediaAltText"
+                    ).value.trim();
+
+
+                const status =
+                    document.getElementById(
+                        "mediaStatus"
+                    ).value;
+
+
+                const file =
+                    document.getElementById(
+                        "mediaFile"
+                    ).files[0];
+
+
+                if (!title) {
+
+                    alert(
+                        "Please enter a photo title."
+                    );
+
+                    return;
+
+                }
+
+
+                if (
+                    !editingMediaId &&
+                    !file
+                ) {
+
+                    alert(
+                        "Please select a photo to upload."
+                    );
+
+                    return;
+
+                }
+
+
+                const saveButton =
+                    document.getElementById(
+                        "saveMediaButton"
+                    );
+
+
+                saveButton.disabled =
+                    true;
+
+
+                saveButton.textContent =
+                    "Saving...";
+
+
+                try {
+
+                    let imageUrl = null;
+
+
+                    if (file) {
+
+                        document.getElementById(
+                            "mediaProgress"
+                        ).style.display =
+                            "block";
+
+
+                        document.getElementById(
+                            "mediaProgressText"
+                        ).textContent =
+                            "Uploading photo...";
+
+
+                        document.getElementById(
+                            "mediaProgressBar"
+                        ).style.width =
+                            "50%";
+
+
+                        imageUrl =
+                            await uploadImage(
+                                file
+                            );
+
+
+                        document.getElementById(
+                            "mediaProgressBar"
+                        ).style.width =
+                            "100%";
+
+
+                        document.getElementById(
+                            "mediaProgressText"
+                        ).textContent =
+                            "Photo uploaded successfully.";
+
+                    }
+
+
+                    if (editingMediaId) {
+
+                        const updateData = {
+
+                            title:
+                                title,
+
+                            caption:
+                                caption ||
+                                null,
+
+                            category:
+                                category,
+
+                            alt_text:
+                                altText ||
+                                null,
+
+                            status:
+                                status,
+
+                            updated_at:
+                                new Date()
+                                    .toISOString()
+
+                        };
+
+
+                        if (imageUrl) {
+
+                            updateData.image_url =
+                                imageUrl;
+
+                        }
+
+
+                        if (
+                            status ===
+                            "Published"
+                        ) {
+
+                            updateData.published_at =
+                                new Date()
+                                    .toISOString();
+
+                        }
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+
+                                .from(
+                                    "website_media"
+                                )
+
+                                .update(
+                                    updateData
+                                )
+
+                                .eq(
+                                    "id",
+                                    editingMediaId
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        alert(
+                            "Media updated successfully."
+                        );
+
+                    }
+
+                    else {
+
+                        if (!imageUrl) {
+
+                            throw new Error(
+                                "Photo upload failed."
+                            );
+
+                        }
+
+
+                        const insertData = {
+
+                            title:
+                                title,
+
+                            caption:
+                                caption ||
+                                null,
+
+                            category:
+                                category,
+
+                            image_url:
+                                imageUrl,
+
+                            alt_text:
+                                altText ||
+                                null,
+
+                            status:
+                                status,
+
+                            published_at:
+                                status ===
+                                "Published"
+                                    ? new Date()
+                                        .toISOString()
+                                    : null
+
+                        };
+
+
+                        const {
+                            error
+                        } =
+                            await supabaseClient
+
+                                .from(
+                                    "website_media"
+                                )
+
+                                .insert(
+                                    insertData
+                                );
+
+
+                        if (error) {
+
+                            throw error;
+
+                        }
+
+
+                        alert(
+                            status ===
+                            "Published"
+                                ? "Photo uploaded and published successfully."
+                                : "Photo uploaded successfully as a draft."
+                        );
+
+                    }
+
+
+                    closeMediaModal();
+
+                    await loadMedia();
+
+                }
+
+                catch (error) {
+
+                    console.error(
+                        "Media save error:",
+                        error
+                    );
+
+
+                    alert(
+                        "Unable to save media: " +
+                        error.message
+                    );
+
+                }
+
+                finally {
+
+                    saveButton.disabled =
+                        false;
+
+
+                    saveButton.textContent =
+                        editingMediaId
+                            ? "Save Changes"
+                            : "Upload Photo";
+
+                }
+
+            }
+        );
+
+
+
+        /* ==========================================
+           EDIT MEDIA
+        =========================================== */
+
+        function editMedia(id) {
+
+            const item =
+                mediaRecords.find(
+                    media =>
+                        media.id === id
+                );
+
+
+            if (!item) {
+
+                return;
+
+            }
+
+
+            editingMediaId =
+                id;
+
+
+            document.getElementById(
+                "mediaModalTitle"
+            ).textContent =
+                "Edit Photo";
+
+
+            document.getElementById(
+                "saveMediaButton"
+            ).textContent =
+                "Save Changes";
+
+
+            document.getElementById(
+                "mediaTitle"
+            ).value =
+                item.title || "";
+
+
+            document.getElementById(
+                "mediaCaption"
+            ).value =
+                item.caption || "";
+
+
+            document.getElementById(
+                "mediaCategory"
+            ).value =
+                item.category ||
+                "General";
+
+
+            document.getElementById(
+                "mediaAltText"
+            ).value =
+                item.alt_text || "";
+
+
+            document.getElementById(
+                "mediaStatus"
+            ).value =
+                item.status ||
+                "Draft";
+
+
+            document.getElementById(
+                "mediaFile"
+            ).value =
+                "";
+
+
+            if (item.image_url) {
+
+                document.getElementById(
+                    "mediaPreviewImage"
+                ).src =
+                    item.image_url;
+
+
+                document.getElementById(
+                    "mediaUploadPreview"
+                ).style.display =
+                    "block";
+
+            }
+
+
+            document.getElementById(
+                "mediaModal"
+            ).classList.add("active");
+
+        }
+
+
+
+        /* ==========================================
+           CHANGE STATUS
+        =========================================== */
+
+        async function changeMediaStatus(
+            id,
+            newStatus
+        ) {
+
+            const item =
+                mediaRecords.find(
+                    media =>
+                        media.id === id
+                );
+
+
+            if (!item) {
+
+                return;
+
+            }
+
+
+            const actionText =
+                newStatus ===
+                "Published"
+                    ? "publish"
+                    : "archive";
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to " +
+                    actionText +
+                    " this photo?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            const updateData = {
+
+                status:
+                    newStatus,
+
+                updated_at:
+                    new Date()
+                        .toISOString()
+
+            };
+
+
+            if (
+                newStatus ===
+                "Published"
+            ) {
+
+                updateData.published_at =
+                    new Date()
+                        .toISOString();
+
+            }
+
+
+            const {
+                error
+            } =
+                await supabaseClient
+
+                    .from(
+                        "website_media"
+                    )
+
+                    .update(
+                        updateData
+                    )
+
+                    .eq(
+                        "id",
+                        id
+                    );
+
+
+            if (error) {
+
+                alert(
+                    "Unable to update status: " +
+                    error.message
+                );
+
+                return;
+
+            }
+
+
+            await loadMedia();
+
+        }
+
+
+
+        /* ==========================================
+           DELETE MEDIA
+        =========================================== */
+
+        async function deleteMedia(id) {
+
+            const item =
+                mediaRecords.find(
+                    media =>
+                        media.id === id
+                );
+
+
+            if (!item) {
+
+                return;
+
+            }
+
+
+            if (
+                !confirm(
+                    "Are you sure you want to permanently delete this photo?"
+                )
+            ) {
+
+                return;
+
+            }
+
+
+            try {
+
+                /*
+                    Delete database record first.
+                */
+
+                const {
+                    error: databaseError
+                } =
+                    await supabaseClient
+
+                        .from(
+                            "website_media"
+                        )
+
+                        .delete()
+
+                        .eq(
+                            "id",
+                            id
+                        );
+
+
+                if (databaseError) {
+
+                    throw databaseError;
+
+                }
+
+
+                /*
+                    Attempt to remove the
+                    associated storage file.
+                */
+
+                if (item.image_url) {
+
+                    const marker =
+                        "/website-media/";
+
+                    const index =
+                        item.image_url.indexOf(
+                            marker
+                        );
+
+
+                    if (index !== -1) {
+
+                        const filePath =
+                            item.image_url.substring(
+                                index +
+                                marker.length
+                            );
+
+
+                        await supabaseClient
+                            .storage
+                            .from(
+                                "website-media"
+                            )
+                            .remove(
+                                [filePath]
+                            );
+
+                    }
+
+                }
+
+
+                alert(
+                    "Photo deleted successfully."
+                );
+
+
+                await loadMedia();
+
+            }
+
+            catch (error) {
+
+                console.error(
+                    "Delete media error:",
+                    error
+                );
+
+
+                alert(
+                    "Unable to delete photo: " +
+                    error.message
+                );
+
+            }
+
+        }
+
+
+
+        /* ==========================================
+           EVENTS
+        =========================================== */
+
+        document.getElementById(
+            "openUploadButton"
+        ).addEventListener(
+            "click",
+            openMediaModal
+        );
+
+
+        document.getElementById(
+            "closeMediaModal"
+        ).addEventListener(
+            "click",
+            closeMediaModal
+        );
+
+
+        document.getElementById(
+            "cancelMediaButton"
+        ).addEventListener(
+            "click",
+            closeMediaModal
+        );
+
+
+        document.getElementById(
+            "mediaSearch"
+        ).addEventListener(
+            "input",
+            renderMediaTable
+        );
+
+
+        document.getElementById(
+            "mediaCategoryFilter"
+        ).addEventListener(
+            "change",
+            renderMediaTable
+        );
+
+
+        document.getElementById(
+            "mediaStatusFilter"
+        ).addEventListener(
+            "change",
+            renderMediaTable
+        );
+
+
+        document.getElementById(
+            "mediaModal"
+        ).addEventListener(
+            "click",
+            function (event) {
+
+                if (
+                    event.target ===
+                    this
+                ) {
+
+                    closeMediaModal();
+
+                }
+
+            }
+        );
+
+
+        document.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key ===
+                    "Escape"
+                ) {
+
+                    closeMediaModal();
+
+                }
+
+            }
+        );
+
+
+
+        /* ==========================================
+           START
+        =========================================== */
+
+        document.addEventListener(
+            "DOMContentLoaded",
+            function () {
+
+                initializeMedia();
+
+            }
+        );
+
+    </script>
+
+
+</body>
+
+</html>
