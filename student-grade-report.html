@@ -159,9 +159,24 @@
 }
 
 .signature-space {
-    height: 55px;
+    height: 75px;
     border-bottom: 1px solid #1b3a57;
     margin-bottom: 8px;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.ceo-signature {
+    width: 210px;
+    max-width: 100%;
+    height: auto;
+    max-height: 68px;
+    object-fit: contain;
+    display: block;
+    margin-bottom: 2px;
 }
 
 .signature-name {
@@ -293,7 +308,13 @@
 <div class="report-signature">
 
     <div class="signature-line">
-        <div class="signature-space"></div>
+       <div class="signature-space">
+    <img
+        src="assets/images/ayli-ceo-signature.png"
+        alt="Signature of Amb. Christopher N. Touabli Jr."
+        class="ceo-signature"
+    >
+</div>
 
         <div class="signature-name">
             Amb. Christopher N. Touabli Jr.
