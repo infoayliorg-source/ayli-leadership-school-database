@@ -132,6 +132,11 @@ document
                 student.ayli_id
             );
 
+            localStorage.setItem(
+    "ayliStudentPassword",
+    password
+);
+
 
             // ==================================================
             // REDIRECT TO STUDENT PROFILE

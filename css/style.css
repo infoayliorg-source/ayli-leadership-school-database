@@ -651,3 +651,94 @@ img {
     }
 
 }
+/* ==========================================================
+   STUDENT DASHBOARD - GRADUATION STATUS
+   ========================================================== */
+
+#dashboardGraduationStatus {
+    width: 100%;
+    margin: 0 0 25px;
+}
+
+.dashboard-clearance {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 22px 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    border-left: 6px solid #0B3D91;
+}
+
+.dashboard-clearance.cleared {
+    background: #eaf8ef;
+    border-left-color: #16803c;
+}
+
+.dashboard-clearance.pending {
+    background: #fff8e6;
+    border-left-color: #F4B400;
+}
+
+.dashboard-clearance .clearance-icon {
+    font-size: 42px;
+    flex-shrink: 0;
+}
+
+.dashboard-clearance .clearance-text {
+    flex: 1;
+}
+
+.dashboard-clearance .clearance-text h3 {
+    margin: 0 0 6px;
+    color: #0B3D91;
+    font-size: 18px;
+}
+
+.dashboard-clearance .clearance-text strong {
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.dashboard-clearance.cleared .clearance-text strong {
+    color: #16803c;
+}
+
+.dashboard-clearance.pending .clearance-text strong {
+    color: #805f00;
+}
+
+.dashboard-clearance .clearance-text p {
+    margin: 4px 0;
+    color: #52606D;
+}
+
+.clearance-button {
+    display: inline-block;
+    background: #0B3D91;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.clearance-button:hover {
+    background: #082f70;
+}
+
+@media (max-width: 700px) {
+
+    .dashboard-clearance {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .clearance-button {
+        width: 100%;
+        text-align: center;
+    }
+
+}

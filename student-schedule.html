@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Class Schedule | AYLI</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        .schedule-page {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .schedule-header {
+            background: linear-gradient(
+                135deg,
+                #0B3D91,
+                #174ea6
+            );
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .schedule-header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .schedule-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .cohort-info {
+            margin-top: 12px;
+            font-weight: 700;
+            color: #F4B400;
+        }
+
+        .schedule-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .day-title {
+            color: #0B3D91;
+            font-size: 21px;
+            margin: 0 0 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #F4B400;
+        }
+
+        .class-row {
+            display: grid;
+            grid-template-columns:
+                150px
+                1fr
+                220px
+                150px;
+            gap: 15px;
+            align-items: center;
+            padding: 18px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .class-row:last-child {
+            border-bottom: none;
+        }
+
+        .class-time {
+            font-weight: 800;
+            color: #0B3D91;
+        }
+
+        .course-name {
+            font-weight: 800;
+            color: #172b4d;
+        }
+
+        .lecturer-name {
+            color: #52606D;
+        }
+
+        .meeting-type {
+            color: #52606D;
+            font-size: 14px;
+        }
+
+        .join-class {
+            display: inline-block;
+            background: #0B3D91;
+            color: white;
+            padding: 8px 13px;
+            border-radius: 7px;
+            text-decoration: none;
+            margin-top: 6px;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .join-class:hover {
+            background: #082f70;
+        }
+
+        .empty-state {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 45px 25px;
+            text-align: center;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .empty-state h2 {
+            color: #0B3D91;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #52606D;
+        }
+
+        .error-message {
+            background: #fdecec;
+            color: #9b1c1c;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: #0B3D91;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 800px) {
+
+            .class-row {
+                grid-template-columns: 1fr;
+                gap: 7px;
+            }
+
+            .schedule-page {
+                padding: 12px;
+            }
+
+            .schedule-header {
+                padding: 22px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="schedule-page">
+
+        <div class="schedule-header">
+
+            <h1>📅 Class Schedule</h1>
+
+            <p>
+                Africa Youth Leadership Institute
+                — Student Class Timetable
+            </p>
+
+            <div
+                id="cohortInfo"
+                class="cohort-info"
+            >
+                Loading your cohort...
+            </div>
+
+        </div>
+
+
+        <div id="scheduleContent">
+
+            <div class="loading">
+                Loading your class schedule...
+            </div>
+
+        </div>
+
+
+        <a
+            href="student-dashboard.html"
+            class="back-button"
+        >
+            ← Back to Student Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ======================================================
+    // SUPABASE CONFIGURATION
+    // ======================================================
+
+    const SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+    const scheduleSupabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    // ======================================================
+    // STUDENT LOGIN
+    // ======================================================
+
+    const loggedIn =
+        localStorage.getItem(
+            "ayliStudentLoggedIn"
+        );
+
+    const ayliId =
+        localStorage.getItem(
+            "ayliCurrentStudentId"
+        );
+
+
+    if (
+        loggedIn !== "true" ||
+        !ayliId
+    ) {
+
+        window.location.href =
+            "student-login.html";
+
+    }
+
+
+    // ======================================================
+    // DAY ORDER
+    // ======================================================
+
+    const dayOrder = {
+
+        "Monday": 1,
+        "Tuesday": 2,
+        "Wednesday": 3,
+        "Thursday": 4,
+        "Friday": 5,
+        "Saturday": 6,
+        "Sunday": 7
+
+    };
+
+
+    // ======================================================
+    // FORMAT TIME
+    // ======================================================
+
+    function formatTime(timeValue) {
+
+        if (!timeValue) {
+            return "";
+        }
+
+        const parts =
+            timeValue.split(":");
+
+        let hour =
+            parseInt(parts[0], 10);
+
+        const minutes =
+            parts[1];
+
+        const period =
+            hour >= 12
+                ? "PM"
+                : "AM";
+
+        hour =
+            hour % 12 || 12;
+
+        return `${hour}:${minutes} ${period}`;
+
+    }
+
+
+    // ======================================================
+    // LOAD CLASS SCHEDULE
+    // ======================================================
+
+    async function loadClassSchedule() {
+
+        const scheduleContent =
+            document.getElementById(
+                "scheduleContent"
+            );
+
+        const cohortInfo =
+            document.getElementById(
+                "cohortInfo"
+            );
+
+
+        try {
+
+            // ==================================================
+            // GET STUDENT COHORT
+            // ==================================================
+
+            const {
+                data: student,
+                error: studentError
+            } = await scheduleSupabaseClient
+                .from("students")
+                .select("ayli_id, cohort")
+                .eq("ayli_id", ayliId)
+                .single();
+
+
+            if (
+                studentError ||
+                !student
+            ) {
+
+                console.error(
+                    "Student loading error:",
+                    studentError
+                );
+
+                scheduleContent.innerHTML = `
+                    <div class="error-message">
+
+                        <h2>
+                            Unable to load student information
+                        </h2>
+
+                        <p>
+                            Please log in again and try once more.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            const cohort =
+                student.cohort;
+
+
+            cohortInfo.textContent =
+                "Your Cohort: " +
+                (cohort || "Not assigned");
+
+
+            if (!cohort) {
+
+                scheduleContent.innerHTML = `
+                    <div class="empty-state">
+
+                        <div class="icon">
+                            📅
+                        </div>
+
+                        <h2>
+                            Cohort Not Assigned
+                        </h2>
+
+                        <p>
+                            Your cohort has not yet been assigned
+                            to your student record.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // GET ACTIVE CLASS SCHEDULES
+            // ==================================================
+
+            const {
+                data: schedules,
+                error: scheduleError
+            } = await scheduleSupabaseClient
+                .from("class_schedules")
+                .select(`
+                    id,
+                    cohort,
+                    course,
+                    lecturer,
+                    day_of_week,
+                    start_time,
+                    end_time,
+                    meeting_type,
+                    meeting_link,
+                    status
+                `)
+                .eq("cohort", cohort)
+                .eq("status", "Active");
+
+
+            if (scheduleError) {
+
+                console.error(
+                    "Schedule loading error:",
+                    scheduleError
+                );
+
+                scheduleContent.innerHTML = `
+                    <div class="error-message">
+
+                        <h2>
+                            Unable to load class schedule
+                        </h2>
+
+                        <p>
+                            Please try again later.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // NO SCHEDULE
+            // ==================================================
+
+            if (
+                !schedules ||
+                schedules.length === 0
+            ) {
+
+                scheduleContent.innerHTML = `
+                    <div class="empty-state">
+
+                        <div class="icon">
+                            📅
+                        </div>
+
+                        <h2>
+                            Class Schedule Not Published Yet
+                        </h2>
+
+                        <p>
+                            Your class timetable will appear here
+                            once AYLI publishes the schedule for
+                            your cohort.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            // ==================================================
+            // SORT SCHEDULE
+            // ==================================================
+
+            schedules.sort(
+                (a, b) => {
+
+                    const dayDifference =
+                        (
+                            dayOrder[a.day_of_week] || 99
+                        ) -
+                        (
+                            dayOrder[b.day_of_week] || 99
+                        );
+
+
+                    if (
+                        dayDifference !== 0
+                    ) {
+
+                        return dayDifference;
+
+                    }
+
+
+                    return (
+                        a.start_time || ""
+                    )
+                    .localeCompare(
+                        b.start_time || ""
+                    );
+
+                }
+            );
+
+
+            // ==================================================
+            // GROUP BY DAY
+            // ==================================================
+
+            const groupedSchedules = {};
+
+
+            schedules.forEach(
+                schedule => {
+
+                    if (
+                        !groupedSchedules[
+                            schedule.day_of_week
+                        ]
+                    ) {
+
+                        groupedSchedules[
+                            schedule.day_of_week
+                        ] = [];
+
+                    }
+
+
+                    groupedSchedules[
+                        schedule.day_of_week
+                    ].push(schedule);
+
+                }
+            );
+
+
+            // ==================================================
+            // BUILD HTML
+            // ==================================================
+
+            let html = "";
+
+
+            Object.keys(groupedSchedules)
+                .sort(
+                    (a, b) =>
+                        (
+                            dayOrder[a] || 99
+                        ) -
+                        (
+                            dayOrder[b] || 99
+                        )
+                )
+                .forEach(
+                    day => {
+
+                        html += `
+
+                            <div class="schedule-card">
+
+                                <h2 class="day-title">
+                                    ${day}
+                                </h2>
+
+                        `;
+
+
+                        groupedSchedules[day]
+                            .forEach(
+                                schedule => {
+
+                                    html += `
+
+                                        <div class="class-row">
+
+                                            <div class="class-time">
+
+                                                ${formatTime(
+                                                    schedule.start_time
+                                                )}
+
+                                                -
+
+                                                ${formatTime(
+                                                    schedule.end_time
+                                                )}
+
+                                            </div>
+
+
+                                            <div>
+
+                                                <div class="course-name">
+
+                                                    ${schedule.course}
+
+                                                </div>
+
+                                                <div class="meeting-type">
+
+                                                    ${schedule.meeting_type || "Online"}
+
+                                                </div>
+
+                                            </div>
+
+
+                                            <div class="lecturer-name">
+
+                                                👨‍🏫
+                                                ${schedule.lecturer}
+
+                                            </div>
+
+
+                                            <div>
+
+                                                ${
+                                                    schedule.meeting_link
+                                                        ? `
+                                                            <a
+                                                                href="${schedule.meeting_link}"
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                class="join-class"
+                                                            >
+                                                                🔗 Join Class
+                                                            </a>
+                                                          `
+                                                        : `
+                                                            <span class="meeting-type">
+                                                                No meeting link
+                                                            </span>
+                                                          `
+                                                }
+
+                                            </div>
+
+                                        </div>
+
+                                    `;
+
+                                }
+                            );
+
+
+                        html += `
+                            </div>
+                        `;
+
+                    }
+                );
+
+
+            scheduleContent.innerHTML =
+                html;
+
+
+        } catch (error) {
+
+            console.error(
+                "Unexpected schedule error:",
+                error
+            );
+
+
+            scheduleContent.innerHTML = `
+                <div class="error-message">
+
+                    <h2>
+                        Something went wrong
+                    </h2>
+
+                    <p>
+                        Please try again later.
+                    </p>
+
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // ======================================================
+    // START
+    // ======================================================
+
+    loadClassSchedule();
+
+</script>
+
+
+</body>
+
+</html>

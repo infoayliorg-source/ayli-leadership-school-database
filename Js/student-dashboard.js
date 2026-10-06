@@ -7,9 +7,6 @@
 // SUPABASE CONFIGURATION
 // ==========================================================
 
-// Use the same Supabase configuration already used
-// in your student-profile.html or other working JS file.
-
 const DASHBOARD_SUPABASE_URL =
     "https://jutxahzlecbbphgxlouy.supabase.co";
 
@@ -59,9 +56,13 @@ async function loadStudentDashboard() {
 
     try {
 
+        // ==================================================
+        // LOAD STUDENT INFORMATION
+        // ==================================================
+
         const {
             data: student,
-            error
+            error: studentError
         } = await dashboardSupabaseClient
             .from("students")
             .select("*")
@@ -69,11 +70,14 @@ async function loadStudentDashboard() {
             .single();
 
 
-        if (error || !student) {
+        if (
+            studentError ||
+            !student
+        ) {
 
             console.error(
                 "Dashboard student loading error:",
-                error
+                studentError
             );
 
             document.getElementById(
@@ -130,6 +134,239 @@ async function loadStudentDashboard() {
             (student.chapter || "-");
 
 
+        // ==================================================
+        // LOAD GRADUATION CLEARANCE
+        // ==================================================
+
+        const studentPassword =
+            localStorage.getItem(
+                "ayliStudentPassword"
+            );
+
+
+        let clearance = null;
+
+
+        if (studentPassword) {
+
+            const {
+                data: clearanceData,
+                error: clearanceError
+            } = await dashboardSupabaseClient
+                .rpc(
+                    "get_student_graduation_clearance",
+                    {
+                        p_ayli_id: ayliId,
+                        p_password: studentPassword
+                    }
+                );
+
+
+            if (clearanceError) {
+
+                console.error(
+                    "Graduation clearance error:",
+                    clearanceError
+                );
+
+            } else if (
+                clearanceData &&
+                clearanceData.length > 0
+            ) {
+
+                clearance =
+                    clearanceData[0];
+
+            }
+
+        }
+
+
+        // ==================================================
+        // CREATE DASHBOARD CLEARANCE SUMMARY
+        // ==================================================
+
+        let clearanceCard =
+            document.getElementById(
+                "dashboardGraduationStatus"
+            );
+
+
+        if (!clearanceCard) {
+
+            clearanceCard =
+                document.createElement("div");
+
+            clearanceCard.id =
+                "dashboardGraduationStatus";
+
+            const dashboardMenu =
+                document.querySelector(
+                    ".student-dashboard-menu"
+                );
+
+
+            if (dashboardMenu) {
+
+                dashboardMenu.parentNode.insertBefore(
+                    clearanceCard,
+                    dashboardMenu
+                );
+
+            }
+
+        }
+
+
+        // ==================================================
+        // DISPLAY CLEARANCE
+        // ==================================================
+
+        if (!clearance) {
+
+            clearanceCard.innerHTML = `
+                <div class="dashboard-clearance pending">
+
+                    <div class="clearance-icon">
+                        🎓
+                    </div>
+
+                    <div class="clearance-text">
+
+                        <h3>
+                            Graduation Status
+                        </h3>
+
+                        <strong>
+                            Clearance in progress
+                        </strong>
+
+                        <p>
+                            Your graduation clearance has not
+                            yet been published.
+                        </p>
+
+                    </div>
+
+                    <a
+                        href="student-graduation-clearance.html"
+                        class="clearance-button"
+                    >
+                        View Clearance
+                    </a>
+
+                </div>
+            `;
+
+        } else {
+
+            const finalStatus =
+                String(
+                    clearance.final_status || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const isCleared =
+                finalStatus === "cleared" ||
+                finalStatus === "final cleared" ||
+                finalStatus === "approved";
+
+
+            if (isCleared) {
+
+                clearanceCard.innerHTML = `
+                    <div class="dashboard-clearance cleared">
+
+                        <div class="clearance-icon">
+                            🎓
+                        </div>
+
+                        <div class="clearance-text">
+
+                            <h3>
+                                Graduation Status
+                            </h3>
+
+                            <strong>
+                                CLEARED FOR GRADUATION ✅
+                            </strong>
+
+                            <p>
+                                You have successfully completed
+                                the required graduation requirements.
+                            </p>
+
+                            ${
+                                clearance.graduation_date
+                                    ? `
+                                        <p>
+                                            <strong>
+                                                Graduation:
+                                            </strong>
+                                            ${clearance.graduation_date}
+                                        </p>
+                                      `
+                                    : ""
+                            }
+
+                        </div>
+
+                        <a
+                            href="student-graduation-clearance.html"
+                            class="clearance-button"
+                        >
+                            View Clearance
+                        </a>
+
+                    </div>
+                `;
+
+            } else {
+
+                clearanceCard.innerHTML = `
+                    <div class="dashboard-clearance pending">
+
+                        <div class="clearance-icon">
+                            🎓
+                        </div>
+
+                        <div class="clearance-text">
+
+                            <h3>
+                                Graduation Status
+                            </h3>
+
+                            <strong>
+                                ${
+                                    clearance.final_status ||
+                                    "CLEARANCE IN PROGRESS"
+                                }
+                            </strong>
+
+                            <p>
+                                Your graduation clearance is
+                                currently being processed.
+                            </p>
+
+                        </div>
+
+                        <a
+                            href="student-graduation-clearance.html"
+                            class="clearance-button"
+                        >
+                            View Clearance
+                        </a>
+
+                    </div>
+                `;
+
+            }
+
+        }
+
+
     } catch (error) {
 
         console.error(
@@ -153,6 +390,7 @@ async function loadStudentDashboard() {
 
 loadStudentDashboard();
 
+
 // ==========================================================
 // STUDENT LOGOUT
 // ==========================================================
@@ -165,6 +403,10 @@ function studentLogout() {
 
     localStorage.removeItem(
         "ayliCurrentStudentId"
+    );
+
+    localStorage.removeItem(
+        "ayliStudentPassword"
     );
 
 

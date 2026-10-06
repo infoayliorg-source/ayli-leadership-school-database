@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Graduation Clearance | AYLI</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        .clearance-page {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 20px;
+        }
+
+        .clearance-header {
+            background: linear-gradient(
+                135deg,
+                #0B3D91,
+                #174ea6
+            );
+            color: white;
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 25px;
+        }
+
+        .clearance-header h1 {
+            margin: 0 0 8px;
+            font-size: 28px;
+        }
+
+        .clearance-header p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .clearance-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 20px;
+        }
+
+        .student-information {
+            display: grid;
+            grid-template-columns: repeat(
+                auto-fit,
+                minmax(220px, 1fr)
+            );
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .info-box {
+            background: #f4f7fb;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-box strong {
+            display: block;
+            color: #0B3D91;
+            margin-bottom: 5px;
+        }
+
+        .clearance-status {
+            text-align: center;
+            padding: 25px;
+            border-radius: 14px;
+            margin: 20px 0;
+        }
+
+        .status-cleared {
+            background: #e8f7ee;
+            border: 2px solid #1f9d55;
+            color: #126b38;
+        }
+
+        .status-pending {
+            background: #fff7e6;
+            border: 2px solid #f4b400;
+            color: #805f00;
+        }
+
+        .status-danger {
+            background: #fdecec;
+            border: 2px solid #d93025;
+            color: #9b1c1c;
+        }
+
+        .clearance-status h2 {
+            margin: 0 0 10px;
+            font-size: 25px;
+        }
+
+        .clearance-status p {
+            margin: 5px 0;
+        }
+
+        .requirements {
+            margin-top: 25px;
+        }
+
+        .requirements h2 {
+            color: #0B3D91;
+        }
+
+        .requirement-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 13px 15px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .requirement-row:last-child {
+            border-bottom: none;
+        }
+
+        .requirement-status {
+            font-weight: 700;
+        }
+
+        .status-yes {
+            color: #16803c;
+        }
+
+        .status-no {
+            color: #c62828;
+        }
+
+        .remarks {
+            background: #f4f7fb;
+            border-left: 4px solid #0B3D91;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 6px;
+        }
+
+        .back-button {
+            display: inline-block;
+            background: #0B3D91;
+            color: white;
+            padding: 11px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #52606D;
+        }
+
+        .error-message {
+            background: #fdecec;
+            color: #9b1c1c;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <div class="clearance-page">
+
+        <div class="clearance-header">
+
+            <h1>🎓 Graduation Clearance</h1>
+
+            <p>
+                Africa Youth Leadership Institute
+                — Student Graduation Clearance
+            </p>
+
+        </div>
+
+
+        <div
+            id="clearanceContent"
+            class="clearance-card"
+        >
+
+            <div class="loading">
+                Loading your graduation clearance...
+            </div>
+
+        </div>
+
+
+        <a
+            href="student-dashboard.html"
+            class="back-button"
+        >
+            ← Back to Student Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ======================================================
+    // SUPABASE CONFIGURATION
+    // ======================================================
+
+    const SUPABASE_URL =
+        "https://jutxahzlecbbphgxlouy.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+        "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+
+    const clearanceSupabaseClient =
+        supabase.createClient(
+            SUPABASE_URL,
+            SUPABASE_PUBLISHABLE_KEY
+        );
+
+
+    // ======================================================
+    // STUDENT LOGIN INFORMATION
+    // ======================================================
+
+    const loggedIn =
+        localStorage.getItem(
+            "ayliStudentLoggedIn"
+        );
+
+    const ayliId =
+        localStorage.getItem(
+            "ayliCurrentStudentId"
+        );
+
+    const studentPassword =
+        localStorage.getItem(
+            "ayliStudentPassword"
+        );
+
+
+    // ======================================================
+    // CHECK LOGIN
+    // ======================================================
+
+    if (
+        loggedIn !== "true" ||
+        !ayliId ||
+        !studentPassword
+    ) {
+
+        window.location.href =
+            "student-login.html";
+
+    }
+
+
+    // ======================================================
+    // HELPERS
+    // ======================================================
+
+    function displayStatus(value) {
+
+        if (!value) {
+
+            return `
+                <span class="requirement-status status-no">
+                    Pending
+                </span>
+            `;
+
+        }
+
+        const status =
+            String(value).trim().toLowerCase();
+
+
+        if (
+            status === "cleared" ||
+            status === "completed" ||
+            status === "passed" ||
+            status === "approved" ||
+            status === "yes"
+        ) {
+
+            return `
+                <span class="requirement-status status-yes">
+                    ✓ ${value}
+                </span>
+            `;
+
+        }
+
+
+        return `
+            <span class="requirement-status status-no">
+                ${value}
+            </span>
+        `;
+
+    }
+
+
+    function formatDate(dateValue) {
+
+        if (!dateValue) {
+
+            return "Not specified";
+
+        }
+
+        const date =
+            new Date(dateValue);
+
+
+        if (Number.isNaN(date.getTime())) {
+
+            return dateValue;
+
+        }
+
+
+        return date.toLocaleDateString(
+            "en-US",
+            {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+            }
+        );
+
+    }
+
+
+    // ======================================================
+    // LOAD GRADUATION CLEARANCE
+    // ======================================================
+
+    async function loadGraduationClearance() {
+
+        const content =
+            document.getElementById(
+                "clearanceContent"
+            );
+
+
+        try {
+
+            const {
+                data,
+                error
+            } = await clearanceSupabaseClient
+                .rpc(
+                    "get_student_graduation_clearance",
+                    {
+                        p_ayli_id: ayliId,
+                        p_password: studentPassword
+                    }
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Graduation clearance error:",
+                    error
+                );
+
+                content.innerHTML = `
+                    <div class="error-message">
+
+                        <h2>
+                            Unable to load clearance
+                        </h2>
+
+                        <p>
+                            We could not retrieve your
+                            graduation clearance at this time.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            const clearance =
+                data && data.length
+                    ? data[0]
+                    : null;
+
+
+            if (!clearance) {
+
+                content.innerHTML = `
+                    <div class="clearance-status status-pending">
+
+                        <h2>
+                            🎓 Graduation Clearance
+                        </h2>
+
+                        <p>
+                            Your graduation clearance
+                            has not yet been published.
+                        </p>
+
+                        <p>
+                            Please check your portal again
+                            after the clearance process is completed.
+                        </p>
+
+                    </div>
+                `;
+
+                return;
+
+            }
+
+
+            const finalStatus =
+                String(
+                    clearance.final_status || ""
+                )
+                .trim()
+                .toLowerCase();
+
+
+            const isCleared =
+                finalStatus === "cleared" ||
+                finalStatus === "final cleared" ||
+                finalStatus === "approved";
+
+
+            // ==================================================
+            // STATUS SECTION
+            // ==================================================
+
+            const statusClass =
+                isCleared
+                    ? "status-cleared"
+                    : "status-pending";
+
+
+            const statusTitle =
+                isCleared
+                    ? "FINAL CLEARANCE: CLEARED FOR GRADUATION ✅"
+                    : (
+                        clearance.final_status ||
+                        "CLEARANCE IN PROGRESS"
+                    );
+
+
+            const statusMessage =
+                isCleared
+                    ? `
+                        Congratulations!
+                        You have successfully completed
+                        the required graduation requirements
+                        and are officially cleared for graduation.
+                    `
+                    : `
+                        Your graduation clearance is
+                        currently being processed.
+                    `;
+
+
+            content.innerHTML = `
+
+                <div class="student-information">
+
+                    <div class="info-box">
+
+                        <strong>AYLI ID</strong>
+
+                        ${clearance.ayli_id}
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>Cohort</strong>
+
+                        ${clearance.cohort || "-"}
+
+                    </div>
+
+
+                    <div class="info-box">
+
+                        <strong>Graduation Date</strong>
+
+                        ${formatDate(
+                            clearance.graduation_date
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                <div
+                    class="clearance-status ${statusClass}"
+                >
+
+                    <h2>
+                        ${statusTitle}
+                    </h2>
+
+                    <p>
+                        ${statusMessage}
+                    </p>
+
+                </div>
+
+
+                <div class="requirements">
+
+                    <h2>
+                        Clearance Requirements
+                    </h2>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Registration
+                        </span>
+
+                        ${displayStatus(
+                            clearance.registration_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Academic Status
+                        </span>
+
+                        ${displayStatus(
+                            clearance.academic_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Course Completion
+                        </span>
+
+                        ${displayStatus(
+                            clearance.course_completion_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Examination
+                        </span>
+
+                        ${displayStatus(
+                            clearance.examination_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Presentation
+                        </span>
+
+                        ${displayStatus(
+                            clearance.presentation_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Graduation Fee
+                        </span>
+
+                        ${displayStatus(
+                            clearance.graduation_fee_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Administrative Clearance
+                        </span>
+
+                        ${displayStatus(
+                            clearance.administrative_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <span>
+                            Preliminary Clearance
+                        </span>
+
+                        ${displayStatus(
+                            clearance.preliminary_status
+                        )}
+
+                    </div>
+
+
+                    <div class="requirement-row">
+
+                        <strong>
+                            Final Clearance
+                        </strong>
+
+                        ${displayStatus(
+                            clearance.final_status
+                        )}
+
+                    </div>
+
+                </div>
+
+
+                ${
+                    clearance.remarks
+                        ? `
+                            <div class="remarks">
+
+                                <strong>
+                                    Remarks from AYLI:
+                                </strong>
+
+                                <p>
+                                    ${clearance.remarks}
+                                </p>
+
+                            </div>
+                          `
+                        : ""
+                }
+
+            `;
+
+
+        } catch (error) {
+
+            console.error(
+                "Unexpected graduation clearance error:",
+                error
+            );
+
+
+            content.innerHTML = `
+                <div class="error-message">
+
+                    <h2>
+                        Something went wrong
+                    </h2>
+
+                    <p>
+                        Please try again later.
+                    </p>
+
+                </div>
+            `;
+
+        }
+
+    }
+
+
+    // ======================================================
+    // START
+    // ======================================================
+
+    loadGraduationClearance();
+
+</script>
+
+
+</body>
+
+</html>
