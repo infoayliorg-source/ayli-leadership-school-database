@@ -742,3 +742,77 @@ img {
     }
 
 }
+
+/* ==========================================================
+   MOBILE SIDEBAR - SHOW MENU NAMES
+   ========================================================== */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 175px !important;
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .logo-area {
+        justify-content: flex-start !important;
+        padding: 15px 12px !important;
+    }
+
+    .logo-text {
+        display: block !important;
+    }
+
+    .menu-title {
+        display: block !important;
+        font-size: 10px !important;
+    }
+
+    .menu a {
+        justify-content: flex-start !important;
+        gap: 8px;
+        padding: 11px 10px !important;
+        font-size: 11px !important;
+        white-space: normal;
+    }
+
+    .menu-icon {
+        width: 24px;
+        min-width: 24px;
+        font-size: 17px !important;
+        text-align: center;
+    }
+
+    .main {
+        margin-left: 175px !important;
+        width: calc(100% - 175px) !important;
+    }
+}
+
+/* ==========================================================
+   VERY SMALL PHONES
+   ========================================================== */
+
+@media (max-width: 400px) {
+
+    .sidebar {
+        width: 165px !important;
+    }
+
+    .main {
+        margin-left: 165px !important;
+        width: calc(100% - 165px) !important;
+    }
+
+    .menu a {
+        padding: 10px 8px !important;
+        font-size: 10px !important;
+    }
+
+    .menu-icon {
+        width: 22px;
+        min-width: 22px;
+        font-size: 16px !important;
+    }
+}
