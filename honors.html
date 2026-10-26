@@ -463,14 +463,17 @@
     );
 
     // Restore a previously authenticated administrator session.
-    const { data: { session } } = await db.auth.getSession();
+   const { data: { session }, error } = await db.auth.getSession();
 
-    if (session?.user?.email?.toLowerCase() === "infoayli.org@gmail.com") {
-      showSignedIn(true);
-      await loadDashboard();
-    } else {
-      showSignedIn(false);
-    }
+if (error) {
+  showSignedIn(false);
+  showMessage(loginMessage, "Unable to check your login session. Please refresh and try again.", true);
+} else if (session?.user?.email?.toLowerCase() === "infoayli.org@gmail.com") {
+  showSignedIn(true);
+  await loadDashboard();
+} else {
+  showSignedIn(false);
+}
   </script>
 </body>
 </html>
