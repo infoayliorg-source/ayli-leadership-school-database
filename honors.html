@@ -1,0 +1,476 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AYLI Cohort 12 Honors Admin</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f3f6fb;
+      color: #172b4d;
+    }
+    header {
+      background: #123b70;
+      color: white;
+      padding: 24px 20px;
+    }
+    header h1 { margin: 0 0 8px; font-size: 24px; }
+    header p { margin: 0; color: #e0eaff; }
+    main { max-width: 1200px; margin: 25px auto; padding: 0 16px; }
+    .panel {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 8px #142b4810;
+    }
+    label { display: block; margin: 12px 0 6px; font-weight: bold; }
+    input {
+      width: 100%;
+      max-width: 420px;
+      padding: 11px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    button {
+      padding: 11px 16px;
+      border: 0;
+      border-radius: 6px;
+      background: #123b70;
+      color: white;
+      cursor: pointer;
+      margin: 12px 8px 0 0;
+    }
+    button.secondary { background: #52657e; }
+    button:disabled { opacity: .6; cursor: wait; }
+    #message { margin-top: 14px; white-space: pre-wrap; }
+    .error { color: #b42318; }
+    .success { color: #187044; }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      background: #eef4fc;
+      border-radius: 8px;
+      padding: 16px;
+    }
+    .stat strong { display: block; font-size: 25px; margin-top: 6px; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 14px; }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #e4e9f0;
+      vertical-align: top;
+    }
+    th { background: #eef4fc; }
+    .hidden { display: none; }
+    .note { color: #52657e; font-size: 14px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Africa Youth Leadership Institute</h1>
+    <p>Cohort 12 — Honors Verification Dashboard</p>
+  </header>
+
+  <main>
+    <section class="panel" id="loginPanel">
+      <h2>Administrator Sign In</h2>
+      <p class="note">
+        Sign in using the authorized AYLI administrator account.
+        Access is restricted by the Supabase database function.
+      </p>
+
+      <form id="loginForm">
+        <label for="email">Administrator Email</label>
+        <input id="email" type="email" value="infoayli.org@gmail.com"
+          autocomplete="username" required>
+
+        <label for="password">Password</label>
+        <input id="password" type="password"
+          autocomplete="current-password" required>
+
+        <button id="loginButton" type="submit">Sign In</button>
+      </form>
+      <div id="loginMessage" role="status"></div>
+    </section>
+
+    <section class="hidden" id="dashboard">
+      <div class="panel">
+        <h2>Honors Overview</h2>
+        <p class="note">
+          These results are provisional until the required grades,
+          duplicate records, verification, and final approval have
+          been reviewed. This dashboard is read-only.
+        </p>
+        <div class="stats">
+          <div class="stat">Records Displayed<strong id="total">—</strong></div>
+          <div class="stat">Eligible — Pending Final Approval<strong id="eligible">—</strong></div>
+          <div class="stat">Pending Review<strong id="pending">—</strong></div>
+          <div class="stat">Approved<strong id="approved">—</strong></div>
+          <div class="stat">Published<strong id="published">—</strong></div>
+        </div>
+        <button id="refreshButton" type="button">Refresh Results</button>
+        <button id="logoutButton" class="secondary" type="button">Sign Out</button>
+        <div id="dashboardMessage" role="status"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Student Honors Records</h2>
+        
+<div class="panel">
+  <h3>Review Selected Student</h3>
+  <p class="note">
+    Select a student's AYLI ID from the records below, then choose
+    an action. Verify records before approving honors.
+  </p>
+
+  <label for="selectedStudent">Student AYLI ID</label>
+  <input id="selectedStudent" type="text"
+    placeholder="Example: AYLI-C12-010">
+
+  <label for="actionRemarks">Remarks / Reason</label>
+  <input id="actionRemarks" type="text"
+    placeholder="Enter review notes or rejection reason">
+
+  <div>
+    <button type="button" id="verifyBtn">Verify Record</button>
+    <button type="button" id="reviewBtn" class="secondary">
+      Mark Needs Review
+    </button>
+    <button type="button" id="approveBtn">Approve Honors</button>
+    <button type="button" id="rejectBtn" class="secondary">
+      Reject Honors
+    </button>
+    <button type="button" id="publishBtn">Mark as Published</button>
+    <button type="button" id="unpublishBtn" class="secondary">
+      Unpublish
+    </button>
+  </div>
+
+  <p class="note">
+    These buttons will work only after we connect them to the secure
+    Supabase function. “Mark as Published” changes the database status;
+    it does not automatically publish names on the public website.
+  </p>
+</div>
+
+        <label for="search">Search by name, AYLI ID, or chapter</label>
+        <input id="search" type="search" placeholder="Type to search...">
+        <div class="table-wrap" style="margin-top:16px">
+          <table>
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>AYLI ID</th>
+                <th>Student</th>
+                <th>Chapter</th>
+                <th>Average</th>
+                <th>Honors Status</th>
+                <th>Verification</th>
+                <th>Final Approval</th>
+                <th>Publication</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody">
+              <tr><td colspan="9">No results loaded.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { createClient } from
+      "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+    const SUPABASE_URL =
+      "https://jutxahzlecbbphgxlouy.supabase.co";
+
+    // This is the public publishable key, not a service-role key.
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+    const db = createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const loginPanel = document.getElementById("loginPanel");
+    const dashboard = document.getElementById("dashboard");
+    const loginForm = document.getElementById("loginForm");
+    const loginMessage = document.getElementById("loginMessage");
+    const dashboardMessage = document.getElementById("dashboardMessage");
+    const resultsBody = document.getElementById("resultsBody");
+
+    let records = [];
+
+    function showMessage(element, message, isError = false) {
+      element.textContent = message;
+      element.className = isError ? "error" : "success";
+    }
+
+    function showSignedIn(isSignedIn) {
+      loginPanel.classList.toggle("hidden", isSignedIn);
+      dashboard.classList.toggle("hidden", !isSignedIn);
+    }
+
+    function safeNumber(value) {
+      const number = Number(value);
+      return Number.isFinite(number) ? number : null;
+    }
+
+    function renderRows() {
+      const query = document.getElementById("search").value
+        .trim().toLowerCase();
+
+      const filtered = records.filter(row =>
+        [
+          row.student_name,
+          row.ayli_id,
+          row.chapter,
+          row.honors_status
+        ].some(value => String(value ?? "").toLowerCase().includes(query))
+      );
+
+      resultsBody.replaceChildren();
+
+      if (!filtered.length) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = 9;
+        td.textContent = "No matching records.";
+        tr.appendChild(td);
+        resultsBody.appendChild(tr);
+        return;
+      }
+
+      filtered.forEach(row => {
+        const tr = document.createElement("tr");
+        const values = [
+          row.provisional_rank ?? "—",
+          row.ayli_id ?? "—",
+          row.student_name ?? "—",
+          row.chapter ?? "—",
+          safeNumber(row.provisional_average)?.toFixed(2) ?? "—",
+          row.honors_status ?? "—",
+          row.verification_status ?? "pending",
+          row.approval_status ?? "pending",
+          row.publication_status ?? "not_published"
+        ];
+
+        values.forEach(value => {
+          const td = document.createElement("td");
+          td.textContent = String(value);
+          tr.appendChild(td);
+        });
+
+        resultsBody.appendChild(tr);
+      });
+    }
+
+    async function loadDashboard() {
+      showMessage(dashboardMessage, "Loading honors records...");
+
+      const { data, error } = await db.rpc(
+        "admin_get_cohort12_honors_dashboard"
+      );
+
+      if (error) {
+        showMessage(
+          dashboardMessage,
+          "Could not load honors records: " + error.message,
+          true
+        );
+        return;
+      }
+
+      records = data ?? [];
+
+      const countStatus = status =>
+        records.filter(row => row.honors_status === status).length;
+
+      document.getElementById("total").textContent = records.length;
+      document.getElementById("eligible").textContent =
+        countStatus("Eligible - Pending Final Approval");
+
+      document.getElementById("pending").textContent =
+        records.filter(row =>
+          String(row.honors_status ?? "").startsWith("Pending")
+        ).length;
+
+      document.getElementById("approved").textContent =
+        records.filter(row => row.approval_status === "approved").length;
+
+      document.getElementById("published").textContent =
+        records.filter(row => row.publication_status === "published").length;
+
+      renderRows();
+      showMessage(
+        dashboardMessage,
+        "Records loaded. No grades or approval statuses were changed."
+      );
+    }
+
+    loginForm.addEventListener("submit", async event => {
+      event.preventDefault();
+      const button = document.getElementById("loginButton");
+      button.disabled = true;
+      showMessage(loginMessage, "Signing in...");
+
+      try {
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        const { error } = await db.auth.signInWithPassword({
+          email,
+          password
+        });
+
+        if (error) {
+          showMessage(loginMessage, error.message, true);
+          return;
+        }
+
+        const { data: { user } } = await db.auth.getUser();
+
+        if (user?.email?.toLowerCase() !== "infoayli.org@gmail.com") {
+          await db.auth.signOut();
+          showMessage(
+            loginMessage,
+            "Access denied. Use the authorized AYLI administrator account.",
+            true
+          );
+          return;
+        }
+
+        showSignedIn(true);
+        await loadDashboard();
+      } catch (error) {
+        showMessage(loginMessage, error.message || "Sign-in failed.", true);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    document.getElementById("refreshButton").addEventListener(
+      "click", loadDashboard
+    );
+
+    document.getElementById("logoutButton").addEventListener(
+      "click", async () => {
+        await db.auth.signOut();
+        records = [];
+        resultsBody.replaceChildren();
+        showSignedIn(false);
+        loginForm.reset();
+        showMessage(loginMessage, "You have signed out.");
+      }
+    );
+
+    document.getElementById("search").addEventListener("input", renderRows);
+
+    async function performHonorsAction(action) {
+      const ayliId = document.getElementById("selectedStudent").value.trim();
+      const remarks = document.getElementById("actionRemarks").value.trim();
+
+      if (!ayliId) {
+        showMessage(dashboardMessage, "Enter the student's AYLI ID first.", true);
+        return;
+      }
+
+      if (action === "rejected" && !remarks) {
+        showMessage(dashboardMessage, "Enter a reason before rejecting honors.", true);
+        return;
+      }
+
+      const confirmed = window.confirm(
+        `Are you sure you want to ${action.replaceAll("_", " ")} for ${ayliId}?`
+      );
+
+      if (!confirmed) return;
+
+      const buttons = [
+        "verifyBtn", "reviewBtn", "approveBtn",
+        "rejectBtn", "publishBtn", "unpublishBtn"
+      ];
+
+      buttons.forEach(id => {
+        document.getElementById(id).disabled = true;
+      });
+
+      try {
+        const { data, error } = await db.rpc(
+          "admin_update_cohort12_honors",
+          {
+            p_ayli_id: ayliId,
+            p_action: action,
+            p_remarks: remarks || null
+          }
+        );
+
+        if (error) throw error;
+
+        showMessage(
+          dashboardMessage,
+          `Action successful: ${data.action} for ${data.ayli_id}.`
+        );
+
+        await loadDashboard();
+      } catch (error) {
+        showMessage(
+          dashboardMessage,
+          "Action failed: " + (error.message || "Unknown error"),
+          true
+        );
+      } finally {
+        buttons.forEach(id => {
+          document.getElementById(id).disabled = false;
+        });
+      }
+    }
+
+    document.getElementById("verifyBtn").addEventListener(
+      "click", () => performHonorsAction("verified")
+    );
+
+    document.getElementById("reviewBtn").addEventListener(
+      "click", () => performHonorsAction("marked_needs_review")
+    );
+
+    document.getElementById("approveBtn").addEventListener(
+      "click", () => performHonorsAction("approved")
+    );
+
+    document.getElementById("rejectBtn").addEventListener(
+      "click", () => performHonorsAction("rejected")
+    );
+
+    document.getElementById("publishBtn").addEventListener(
+      "click", () => performHonorsAction("published")
+    );
+
+    document.getElementById("unpublishBtn").addEventListener(
+      "click", () => performHonorsAction("unpublished")
+    );
+
+    // Restore a previously authenticated administrator session.
+    const { data: { session } } = await db.auth.getSession();
+
+    if (session?.user?.email?.toLowerCase() === "infoayli.org@gmail.com") {
+      showSignedIn(true);
+      await loadDashboard();
+    } else {
+      showSignedIn(false);
+    }
+  </script>
+</body>
+</html>
