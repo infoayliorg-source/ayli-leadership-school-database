@@ -1,0 +1,458 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AYLI Digital Library Management</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172b4d;
+      margin: 0;
+      padding: 24px;
+    }
+    .container {
+      max-width: 950px;
+      margin: auto;
+    }
+    h1 { color: #123b70; }
+    .panel {
+      background: white;
+      padding: 22px;
+      margin: 18px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #00000012;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 14px;
+    }
+    input, textarea, select, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 11px;
+      margin-top: 6px;
+      font-size: 15px;
+    }
+    button {
+      background: #123b70;
+      color: white;
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; cursor: wait; }
+    .secondary { background: #52657c; }
+    .danger { background: #9d2929; }
+    .message { padding: 12px; border-radius: 5px; margin: 12px 0; }
+    .error { background: #ffe8e8; color: #8c1717; }
+    .success { background: #e4f7e9; color: #176b32; }
+    .document {
+      border: 1px solid #dce3ec;
+      padding: 16px;
+      border-radius: 7px;
+      margin: 12px 0;
+    }
+    .actions {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .muted { color: #5d6b7c; font-size: 14px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>AYLI Digital Library</h1>
+  <p>Administrative management of academic PDFs and publications.</p>
+
+  <div id="message" role="status" aria-live="polite"></div>
+
+  <section id="loginPanel" class="panel" hidden>
+    <h2>Administrator Sign In</h2>
+    <p class="muted">Sign in using the authorized AYLI administrator account.</p>
+    <form id="loginForm">
+      <label for="email">Email address</label>
+      <input id="email" type="email" required autocomplete="username">
+      <label for="password">Password</label>
+      <input id="password" type="password" required autocomplete="current-password">
+      <button type="submit">Sign In</button>
+    </form>
+  </section>
+
+  <section id="dashboard" hidden>
+    <div class="panel">
+      <h2>Upload a PDF</h2>
+      <form id="uploadForm">
+        <label for="title">Document title *</label>
+        <input id="title" maxlength="200" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" rows="3" maxlength="3000"></textarea>
+
+        <label for="author">Author / Institution</label>
+        <input id="author" maxlength="200">
+
+        <label for="category">Category *</label>
+        <select id="category" required>
+          <option value="Research Works">Research Works</option>
+          <option value="Academic Publications">Academic Publications</option>
+          <option value="Reports">Reports</option>
+          <option value="Curriculum">Curriculum</option>
+          <option value="Course Outlines">Course Outlines</option>
+          <option value="Other Documents">Other Documents</option>
+        </select>
+
+        <label for="cohort">Cohort (if applicable)</label>
+        <input id="cohort" placeholder="e.g. Cohort 12" maxlength="100">
+
+        <label for="academicYear">Academic year</label>
+        <input id="academicYear" placeholder="e.g. 2026–2027" maxlength="50">
+
+        <label for="pdf">PDF file * (maximum 20 MB)</label>
+        <input id="pdf" type="file" accept="application/pdf,.pdf" required>
+
+        <button id="uploadButton" type="submit">Upload PDF as Draft</button>
+      </form>
+      <p class="muted">New uploads remain drafts until you explicitly publish them.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Manage Documents</h2>
+      <button id="refreshButton" type="button" class="secondary">Refresh Documents</button>
+      <div id="documents"><p>Loading documents…</p></div>
+    </div>
+
+    <div class="panel">
+      <button id="logoutButton" type="button" class="secondary">Sign Out</button>
+    </div>
+  </section>
+</div>
+
+<script>
+const SUPABASE_URL = "https://jutxahzlecbbphgxlouy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+const ADMIN_EMAIL = "infoayli.org@gmail.com";
+const BUCKET = "ayli-academic-library";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const messageBox = document.getElementById("message");
+const loginPanel = document.getElementById("loginPanel");
+const dashboard = document.getElementById("dashboard");
+const documentsBox = document.getElementById("documents");
+const uploadButton = document.getElementById("uploadButton");
+
+function showMessage(message, isError = false) {
+  messageBox.className = "message " + (isError ? "error" : "success");
+  messageBox.textContent = message;
+}
+
+function clearMessage() {
+  messageBox.textContent = "";
+  messageBox.className = "";
+}
+
+function setSignedIn(isSignedIn) {
+  loginPanel.hidden = isSignedIn;
+  dashboard.hidden = !isSignedIn;
+}
+
+async function checkSession() {
+  const { data, error } = await db.auth.getSession();
+  if (error) throw error;
+
+  const user = data.session?.user;
+  if (user && user.email?.toLowerCase() === ADMIN_EMAIL) {
+    setSignedIn(true);
+    await loadDocuments();
+  } else {
+    setSignedIn(false);
+  }
+}
+
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage();
+
+  const { data, error } = await db.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value
+  });
+
+  if (error) {
+    showMessage("Sign-in failed. Check your email and password.", true);
+    return;
+  }
+
+  if (data.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    await db.auth.signOut();
+    setSignedIn(false);
+    showMessage("This account is not authorized to manage the AYLI library.", true);
+    return;
+  }
+
+  setSignedIn(true);
+  showMessage("Administrator signed in.");
+  await loadDocuments();
+});
+
+document.getElementById("uploadForm").addEventListener("submit", async event => {
+  event.preventDefault();
+  clearMessage();
+
+  const { data: sessionData, error: sessionError } = await db.auth.getSession();
+  const user = sessionData?.session?.user;
+
+  if (sessionError || user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    showMessage("Your administrator session is missing. Please sign in again.", true);
+    setSignedIn(false);
+    return;
+  }
+
+  const file = document.getElementById("pdf").files[0];
+  if (!file) {
+    showMessage("Please select a PDF file.", true);
+    return;
+  }
+
+  if (file.size > 20 * 1024 * 1024) {
+    showMessage("The PDF exceeds the 20 MB limit.", true);
+    return;
+  }
+
+  if (file.type !== "application/pdf" &&
+      !file.name.toLowerCase().endsWith(".pdf")) {
+    showMessage("Only PDF files are allowed.", true);
+    return;
+  }
+
+  const title = document.getElementById("title").value.trim();
+  if (!title) {
+    showMessage("Enter a document title.", true);
+    return;
+  }
+
+  uploadButton.disabled = true;
+  uploadButton.textContent = "Uploading…";
+
+  let storagePath = null;
+
+  try {
+    const safeName = file.name
+      .normalize("NFKD")
+      .replace(/[^a-zA-Z0-9._-]/g, "_")
+      .slice(-150);
+
+    storagePath = crypto.randomUUID() + "-" + safeName;
+
+    const { error: uploadError } = await db.storage
+      .from(BUCKET)
+      .upload(storagePath, file, {
+        contentType: "application/pdf",
+        upsert: false
+      });
+
+    if (uploadError) throw uploadError;
+
+    const { error: insertError } = await db
+      .from("ayli_library_documents")
+      .insert({
+        title,
+        description: document.getElementById("description").value.trim() || null,
+        author: document.getElementById("author").value.trim() || null,
+        category: document.getElementById("category").value,
+        cohort: document.getElementById("cohort").value.trim() || null,
+        academic_year: document.getElementById("academicYear").value.trim() || null,
+        storage_path: storagePath,
+        original_filename: file.name,
+        publication_status: "draft"
+      });
+
+    if (insertError) throw insertError;
+
+    document.getElementById("uploadForm").reset();
+    showMessage("PDF uploaded successfully as a draft.");
+    await loadDocuments();
+  } catch (error) {
+    console.error("Library upload error:", error);
+
+    if (storagePath) {
+      const { error: cleanupError } = await db.storage
+        .from(BUCKET).remove([storagePath]);
+      if (cleanupError) {
+        console.error("Upload cleanup error:", cleanupError);
+      }
+    }
+
+    showMessage(
+      error.message || "Upload failed. Check your storage and table policies.",
+      true
+    );
+  } finally {
+    uploadButton.disabled = false;
+    uploadButton.textContent = "Upload PDF as Draft";
+  }
+});
+
+async function loadDocuments() {
+  documentsBox.textContent = "Loading documents…";
+
+  const { data, error } = await db
+    .from("ayli_library_documents")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Load documents error:", error);
+    documentsBox.textContent = "Unable to load documents. Check the administrator table policy.";
+    return;
+  }
+
+  documentsBox.replaceChildren();
+
+  if (!data || data.length === 0) {
+    documentsBox.textContent = "No documents uploaded yet.";
+    return;
+  }
+
+  for (const doc of data) {
+    const card = document.createElement("article");
+    card.className = "document";
+
+    const heading = document.createElement("h3");
+    heading.textContent = doc.title;
+    card.appendChild(heading);
+
+    const details = document.createElement("p");
+    details.className = "muted";
+    details.textContent = `${doc.category} · ${doc.publication_status} · ${doc.original_filename}`;
+    card.appendChild(details);
+
+    if (doc.description) {
+      const description = document.createElement("p");
+      description.textContent = doc.description;
+      card.appendChild(description);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const nextStatus = doc.publication_status === "published"
+      ? "draft"
+      : "published";
+
+    const statusButton = document.createElement("button");
+    statusButton.textContent = doc.publication_status === "published"
+      ? "Unpublish"
+      : "Publish";
+    statusButton.addEventListener("click", () => updateStatus(doc, nextStatus));
+    actions.appendChild(statusButton);
+
+    const archiveButton = document.createElement("button");
+    archiveButton.className = "secondary";
+    archiveButton.textContent = "Archive";
+    archiveButton.addEventListener("click", () => updateStatus(doc, "archived"));
+    actions.appendChild(archiveButton);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "danger";
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => deleteDocument(doc));
+    actions.appendChild(deleteButton);
+
+    card.appendChild(actions);
+    documentsBox.appendChild(card);
+  }
+}
+
+async function updateStatus(doc, status) {
+  const { data: sessionData } = await db.auth.getSession();
+  if (sessionData.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    showMessage("Administrator sign-in required.", true);
+    setSignedIn(false);
+    return;
+  }
+
+  if (!confirm(`Change "${doc.title}" to ${status}?`)) return;
+
+  const now = new Date().toISOString();
+  const update = {
+    publication_status: status,
+    updated_at: now,
+    approved_by: status === "published" ? ADMIN_EMAIL : doc.approved_by,
+    approved_at: status === "published" ? now : doc.approved_at,
+    published_at: status === "published" ? now : null
+  };
+
+  const { error } = await db
+    .from("ayli_library_documents")
+    .update(update)
+    .eq("id", doc.id);
+
+  if (error) {
+    showMessage(error.message || "Unable to update document.", true);
+    return;
+  }
+
+  showMessage(`Document status changed to ${status}.`);
+  await loadDocuments();
+}
+
+async function deleteDocument(doc) {
+  const { data: sessionData } = await db.auth.getSession();
+  if (sessionData.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    showMessage("Administrator sign-in required.", true);
+    setSignedIn(false);
+    return;
+  }
+
+  if (!confirm(`Permanently delete "${doc.title}" and its PDF? This cannot be undone.`)) {
+    return;
+  }
+
+  const { error: deleteRowError } = await db
+    .from("ayli_library_documents")
+    .delete()
+    .eq("id", doc.id);
+
+  if (deleteRowError) {
+    showMessage(deleteRowError.message || "Unable to delete document record.", true);
+    return;
+  }
+
+  const { error: deleteFileError } = await db.storage
+    .from(BUCKET)
+    .remove([doc.storage_path]);
+
+  if (deleteFileError) {
+    showMessage("Record deleted, but the PDF could not be removed from storage. Contact the administrator.", true);
+    await loadDocuments();
+    return;
+  }
+
+  showMessage("Document and PDF deleted.");
+  await loadDocuments();
+}
+
+document.getElementById("refreshButton").addEventListener("click", loadDocuments);
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  await db.auth.signOut();
+  setSignedIn(false);
+  showMessage("You have signed out.");
+});
+
+checkSession().catch(error => {
+  console.error("Initialization error:", error);
+  setSignedIn(false);
+  showMessage("Unable to initialize the library. Refresh the page and try again.", true);
+});
+</script>
+</body>
+</html>
