@@ -1,0 +1,398 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AYLI Curriculum Management</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172b4d;
+      margin: 0;
+      padding: 24px;
+    }
+    main { max-width: 900px; margin: auto; }
+    h1 { color: #123b70; }
+    .panel {
+      background: #fff;
+      padding: 22px;
+      margin: 18px 0;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px #00000012;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-top: 14px;
+    }
+    input, textarea, select, button {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 11px;
+      margin-top: 6px;
+      font-size: 15px;
+    }
+    button {
+      background: #123b70;
+      color: white;
+      border: 0;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .6; }
+    .secondary { background: #52657c; }
+    .danger { background: #9d2929; }
+    .message { padding: 12px; margin: 12px 0; border-radius: 5px; }
+    .error { background: #ffe8e8; color: #8c1717; }
+    .success { background: #e4f7e9; color: #176b32; }
+    .item { border: 1px solid #dce3ec; padding: 16px; margin: 12px 0; border-radius: 7px; }
+    .muted { color: #5d6b7c; font-size: 14px; }
+    .actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 8px; margin-top: 12px; }
+    [hidden] { display: none !important; }
+  </style>
+</head>
+<body>
+<main>
+  <h1>AYLI Curriculum Management</h1>
+  <p>Upload and manage AYLI curricula and course outlines.</p>
+
+  <div id="message" role="status" aria-live="polite"></div>
+
+  <section id="loginPanel" class="panel" hidden>
+    <h2>Administrator Sign In</h2>
+    <form id="loginForm">
+      <label for="email">Administrator email</label>
+      <input id="email" type="email" required autocomplete="username">
+      <label for="password">Password</label>
+      <input id="password" type="password" required autocomplete="current-password">
+      <button type="submit">Sign In</button>
+    </form>
+  </section>
+
+  <section id="dashboard" hidden>
+    <div class="panel">
+      <h2>Upload Curriculum PDF</h2>
+      <form id="uploadForm">
+        <label for="title">Curriculum title *</label>
+        <input id="title" maxlength="200" required>
+
+        <label for="description">Description</label>
+        <textarea id="description" rows="3" maxlength="3000"></textarea>
+
+        <label for="author">Prepared by / Department</label>
+        <input id="author" maxlength="200">
+
+        <label for="cohort">Applicable cohort</label>
+        <input id="cohort" placeholder="e.g. Cohort 13" maxlength="100">
+
+        <label for="academicYear">Academic year</label>
+        <input id="academicYear" placeholder="e.g. 2026–2027" maxlength="50">
+
+        <label for="category">Document type *</label>
+        <select id="category" required>
+          <option value="Curriculum">Curriculum</option>
+          <option value="Course Outlines">Course Outlines</option>
+        </select>
+
+        <label for="pdf">PDF file * (maximum 20 MB)</label>
+        <input id="pdf" type="file" accept="application/pdf,.pdf" required>
+
+        <button id="uploadButton" type="submit">Upload as Draft</button>
+      </form>
+      <p class="muted">Uploaded documents remain drafts until you publish them.</p>
+    </div>
+
+    <div class="panel">
+      <h2>Manage Curriculum Documents</h2>
+      <button id="refreshButton" type="button" class="secondary">Refresh List</button>
+      <div id="documents">Loading documents…</div>
+    </div>
+
+    <div class="panel">
+      <button id="logoutButton" type="button" class="secondary">Sign Out</button>
+    </div>
+  </section>
+</main>
+
+<script>
+const SUPABASE_URL = "https://jutxahzlecbbphgxlouy.supabase.co";
+const SUPABASE_KEY = "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+const ADMIN_EMAIL = "infoayli.org@gmail.com";
+const BUCKET = "ayli-academic-library";
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const loginPanel = document.getElementById("loginPanel");
+const dashboard = document.getElementById("dashboard");
+const messageBox = document.getElementById("message");
+const documentsBox = document.getElementById("documents");
+const uploadButton = document.getElementById("uploadButton");
+
+function message(text, error = false) {
+  messageBox.className = "message " + (error ? "error" : "success");
+  messageBox.textContent = text;
+}
+
+function setSignedIn(value) {
+  loginPanel.hidden = value;
+  dashboard.hidden = !value;
+}
+
+async function checkSession() {
+  const { data, error } = await db.auth.getSession();
+  if (error) throw error;
+
+  if (data.session?.user?.email?.toLowerCase() === ADMIN_EMAIL) {
+    setSignedIn(true);
+    await loadDocuments();
+  } else {
+    setSignedIn(false);
+  }
+}
+
+document.getElementById("loginForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const { data, error } = await db.auth.signInWithPassword({
+    email: document.getElementById("email").value.trim(),
+    password: document.getElementById("password").value
+  });
+
+  if (error) {
+    message("Sign-in failed. Check your email and password.", true);
+    return;
+  }
+
+  if (data.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    await db.auth.signOut();
+    setSignedIn(false);
+    message("This account is not authorized to manage the curriculum.", true);
+    return;
+  }
+
+  setSignedIn(true);
+  message("Administrator signed in.");
+  await loadDocuments();
+});
+
+document.getElementById("uploadForm").addEventListener("submit", async event => {
+  event.preventDefault();
+
+  const { data: sessionData, error: sessionError } = await db.auth.getSession();
+  if (sessionError ||
+      sessionData.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    setSignedIn(false);
+    message("Please sign in with the authorized administrator account.", true);
+    return;
+  }
+
+  const file = document.getElementById("pdf").files[0];
+  if (!file) {
+    message("Choose a PDF file first.", true);
+    return;
+  }
+
+  if (file.size > 20 * 1024 * 1024) {
+    message("The file exceeds the 20 MB limit.", true);
+    return;
+  }
+
+  if (file.type !== "application/pdf" &&
+      !file.name.toLowerCase().endsWith(".pdf")) {
+    message("Only PDF files are allowed.", true);
+    return;
+  }
+
+  uploadButton.disabled = true;
+  uploadButton.textContent = "Uploading…";
+
+  let path = null;
+
+  try {
+    path = crypto.randomUUID() + "-" +
+      file.name.normalize("NFKD").replace(/[^a-zA-Z0-9._-]/g, "_").slice(-150);
+
+    const { error: storageError } = await db.storage
+      .from(BUCKET)
+      .upload(path, file, { contentType: "application/pdf", upsert: false });
+
+    if (storageError) throw storageError;
+
+    const { error: rowError } = await db.from("ayli_library_documents").insert({
+      title: document.getElementById("title").value.trim(),
+      description: document.getElementById("description").value.trim() || null,
+      author: document.getElementById("author").value.trim() || null,
+      category: document.getElementById("category").value,
+      cohort: document.getElementById("cohort").value.trim() || null,
+      academic_year: document.getElementById("academicYear").value.trim() || null,
+      storage_path: path,
+      original_filename: file.name,
+      publication_status: "draft"
+    });
+
+    if (rowError) throw rowError;
+
+    document.getElementById("uploadForm").reset();
+    message("Curriculum PDF uploaded as a draft.");
+    await loadDocuments();
+  } catch (error) {
+    console.error("Curriculum upload error:", error);
+
+    if (path) {
+      const { error: cleanupError } = await db.storage.from(BUCKET).remove([path]);
+      if (cleanupError) console.error("Cleanup error:", cleanupError);
+    }
+
+    message(error.message || "Upload failed. Check your Supabase policies.", true);
+  } finally {
+    uploadButton.disabled = false;
+    uploadButton.textContent = "Upload as Draft";
+  }
+});
+
+async function loadDocuments() {
+  documentsBox.textContent = "Loading documents…";
+
+  const { data, error } = await db
+    .from("ayli_library_documents")
+    .select("*")
+    .in("category", ["Curriculum", "Course Outlines"])
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Curriculum list error:", error);
+    documentsBox.textContent = "Unable to load documents. Check the database policy.";
+    return;
+  }
+
+  documentsBox.replaceChildren();
+
+  if (!data.length) {
+    documentsBox.textContent = "No curriculum documents uploaded yet.";
+    return;
+  }
+
+  for (const doc of data) {
+    const item = document.createElement("article");
+    item.className = "item";
+
+    const heading = document.createElement("h3");
+    heading.textContent = doc.title;
+    item.appendChild(heading);
+
+    const details = document.createElement("p");
+    details.className = "muted";
+    details.textContent = `${doc.category} · ${doc.publication_status} · ${doc.original_filename}`;
+    item.appendChild(details);
+
+    if (doc.description) {
+      const desc = document.createElement("p");
+      desc.textContent = doc.description;
+      item.appendChild(desc);
+    }
+
+    const actions = document.createElement("div");
+    actions.className = "actions";
+
+    const status = doc.publication_status === "published" ? "draft" : "published";
+    const statusButton = document.createElement("button");
+    statusButton.textContent = doc.publication_status === "published"
+      ? "Unpublish" : "Publish";
+    statusButton.addEventListener("click", () => updateStatus(doc, status));
+    actions.appendChild(statusButton);
+
+    const archiveButton = document.createElement("button");
+    archiveButton.className = "secondary";
+    archiveButton.textContent = "Archive";
+    archiveButton.addEventListener("click", () => updateStatus(doc, "archived"));
+    actions.appendChild(archiveButton);
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "danger";
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => deleteDocument(doc));
+    actions.appendChild(deleteButton);
+
+    item.appendChild(actions);
+    documentsBox.appendChild(item);
+  }
+}
+
+async function updateStatus(doc, status) {
+  const { data } = await db.auth.getSession();
+  if (data.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    message("Administrator sign-in required.", true);
+    setSignedIn(false);
+    return;
+  }
+
+  if (!confirm(`Change "${doc.title}" to ${status}?`)) return;
+
+  const now = new Date().toISOString();
+  const { error } = await db.from("ayli_library_documents")
+    .update({
+      publication_status: status,
+      updated_at: now,
+      approved_by: status === "published" ? ADMIN_EMAIL : doc.approved_by,
+      approved_at: status === "published" ? now : doc.approved_at,
+      published_at: status === "published" ? now : null
+    })
+    .eq("id", doc.id);
+
+  if (error) {
+    message(error.message || "Could not update document status.", true);
+    return;
+  }
+
+  message(`Document status changed to ${status}.`);
+  await loadDocuments();
+}
+
+async function deleteDocument(doc) {
+  const { data } = await db.auth.getSession();
+  if (data.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+    message("Administrator sign-in required.", true);
+    setSignedIn(false);
+    return;
+  }
+
+  if (!confirm(`Permanently delete "${doc.title}" and its PDF?`)) return;
+
+  const { error: rowError } = await db.from("ayli_library_documents")
+    .delete().eq("id", doc.id);
+
+  if (rowError) {
+    message(rowError.message || "Could not delete the document record.", true);
+    return;
+  }
+
+  const { error: fileError } = await db.storage.from(BUCKET).remove([doc.storage_path]);
+
+  if (fileError) {
+    message("The record was deleted, but the PDF could not be removed from storage.", true);
+    await loadDocuments();
+    return;
+  }
+
+  message("Curriculum document and PDF deleted.");
+  await loadDocuments();
+}
+
+document.getElementById("refreshButton").addEventListener("click", loadDocuments);
+
+document.getElementById("logoutButton").addEventListener("click", async () => {
+  await db.auth.signOut();
+  setSignedIn(false);
+  message("You have signed out.");
+});
+
+checkSession().catch(error => {
+  console.error("Initialization error:", error);
+  setSignedIn(false);
+  message("Unable to initialize the page. Refresh and try again.", true);
+});
+</script>
+</body>
+</html>
