@@ -14,10 +14,7 @@
       margin: 0;
       padding: 24px;
     }
-    .container {
-      max-width: 950px;
-      margin: auto;
-    }
+    .container { max-width: 950px; margin: auto; }
     h1 { color: #123b70; }
     .panel {
       background: white;
@@ -80,15 +77,17 @@
     <form id="loginForm">
       <label for="email">Email address</label>
       <input id="email" type="email" required autocomplete="username">
+
       <label for="password">Password</label>
       <input id="password" type="password" required autocomplete="current-password">
+
       <button type="submit">Sign In</button>
     </form>
   </section>
 
   <section id="dashboard" hidden>
     <div class="panel">
-      <h2>Upload a PDF</h2>
+      <h2>Upload a Document</h2>
       <form id="uploadForm">
         <label for="title">Document title *</label>
         <input id="title" maxlength="200" required>
@@ -118,6 +117,17 @@
         <label for="pdf">PDF file * (maximum 20 MB)</label>
         <input id="pdf" type="file" accept="application/pdf,.pdf" required>
 
+        <label for="coverImage">Cover image (optional)</label>
+        <input
+          id="coverImage"
+          type="file"
+          accept="image/png,image/jpeg,image/webp"
+        >
+        <p class="muted">
+          Optional: PNG, JPG, or WebP. Maximum 5 MB.
+          If omitted, the public library should display an AYLI-branded placeholder.
+        </p>
+
         <button id="uploadButton" type="submit">Upload PDF as Draft</button>
       </form>
       <p class="muted">New uploads remain drafts until you explicitly publish them.</p>
@@ -140,6 +150,9 @@ const SUPABASE_URL = "https://jutxahzlecbbphgxlouy.supabase.co";
 const SUPABASE_KEY = "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
 const ADMIN_EMAIL = "infoayli.org@gmail.com";
 const BUCKET = "ayli-academic-library";
+const MAX_PDF_SIZE = 20 * 1024 * 1024;
+const MAX_COVER_SIZE = 5 * 1024 * 1024;
+
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const messageBox = document.getElementById("message");
@@ -161,6 +174,13 @@ function clearMessage() {
 function setSignedIn(isSignedIn) {
   loginPanel.hidden = isSignedIn;
   dashboard.hidden = !isSignedIn;
+}
+
+async function isAuthorizedAdmin() {
+  const { data, error } = await db.auth.getSession();
+  if (error) return false;
+
+  return data.session?.user?.email?.toLowerCase() === ADMIN_EMAIL;
 }
 
 async function checkSession() {
@@ -206,22 +226,27 @@ document.getElementById("uploadForm").addEventListener("submit", async event => 
   event.preventDefault();
   clearMessage();
 
-  const { data: sessionData, error: sessionError } = await db.auth.getSession();
-  const user = sessionData?.session?.user;
-
-  if (sessionError || user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+  if (!(await isAuthorizedAdmin())) {
     showMessage("Your administrator session is missing. Please sign in again.", true);
     setSignedIn(false);
     return;
   }
 
   const file = document.getElementById("pdf").files[0];
+  const coverFile = document.getElementById("coverImage").files[0] || null;
+  const title = document.getElementById("title").value.trim();
+
   if (!file) {
     showMessage("Please select a PDF file.", true);
     return;
   }
 
-  if (file.size > 20 * 1024 * 1024) {
+  if (!title) {
+    showMessage("Enter a document title.", true);
+    return;
+  }
+
+  if (file.size > MAX_PDF_SIZE) {
     showMessage("The PDF exceeds the 20 MB limit.", true);
     return;
   }
@@ -232,9 +257,15 @@ document.getElementById("uploadForm").addEventListener("submit", async event => 
     return;
   }
 
-  const title = document.getElementById("title").value.trim();
-  if (!title) {
-    showMessage("Enter a document title.", true);
+  const allowedCoverTypes = ["image/png", "image/jpeg", "image/webp"];
+
+  if (coverFile && !allowedCoverTypes.includes(coverFile.type)) {
+    showMessage("Cover must be a PNG, JPG, or WebP image.", true);
+    return;
+  }
+
+  if (coverFile && coverFile.size > MAX_COVER_SIZE) {
+    showMessage("Cover image must be 5 MB or smaller.", true);
     return;
   }
 
@@ -242,6 +273,10 @@ document.getElementById("uploadForm").addEventListener("submit", async event => 
   uploadButton.textContent = "Uploading…";
 
   let storagePath = null;
+  let coverStoragePath = null;
+  let pdfUploaded = false;
+  let coverUploaded = false;
+  let recordSaved = false;
 
   try {
     const safeName = file.name
@@ -259,6 +294,26 @@ document.getElementById("uploadForm").addEventListener("submit", async event => 
       });
 
     if (uploadError) throw uploadError;
+    pdfUploaded = true;
+
+    if (coverFile) {
+      const coverSafeName = coverFile.name
+        .normalize("NFKD")
+        .replace(/[^a-zA-Z0-9._-]/g, "_")
+        .slice(-150);
+
+      coverStoragePath = "covers/" + crypto.randomUUID() + "-" + coverSafeName;
+
+      const { error: coverUploadError } = await db.storage
+        .from(BUCKET)
+        .upload(coverStoragePath, coverFile, {
+          contentType: coverFile.type,
+          upsert: false
+        });
+
+      if (coverUploadError) throw coverUploadError;
+      coverUploaded = true;
+    }
 
     const { error: insertError } = await db
       .from("ayli_library_documents")
@@ -270,28 +325,38 @@ document.getElementById("uploadForm").addEventListener("submit", async event => 
         cohort: document.getElementById("cohort").value.trim() || null,
         academic_year: document.getElementById("academicYear").value.trim() || null,
         storage_path: storagePath,
+        cover_storage_path: coverStoragePath,
         original_filename: file.name,
         publication_status: "draft"
       });
 
     if (insertError) throw insertError;
+    recordSaved = true;
 
     document.getElementById("uploadForm").reset();
-    showMessage("PDF uploaded successfully as a draft.");
+    showMessage("Document uploaded successfully as a draft.");
     await loadDocuments();
   } catch (error) {
     console.error("Library upload error:", error);
 
-    if (storagePath) {
-      const { error: cleanupError } = await db.storage
-        .from(BUCKET).remove([storagePath]);
-      if (cleanupError) {
-        console.error("Upload cleanup error:", cleanupError);
+    if (!recordSaved) {
+      const pathsToRemove = [];
+      if (coverUploaded && coverStoragePath) pathsToRemove.push(coverStoragePath);
+      if (pdfUploaded && storagePath) pathsToRemove.push(storagePath);
+
+      if (pathsToRemove.length) {
+        const { error: cleanupError } = await db.storage
+          .from(BUCKET)
+          .remove(pathsToRemove);
+
+        if (cleanupError) {
+          console.error("Upload cleanup error:", cleanupError);
+        }
       }
     }
 
     showMessage(
-      error.message || "Upload failed. Check your storage and table policies.",
+      error.message || "Upload failed. Check the storage and database policies.",
       true
     );
   } finally {
@@ -310,7 +375,8 @@ async function loadDocuments() {
 
   if (error) {
     console.error("Load documents error:", error);
-    documentsBox.textContent = "Unable to load documents. Check the administrator table policy.";
+    documentsBox.textContent =
+      "Unable to load documents. Check the administrator table policy.";
     return;
   }
 
@@ -331,8 +397,21 @@ async function loadDocuments() {
 
     const details = document.createElement("p");
     details.className = "muted";
-    details.textContent = `${doc.category} · ${doc.publication_status} · ${doc.original_filename}`;
+    details.textContent =
+      `${doc.category} · ${doc.publication_status} · ${doc.original_filename}`;
     card.appendChild(details);
+
+    if (doc.cover_storage_path) {
+      const coverNote = document.createElement("p");
+      coverNote.className = "muted";
+      coverNote.textContent = "Cover image uploaded.";
+      card.appendChild(coverNote);
+    } else {
+      const coverNote = document.createElement("p");
+      coverNote.className = "muted";
+      coverNote.textContent = "No cover image; public placeholder will be used.";
+      card.appendChild(coverNote);
+    }
 
     if (doc.description) {
       const description = document.createElement("p");
@@ -372,8 +451,7 @@ async function loadDocuments() {
 }
 
 async function updateStatus(doc, status) {
-  const { data: sessionData } = await db.auth.getSession();
-  if (sessionData.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+  if (!(await isAuthorizedAdmin())) {
     showMessage("Administrator sign-in required.", true);
     setSignedIn(false);
     return;
@@ -405,14 +483,31 @@ async function updateStatus(doc, status) {
 }
 
 async function deleteDocument(doc) {
-  const { data: sessionData } = await db.auth.getSession();
-  if (sessionData.session?.user?.email?.toLowerCase() !== ADMIN_EMAIL) {
+  if (!(await isAuthorizedAdmin())) {
     showMessage("Administrator sign-in required.", true);
     setSignedIn(false);
     return;
   }
 
-  if (!confirm(`Permanently delete "${doc.title}" and its PDF? This cannot be undone.`)) {
+  if (!confirm(
+    `Permanently delete "${doc.title}", its PDF, and its cover image? This cannot be undone.`
+  )) {
+    return;
+  }
+
+  const pathsToRemove = [doc.storage_path];
+  if (doc.cover_storage_path) pathsToRemove.push(doc.cover_storage_path);
+
+  const { error: deleteFileError } = await db.storage
+    .from(BUCKET)
+    .remove(pathsToRemove);
+
+  if (deleteFileError) {
+    showMessage(
+      "Could not remove the PDF or cover image. The document record was not deleted.",
+      true
+    );
+    console.error("File deletion error:", deleteFileError);
     return;
   }
 
@@ -422,21 +517,15 @@ async function deleteDocument(doc) {
     .eq("id", doc.id);
 
   if (deleteRowError) {
-    showMessage(deleteRowError.message || "Unable to delete document record.", true);
+    showMessage(
+      "Files were removed, but the document record could not be deleted. Contact the administrator.",
+      true
+    );
+    console.error("Record deletion error:", deleteRowError);
     return;
   }
 
-  const { error: deleteFileError } = await db.storage
-    .from(BUCKET)
-    .remove([doc.storage_path]);
-
-  if (deleteFileError) {
-    showMessage("Record deleted, but the PDF could not be removed from storage. Contact the administrator.", true);
-    await loadDocuments();
-    return;
-  }
-
-  showMessage("Document and PDF deleted.");
+  showMessage("Document, PDF, and cover image deleted.");
   await loadDocuments();
 }
 
@@ -451,7 +540,10 @@ document.getElementById("logoutButton").addEventListener("click", async () => {
 checkSession().catch(error => {
   console.error("Initialization error:", error);
   setSignedIn(false);
-  showMessage("Unable to initialize the library. Refresh the page and try again.", true);
+  showMessage(
+    "Unable to initialize the library. Refresh the page and try again.",
+    true
+  );
 });
 </script>
 </body>
