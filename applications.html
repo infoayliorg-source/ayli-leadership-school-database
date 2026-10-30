@@ -1231,33 +1231,59 @@ async function loadProgrammeFilter() {
     const programmeFilter =
         document.getElementById("programmeFilter");
 
-    const { data, error } = await applicationsClient
-        .from("ayli_academic_programmes")
-        .select("programme_code, programme_name")
-        .eq("application_open", true)
-        .order("programme_name");
+    programmeFilter.innerHTML =
+        '<option value="">Loading programmes...</option>';
 
-    if (error) {
-        console.error("Error loading programmes:", error);
-        return;
+    try {
+
+        const { data, error } = await applicationsClient
+            .from("ayli_academic_programmes")
+            .select("programme_code, programme_name, application_open")
+            .eq("application_open", true)
+            .order("programme_name");
+
+        console.log("PROGRAMME DATA:", data);
+        console.log("PROGRAMME ERROR:", error);
+
+        if (error) {
+            throw error;
+        }
+
+        programmeFilter.innerHTML =
+            '<option value="">All Programmes</option>';
+
+        if (!data || data.length === 0) {
+
+            programmeFilter.innerHTML +=
+                '<option value="">No open programmes found</option>';
+
+            return;
+        }
+
+        data.forEach(programme => {
+
+            const option = document.createElement("option");
+
+            option.value = programme.programme_name;
+            option.textContent = programme.programme_name;
+
+            programmeFilter.appendChild(option);
+
+        });
+
+        console.log("PROGRAMMES LOADED:", data.length);
+
+    }
+    catch (error) {
+
+        console.error("FAILED TO LOAD PROGRAMMES:", error);
+
+        programmeFilter.innerHTML =
+            '<option value="">Error loading programmes</option>';
+
     }
 
-    programmeFilter.innerHTML =
-        '<option value="">All Programmes</option>';
-
-    (data || []).forEach(programme => {
-
-        const option = document.createElement("option");
-
-        option.value = programme.programme_name;
-        option.textContent = programme.programme_name;
-
-        programmeFilter.appendChild(option);
-
-    });
-
 }
-
         /* ==========================================
            STATUS BADGE
         ========================================== */
