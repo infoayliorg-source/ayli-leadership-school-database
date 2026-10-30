@@ -1074,163 +1074,157 @@
         }
 
 
-        /* ==========================================
-           RENDER APPLICATIONS
-        ========================================== */
+      /* ==========================================
+   RENDER APPLICATIONS
+========================================== */
 
-        function renderApplications() {
+function renderApplications() {
 
-            const table =
-                document.getElementById(
-                    "applicationsTable"
-                );
+    const table =
+        document.getElementById("applicationsTable");
 
-            const search =
-                document.getElementById(
-                    "searchInput"
-                )
-                .value
-                .toLowerCase()
-                .trim();
+    const search =
+        document.getElementById("searchInput")
+            .value
+            .toLowerCase()
+            .trim();
 
-            const status =
-                document.getElementById(
-                    "statusFilter"
-                ).value;
+    const status =
+        document.getElementById("statusFilter").value;
 
-            const country =
-                document.getElementById(
-                    "countryFilter"
-                ).value;
+    const country =
+        document.getElementById("countryFilter").value;
 
-            const cohort =
-                document.getElementById(
-                    "cohortFilter"
-                ).value;
+    const cohort =
+        document.getElementById("cohortFilter").value;
+
+    // NEW: Learning Mode filter
+    const learningMode =
+        document.getElementById("learningModeFilter").value;
+
+    // NEW: Programme filter
+    const programme =
+        document.getElementById("programmeFilter").value;
 
 
-            const filtered =
-                applications.filter(app => {
+    const filtered =
+        applications.filter(app => {
 
-                    const matchesSearch =
-                        !search ||
-                        String(app.full_name || "")
-                            .toLowerCase()
-                            .includes(search) ||
-                        String(app.application_number || "")
-                            .toLowerCase()
-                            .includes(search) ||
-                        String(app.email || "")
-                            .toLowerCase()
-                            .includes(search);
+            const matchesSearch =
+                !search ||
+                String(app.full_name || "")
+                    .toLowerCase()
+                    .includes(search) ||
+                String(app.application_number || "")
+                    .toLowerCase()
+                    .includes(search) ||
+                String(app.email || "")
+                    .toLowerCase()
+                    .includes(search);
 
-                    const matchesStatus =
-                        !status ||
-                        app.status === status;
+            const matchesStatus =
+                !status ||
+                app.status === status;
 
-                    const matchesCountry =
-                        !country ||
-                        app.country === country;
+            const matchesCountry =
+                !country ||
+                app.country === country;
 
-                    const matchesCohort =
-                        !cohort ||
-                        app.cohort === cohort;
+            const matchesCohort =
+                !cohort ||
+                app.cohort === cohort;
 
-                    return (
-                        matchesSearch &&
-                        matchesStatus &&
-                        matchesCountry &&
-                        matchesCohort
-                    );
+            // NEW: Match learning pathway
+            const matchesLearningMode =
+                !learningMode ||
+                (app.learning_mode || "international_online") === learningMode;
 
-                });
+            // NEW: Match academic programme
+            const appProgramme =
+                app.academic_programme || app.program || "";
 
-
-            if (!filtered.length) {
-
-                table.innerHTML = `
-                    <tr>
-                        <td colspan="8"
-                            class="empty-state">
-                            No applications found.
-                        </td>
-                    </tr>
-                `;
-
-                return;
-
-            }
+            const matchesProgramme =
+                !programme ||
+                appProgramme === programme;
 
 
-            table.innerHTML =
-                filtered.map(app => {
+            return (
+                matchesSearch &&
+                matchesStatus &&
+                matchesCountry &&
+                matchesCohort &&
+                matchesLearningMode &&
+                matchesProgramme
+            );
 
-                    return `
-                        <tr>
+        });
 
-                            <td>
-                                <strong>
-                                    ${escapeHtml(
-                                        app.application_number
-                                    )}
-                                </strong>
-                            </td>
 
-                            <td>
-                                ${escapeHtml(
-                                    app.full_name
-                                )}
-                            </td>
+    if (!filtered.length) {
 
-                            <td>
-                                ${escapeHtml(
-                                    app.country
-                                )}
-                            </td>
+        table.innerHTML = `
+            <tr>
+                <td colspan="8" class="empty-state">
+                    No applications found.
+                </td>
+            </tr>
+        `;
 
-                            <td>
-                                ${escapeHtml(
-                                    app.program
-                                )}
-                            </td>
+        return;
 
-                            <td>
-                                ${escapeHtml(
-                                    app.cohort
-                                )}
-                            </td>
+    }
 
-                            <td>
-                                ${getStatusBadge(
-                                    app.status
-                                )}
-                            </td>
 
-                            <td>
-                                ${formatDate(
-                                    app.created_at
-                                )}
-                            </td>
+    table.innerHTML =
+        filtered.map(app => {
 
-                            <td>
+            return `
+                <tr>
 
-                                <button
-                                    class="view-btn"
-                                    onclick="viewApplication('${app.id}')">
+                    <td>
+                        <strong>
+                            ${escapeHtml(app.application_number)}
+                        </strong>
+                    </td>
 
-                                    View
+                    <td>
+                        ${escapeHtml(app.full_name)}
+                    </td>
 
-                                </button>
+                    <td>
+                        ${escapeHtml(app.country)}
+                    </td>
 
-                            </td>
+                    <td>
+                        ${escapeHtml(app.program)}
+                    </td>
 
-                        </tr>
-                    `;
+                    <td>
+                        ${escapeHtml(app.cohort)}
+                    </td>
 
-                })
-                .join("");
+                    <td>
+                        ${getStatusBadge(app.status)}
+                    </td>
 
-        }
+                    <td>
+                        ${formatDate(app.created_at)}
+                    </td>
+
+                    <td>
+                        <button
+                            class="view-btn"
+                            onclick="viewApplication('${app.id}')">
+                            View
+                        </button>
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+}
 
 
         /* ==========================================
