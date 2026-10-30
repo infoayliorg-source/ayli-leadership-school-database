@@ -2481,6 +2481,21 @@ const adminNotes =
             renderApplications
         );
 
+        // Learning Mode filter
+document.getElementById(
+    "learningModeFilter"
+).addEventListener(
+    "change",
+    renderApplications
+);
+
+// Programme filter
+document.getElementById(
+    "programmeFilter"
+).addEventListener(
+    "change",
+    renderApplications
+);
         document.getElementById(
             "statusFilter"
         ).addEventListener(
