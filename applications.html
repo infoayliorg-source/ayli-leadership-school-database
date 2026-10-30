@@ -1225,7 +1225,38 @@ function renderApplications() {
         }).join("");
 
 }
+// Load available academic programmes from Supabase
+async function loadProgrammeFilter() {
 
+    const programmeFilter =
+        document.getElementById("programmeFilter");
+
+    const { data, error } = await applicationsClient
+        .from("ayli_academic_programmes")
+        .select("programme_code, programme_name")
+        .eq("application_open", true)
+        .order("programme_name");
+
+    if (error) {
+        console.error("Error loading programmes:", error);
+        return;
+    }
+
+    programmeFilter.innerHTML =
+        '<option value="">All Programmes</option>';
+
+    (data || []).forEach(programme => {
+
+        const option = document.createElement("option");
+
+        option.value = programme.programme_name;
+        option.textContent = programme.programme_name;
+
+        programmeFilter.appendChild(option);
+
+    });
+
+}
 
         /* ==========================================
            STATUS BADGE
@@ -2072,8 +2103,9 @@ const adminNotes =
                     );
 
                     await loadApplications();
+await loadProgrammeFilter();
 
-                    return;
+return;
 
                 }
 
