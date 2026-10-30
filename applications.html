@@ -178,11 +178,11 @@
             margin-bottom: 20px;
         }
 
-        .controls-grid {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr 1fr auto;
-            gap: 12px;
-        }
+       .controls-grid {
+    display: grid;
+    grid-template-columns: 2fr repeat(3, minmax(150px, 1fr)) auto;
+    gap: 12px;
+}
 
         input,
         select,
@@ -741,6 +741,15 @@
                         <option value="Rejected">Rejected</option>
                     </select>
 
+                    <select id="learningModeFilter">
+    <option value="">All Learning Modes</option>
+    <option value="international_online">International Online Learning</option>
+    <option value="liberia_in_person">Liberia In-Person Learning</option>
+</select>
+
+<select id="programmeFilter">
+    <option value="">All Programmes</option>
+</select>
                     <select id="countryFilter">
                         <option value="">All Countries</option>
                     </select>
