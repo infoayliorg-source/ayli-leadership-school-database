@@ -1590,15 +1590,50 @@ async function loadProgrammeFilter() {
 
                     <div class="details-grid">
 
+                        
                         <div class="detail-item">
                             <label>Preferred Program</label>
-                            <p>${escapeHtml(app.program)}</p>
+                            <p>${escapeHtml(app.program || "Not provided")}</p>
                         </div>
 
                         <div class="detail-item">
-                            <label>Cohort</label>
-                            <p>${escapeHtml(app.cohort)}</p>
+                            <label>Learning Pathway</label>
+                            <p>${
+                                app.learning_mode === "liberia_in_person"
+                                    ? "Liberia In-Person"
+                                    : app.learning_mode === "international_online"
+                                        ? "International Online"
+                                        : "Not provided"
+                            }</p>
                         </div>
+
+                        ${
+                            app.academic_programme
+                                ? `
+                                    <div class="detail-item">
+                                        <label>Academic Programme</label>
+                                        <p>${escapeHtml(app.academic_programme)}</p>
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        ${
+                            app.study_location
+                                ? `
+                                    <div class="detail-item">
+                                        <label>Study Location</label>
+                                        <p>${escapeHtml(app.study_location)}</p>
+                                    </div>
+                                `
+                                : ""
+                        }
+
+                        <div class="detail-item">
+                            <label>Cohort</label>
+                            <p>${escapeHtml(app.cohort || "Not provided")}</p>
+                        </div>
+
 
                         <div class="detail-item">
                             <label>Chapter / Country</label>
