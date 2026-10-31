@@ -2210,10 +2210,48 @@ return;
                 }
 
 
+                               /*
+                 * Generate separate student ID formats
+                 * for International Online and Liberia In-Person.
+                 */
+
+                const learningMode =
+                    String(app.learning_mode || "").trim();
+
+                let idPrefix = "";
+
+                if (learningMode === "international_online") {
+
+                    // Preserve the existing international ID format.
+                    idPrefix = "AYLI-C" + cohortNumber + "-";
+
+                } else if (learningMode === "liberia_in_person") {
+
+                    // In-person cohorts use two-digit cohort numbers.
+                    const formattedCohort =
+                        cohortNumber.padStart(2, "0");
+
+                    idPrefix =
+                        "AYLI-IPS-C" +
+                        formattedCohort +
+                        "-";
+
+                } else {
+
+                    alert(
+                        "Student enrollment stopped.\n\n" +
+                        "The application's learning mode is missing or unrecognized.\n" +
+                        "Please verify the learning mode before enrollment."
+                    );
+
+                    return;
+
+                }
+
+
                 /*
-                 * Get existing students for this cohort
-                 * so the new AYLI ID follows the same
-                 * numbering system.
+                 * Get existing students using the correct
+                 * pathway-specific ID prefix.
                  */
 
                 const {
@@ -2224,9 +2262,7 @@ return;
                     .select("ayli_id")
                     .like(
                         "ayli_id",
-                        "AYLI-C" +
-                        cohortNumber +
-                        "-%"
+                        idPrefix + "%"
                     );
 
 
@@ -2242,35 +2278,24 @@ return;
                     .forEach(student => {
 
                         const id =
-                            String(
-                                student.ayli_id || ""
-                            );
+                            String(student.ayli_id || "");
 
                         const match =
                             id.match(
                                 new RegExp(
-                                    "^AYLI-C" +
-                                    cohortNumber +
-                                    "-(\\d+)$"
+                                    "^" +
+                                    idPrefix +
+                                    "(\\d+)$"
                                 )
                             );
 
                         if (match) {
 
                             const number =
-                                parseInt(
-                                    match[1],
-                                    10
-                                );
+                                parseInt(match[1], 10);
 
-                            if (
-                                number >
-                                highestNumber
-                            ) {
-
-                                highestNumber =
-                                    number;
-
+                            if (number > highestNumber) {
+                                highestNumber = number;
                             }
 
                         }
@@ -2279,20 +2304,11 @@ return;
 
 
                 const nextNumber =
-                    String(
-                        highestNumber + 1
-                    ).padStart(
-                        3,
-                        "0"
-                    );
+                    String(highestNumber + 1).padStart(3, "0");
 
 
                 const newAyliId =
-                    "AYLI-C" +
-                    cohortNumber +
-                    "-" +
-                    nextNumber;
-
+                    idPrefix + nextNumber;
 
                 /*
                  * Split applicant's full name.
