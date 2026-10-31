@@ -1640,7 +1640,12 @@ if (featuredImageFile) {
         "-" +
         safeFileName;
 console.log("AYLI: Starting image upload...");
-    const uploadResult =
+
+let uploadResult;
+
+try {
+
+    uploadResult =
         await supabaseClient
             .storage
             .from("website-media")
@@ -1653,7 +1658,28 @@ console.log("AYLI: Starting image upload...");
                     contentType: featuredImageFile.type
                 }
             );
-    console.log("AYLI: Upload response:", uploadResult);
+
+    console.log(
+        "AYLI: Upload response:",
+        uploadResult
+    );
+
+} catch (uploadError) {
+
+    console.error(
+        "AYLI UPLOAD FAILED:",
+        uploadError
+    );
+
+    showMessage(
+        uploadError.message ||
+        "An unexpected error occurred while uploading the image.",
+        "error"
+    );
+
+    return;
+
+}
 
     if (uploadResult.error) {
         console.error(uploadResult.error);
