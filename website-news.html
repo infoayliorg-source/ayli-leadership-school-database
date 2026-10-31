@@ -1639,7 +1639,7 @@ if (featuredImageFile) {
         Date.now() +
         "-" +
         safeFileName;
-
+console.log("AYLI: Starting image upload...");
     const uploadResult =
         await supabaseClient
             .storage
@@ -1653,6 +1653,7 @@ if (featuredImageFile) {
                     contentType: featuredImageFile.type
                 }
             );
+    console.log("AYLI: Upload response:", uploadResult);
 
     if (uploadResult.error) {
         console.error(uploadResult.error);
