@@ -883,11 +883,22 @@
                         Featured Image URL
                     </label>
 
-                    <input
-                        type="url"
-                        id="featuredImage"
-                        placeholder="https://..."
-                    >
+                  <input
+    type="file"
+    id="featuredImageFile"
+    accept="image/jpeg,image/png,image/webp"
+>
+
+<div id="featuredImagePreviewContainer" style="display: none; margin-top: 12px;">
+    <img
+        id="featuredImagePreview"
+        src=""
+        alt="Featured image preview"
+        style="max-width: 250px; width: 100%; height: auto; border-radius: 8px;"
+    >
+</div>
+
+<input type="hidden" id="featuredImage" value="">
 
                     <span class="form-help">
                         Image uploading will be added with the AYLI Media Library.
@@ -1422,7 +1433,29 @@
             "featuredImage"
         ).value =
             data.featured_image_url || "";
+// Display existing featured image when editing
 
+document.getElementById(
+    "featuredImageFile"
+).value = "";
+
+const existingImage =
+    document.getElementById(
+        "featuredImagePreview"
+    );
+
+const existingImageContainer =
+    document.getElementById(
+        "featuredImagePreviewContainer"
+    );
+
+if (data.featured_image_url) {
+    existingImage.src = data.featured_image_url;
+    existingImageContainer.style.display = "block";
+} else {
+    existingImage.src = "";
+    existingImageContainer.style.display = "none";
+}
 
         document.getElementById(
             "authorName"
@@ -1444,6 +1477,47 @@
 
     }
 
+    // =====================================================
+// FEATURED IMAGE PREVIEW
+// =====================================================
+
+document.getElementById(
+    "featuredImageFile"
+).addEventListener("change", function(event) {
+
+    const file = event.target.files[0];
+
+    const previewContainer =
+        document.getElementById(
+            "featuredImagePreviewContainer"
+        );
+
+    const previewImage =
+        document.getElementById(
+            "featuredImagePreview"
+        );
+
+    if (!file) {
+        previewContainer.style.display = "none";
+        previewImage.src = "";
+        return;
+    }
+
+    if (!file.type.startsWith("image/")) {
+        showMessage(
+            "Please select a valid image file.",
+            "error"
+        );
+
+        event.target.value = "";
+        previewContainer.style.display = "none";
+        return;
+    }
+
+    previewImage.src = URL.createObjectURL(file);
+    previewContainer.style.display = "block";
+
+});
 
     // =====================================================
     // SAVE NEWS
@@ -1488,10 +1562,15 @@
                 ).value.trim();
 
 
-            const featuredImage =
-                document.getElementById(
-                    "featuredImage"
-                ).value.trim();
+           const featuredImageFile =
+    document.getElementById(
+        "featuredImageFile"
+    ).files[0];
+
+let featuredImage =
+    document.getElementById(
+        "featuredImage"
+    ).value.trim();
 
 
             const authorName =
@@ -1520,7 +1599,77 @@
 
             }
 
+// =====================================================
+// UPLOAD FEATURED IMAGE TO SUPABASE STORAGE
+// =====================================================
 
+if (featuredImageFile) {
+
+    if (
+        !featuredImageFile.type.startsWith("image/")
+    ) {
+        showMessage(
+            "Please select a valid image file.",
+            "error"
+        );
+        return;
+    }
+
+    if (
+        featuredImageFile.size > 5 * 1024 * 1024
+    ) {
+        showMessage(
+            "Image size must not exceed 5 MB.",
+            "error"
+        );
+        return;
+    }
+
+    const safeFileName =
+        featuredImageFile.name
+            .replace(/[^a-zA-Z0-9._-]/g, "-");
+
+    const filePath =
+        "news/" +
+        Date.now() +
+        "-" +
+        safeFileName;
+
+    const uploadResult =
+        await supabaseClient
+            .storage
+            .from("website-media")
+            .upload(
+                filePath,
+                featuredImageFile,
+                {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: featuredImageFile.type
+                }
+            );
+
+    if (uploadResult.error) {
+        console.error(uploadResult.error);
+
+        showMessage(
+            uploadResult.error.message ||
+            "Unable to upload featured image.",
+            "error"
+        );
+
+        return;
+    }
+
+    const imageResult =
+        supabaseClient
+            .storage
+            .from("website-media")
+            .getPublicUrl(filePath);
+
+    featuredImage =
+        imageResult.data.publicUrl;
+}
             const slug =
                 createSlug(
                     title
