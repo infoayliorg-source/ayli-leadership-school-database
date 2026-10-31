@@ -1602,7 +1602,12 @@ let featuredImage =
 // =====================================================
 // UPLOAD FEATURED IMAGE TO SUPABASE STORAGE
 // =====================================================
-
+console.log("AYLI IMAGE UPLOAD CHECK:", {
+    fileSelected: !!featuredImageFile,
+    fileName: featuredImageFile?.name,
+    fileSize: featuredImageFile?.size,
+    fileType: featuredImageFile?.type
+});
 if (featuredImageFile) {
 
     if (
