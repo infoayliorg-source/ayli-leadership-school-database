@@ -1,0 +1,381 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AYLI Student Digital Library</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 24px;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172b4d;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
+
+    header {
+      background: #123b70;
+      color: white;
+      padding: 28px;
+      border-radius: 12px;
+      margin-bottom: 24px;
+    }
+
+    header h1 { margin: 0 0 8px; }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 18px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .toolbar {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+      margin-bottom: 22px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccd5e0;
+      border-radius: 7px;
+      font-size: 15px;
+      background: white;
+    }
+
+    .document-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+
+    .document {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 8px #00000012;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .document-icon {
+      font-size: 38px;
+      margin-bottom: 12px;
+    }
+
+    .document h3 {
+      color: #123b70;
+      margin: 0 0 10px;
+    }
+
+    .description {
+      color: #5d6b7c;
+      line-height: 1.5;
+      flex-grow: 1;
+    }
+
+    .details {
+      font-size: 13px;
+      color: #65758b;
+      line-height: 1.8;
+      margin: 12px 0;
+    }
+
+    button {
+      width: 100%;
+      border: 0;
+      border-radius: 6px;
+      padding: 12px;
+      background: #123b70;
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .message {
+      background: white;
+      padding: 18px;
+      border-radius: 8px;
+      margin-bottom: 18px;
+      color: #52657c;
+    }
+
+    .count {
+      color: #52657c;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+      body { padding: 14px; }
+      .toolbar { grid-template-columns: 1fr; }
+      header { padding: 20px; }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <header>
+    <a href="student-dashboard.html" class="back-link">
+      ← Back to Student Dashboard
+    </a>
+
+    <h1>📚 AYLI Digital Library</h1>
+
+    <p>
+      Access your academic notes, course materials,
+      publications and study resources.
+    </p>
+  </header>
+
+  <div class="toolbar">
+    <input
+      type="search"
+      id="searchInput"
+      placeholder="Search course notes or documents..."
+    >
+
+    <select id="categoryFilter">
+      <option value="">All Categories</option>
+    </select>
+  </div>
+
+  <p id="documentCount" class="count"></p>
+
+  <div id="message" class="message">
+    Loading published academic materials...
+  </div>
+
+  <div id="documentGrid" class="document-grid"></div>
+
+</div>
+
+<script>
+const SUPABASE_URL =
+  "https://jutxahzlecbbphgxlouy.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_3e7SrhjXjF6haRM7yWIv3A_XRj-nlYk";
+
+const db = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+// Check the existing student portal session.
+const loggedIn =
+  localStorage.getItem("ayliStudentLoggedIn");
+
+const ayliId =
+  localStorage.getItem("ayliCurrentStudentId");
+
+if (loggedIn !== "true" || !ayliId) {
+  window.location.href = "student-login.html";
+}
+
+const message = document.getElementById("message");
+const documentGrid = document.getElementById("documentGrid");
+const searchInput = document.getElementById("searchInput");
+const categoryFilter = document.getElementById("categoryFilter");
+const documentCount = document.getElementById("documentCount");
+
+let documents = [];
+
+function showMessage(text) {
+  message.textContent = text;
+  message.hidden = false;
+}
+
+function renderDocuments() {
+  const search = searchInput.value.trim().toLowerCase();
+  const category = categoryFilter.value;
+
+  const filtered = documents.filter(doc => {
+    const searchable = [
+      doc.title,
+      doc.description,
+      doc.author,
+      doc.category,
+      doc.cohort,
+      doc.academic_year
+    ].filter(Boolean).join(" ").toLowerCase();
+
+    return searchable.includes(search) &&
+      (!category || doc.category === category);
+  });
+
+  documentGrid.replaceChildren();
+
+  documentCount.textContent =
+    `${filtered.length} published document(s)`;
+
+  if (!filtered.length) {
+    showMessage("No matching published documents found.");
+    return;
+  }
+
+  message.hidden = true;
+
+  filtered.forEach(doc => {
+    const card = document.createElement("article");
+    card.className = "document";
+
+    const icon = document.createElement("div");
+    icon.className = "document-icon";
+    icon.textContent = "📄";
+    card.appendChild(icon);
+
+    const title = document.createElement("h3");
+    title.textContent = doc.title;
+    card.appendChild(title);
+
+    const description = document.createElement("p");
+    description.className = "description";
+    description.textContent =
+      doc.description || "AYLI academic learning material.";
+    card.appendChild(description);
+
+    const details = document.createElement("div");
+    details.className = "details";
+
+    const information = [
+      doc.category,
+      doc.author ? "Author: " + doc.author : null,
+      doc.cohort ? "Cohort: " + doc.cohort : null,
+      doc.academic_year ? "Academic Year: " + doc.academic_year : null,
+      doc.original_filename ? "File: " + doc.original_filename : null
+    ].filter(Boolean);
+
+    details.textContent = information.join(" · ");
+    card.appendChild(details);
+
+    const downloadButton = document.createElement("button");
+    downloadButton.textContent = "⬇ Download PDF";
+
+    downloadButton.addEventListener("click", async () => {
+      downloadButton.disabled = true;
+      downloadButton.textContent = "Preparing download...";
+
+      try {
+        const { data, error } = await db.functions.invoke(
+          "ayli-secure-download",
+          {
+            body: { document_id: doc.id }
+          }
+        );
+
+        if (error) throw error;
+
+        if (!data || !data.download_url) {
+          throw new Error(
+            data?.error || "Unable to generate download link."
+          );
+        }
+
+        const link = document.createElement("a");
+        link.href = data.download_url;
+        link.target = "_blank";
+        link.rel = "noopener";
+        link.download = data.filename || "AYLI-course-material.pdf";
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+      } catch (error) {
+        console.error("Download error:", error);
+        alert(
+          error.message ||
+          "Unable to download this document. Please try again."
+        );
+      } finally {
+        downloadButton.disabled = false;
+        downloadButton.textContent = "⬇ Download PDF";
+      }
+    });
+
+    card.appendChild(downloadButton);
+    documentGrid.appendChild(card);
+  });
+}
+
+async function loadDocuments() {
+  showMessage("Loading published academic materials...");
+
+  try {
+    const { data, error } = await db
+      .from("ayli_library_documents")
+      .select(`
+        id,
+        title,
+        description,
+        author,
+        category,
+        cohort,
+        academic_year,
+        original_filename,
+        created_at
+      `)
+      .eq("publication_status", "published")
+      .order("created_at", { ascending: false });
+
+    if (error) throw error;
+
+    documents = data || [];
+
+    // Populate available categories.
+    const categories = [
+      ...new Set(
+        documents.map(doc => doc.category).filter(Boolean)
+      )
+    ].sort();
+
+    categories.forEach(category => {
+      const option = document.createElement("option");
+      option.value = category;
+      option.textContent = category;
+      categoryFilter.appendChild(option);
+    });
+
+    renderDocuments();
+
+  } catch (error) {
+    console.error("Library loading error:", error);
+
+    showMessage(
+      "Unable to load the Digital Library. Please refresh the page or contact AYLI administration."
+    );
+  }
+}
+
+searchInput.addEventListener("input", renderDocuments);
+categoryFilter.addEventListener("change", renderDocuments);
+
+loadDocuments();
+</script>
+
+</body>
+</html>
